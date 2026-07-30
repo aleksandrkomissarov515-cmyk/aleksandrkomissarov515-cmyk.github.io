@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)file:///C:/Users/User/Downloads/deepseek_html_20260714_9c1e1b.html -->
+<html lang="ru" data-theme="light"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ОЗП — Дашборд</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./ОЗП — Дашборд_files/css2" rel="stylesheet">
+    <link rel="stylesheet" href="./ОЗП — Дашборд_files/all.min.css">
+    <style>
+        :root {
+            --bg-page: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-skeleton: #e2e8f0;
+            --bg-skeleton-shine: #f1f5f9;
+            --text-primary: #0b1b33;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #eef2f8;
+            --border-hover: #cbd5e1;
+            --shadow: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.08);
+            --badge-bg: #f1f5f9;
+            --badge-text: #1e293b;
+            --pill-bg: #dbeafe;
+            --pill-text: #1d4ed8;
+            --progress-bg: #e9edf3;
+            --direction-bg: #f8fafc;
+            --transition: 0.15s ease;
+            --section-bg: #ffffff;
+            --tooltip-bg: #0b1b33;
+            --tooltip-text: #ffffff;
+            --risk-bg: #fef2f2;
+            --risk-border: #fca5a5;
+            --risk-text: #991b1b;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #0f1724;
+            --bg-card: #1a2332;
+            --bg-skeleton: #2a3446;
+            --bg-skeleton-shine: #3a4558;
+            --text-primary: #e8edf5;
+            --text-secondary: #a0b3cc;
+            --text-muted: #7a8aa3;
+            --border-color: #2a3446;
+            --border-hover: #3f4d66;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.5);
+            --badge-bg: #2a3446;
+            --badge-text: #c8d0dc;
+            --pill-bg: #1e3a5f;
+            --pill-text: #7bb3f0;
+            --progress-bg: #2a3446;
+            --direction-bg: #121c2a;
+            --section-bg: #121c2a;
+            --tooltip-bg: #1e293b;
+            --tooltip-text: #e8edf5;
+            --risk-bg: #2a1a1a;
+            --risk-border: #7f1d1d;
+            --risk-text: #f87171;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            padding: 8px;
+            min-height: 100vh;
+            transition: background var(--transition), color var(--transition);
+            font-size: 13px;
+        }
+
+        .dashboard { max-width: 1440px; margin: 0 auto; }
+
+        .skeleton-wrapper { display: none; gap: 16px; flex-direction: column; }
+        .skeleton-wrapper.active { display: flex; }
+        .skeleton-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px;
+        }
+        .skeleton-metric { height: 60px; background: var(--bg-skeleton); border-radius: 12px; position: relative; overflow: hidden; }
+        .skeleton-metric::after, .skeleton-card::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 0%, var(--bg-skeleton-shine) 50%, transparent 100%);
+            animation: shimmer 1.5s infinite;
+        }
+        .skeleton-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+        .skeleton-card { height: 140px; background: var(--bg-skeleton); border-radius: 12px; position: relative; overflow: hidden; }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+        .content-wrapper { display: none; animation: fadeIn 0.3s ease; }
+        .content-wrapper.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TOOLTIP ===== */
+        .tooltip-trigger {
+            position: relative;
+            cursor: help;
+            display: inline-flex;
+            align-items: center;
+        }
+        .tooltip-trigger .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            width: 200px;
+            background: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            text-align: left;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: 400;
+            line-height: 1.3;
+            position: absolute;
+            z-index: 100;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            border: 1px solid var(--border-color);
+            pointer-events: none;
+            white-space: normal;
+        }
+        .tooltip-trigger .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--tooltip-bg);
+        }
+        .tooltip-trigger:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+            gap: 8px; margin-bottom: 12px;
+        }
+        .header-left h1 { font-size: clamp(18px, 2.5vw, 22px); font-weight: 700; letter-spacing: -0.3px; background: linear-gradient(145deg, var(--text-primary), #2563eb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header-left .sub { font-size: 12px; font-weight: 500; color: var(--text-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 1px; }
+        .header-left .sub i { color: #2563eb; font-size: 11px; }
+        .header-right {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-date {
+            background: var(--bg-card);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: var(--shadow);
+        }
+        .badge-date i { color: #2563eb; }
+        .status-pill {
+            background: var(--pill-bg);
+            color: var(--pill-text);
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .theme-toggle:hover {
+            border-color: var(--border-hover);
+            transform: scale(1.02);
+        }
+        .theme-toggle i { font-size: 12px; }
+
+        /* ===== PLAN BLOCK ===== */
+        .plan-block {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px 18px;
+            border: 2px solid #2563eb;
+            box-shadow: 0 2px 12px rgba(37, 99, 235, 0.1);
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .plan-block .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .plan-block .left .icon {
+            font-size: 22px;
+            color: #2563eb;
+        }
+        .plan-block .left .title {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .plan-block .left .title strong {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: block;
+            line-height: 1;
+        }
+        .plan-block .left .title .done-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #16a34a;
+            background: #dcfce7;
+            padding: 1px 12px;
+            border-radius: 100px;
+            display: inline-block;
+            margin-top: 1px;
+        }
+        .plan-block .right {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .plan-block .right .stat {
+            text-align: center;
+            padding: 0 8px;
+            border-right: 1px solid var(--border-color);
+        }
+        .plan-block .right .stat:last-child {
+            border-right: none;
+        }
+        .plan-block .right .stat .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .plan-block .right .stat .label {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: block;
+        }
+        .plan-block .right .stat .value.green { color: #16a34a; }
+        .plan-block .right .stat .value.amber { color: #d97706; }
+        .plan-block .right .stat .value.red { color: #dc2626; }
+        .plan-block .right .stat .value.blue { color: #2563eb; }
+
+        /* ===== STATUS HERO ===== */
+        .status-hero {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 16px 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px 20px;
+        }
+        .status-hero .main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .status-hero .main .icon-ring {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #60a5fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+            flex-shrink: 0;
+        }
+        .status-hero .main .info h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+        .status-hero .main .info h2 .highlight {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .status-hero .main .info .sub {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 1px;
+        }
+        .status-hero .main .info .sub .pill-big {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 100px;
+            background: #dcfce7;
+            color: #166534;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .status-hero .stats {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .status-hero .stats .item {
+            text-align: center;
+            padding: 0 4px;
+        }
+        .status-hero .stats .item .num {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.2px;
+        }
+        .status-hero .stats .item .num.green { color: #16a34a; }
+        .status-hero .stats .item .num.amber { color: #d97706; }
+        .status-hero .stats .item .num.blue { color: #2563eb; }
+        .status-hero .stats .item .lbl {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        /* ===== SPARKLINE ===== */
+        .sparkline-wrapper {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 20px;
+        }
+        .sparkline-wrapper .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sparkline-wrapper .label i { color: #2563eb; font-size: 14px; }
+        .sparkline-wrapper .sparkline {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            flex: 1;
+            min-width: 160px;
+            height: 44px;
+        }
+        .sparkline-wrapper .sparkline .bar {
+            flex: 1;
+            border-radius: 4px 4px 0 0;
+            min-height: 4px;
+            max-height: 40px;
+            transition: height 0.6s ease;
+            position: relative;
+        }
+        .sparkline-wrapper .sparkline .bar .tooltip {
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            background: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            padding: 2px 6px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .sparkline-wrapper .sparkline .bar:hover .tooltip { opacity: 1; }
+        .sparkline-wrapper .sparkline .bar.green { background: linear-gradient(180deg, #16a34a, #22c55e); }
+        .sparkline-wrapper .sparkline .bar.amber { background: linear-gradient(180deg, #d97706, #f59e0b); }
+        .sparkline-wrapper .sparkline .bar.blue { background: linear-gradient(180deg, #2563eb, #60a5fa); }
+        .sparkline-wrapper .sparkline .bar.purple { background: linear-gradient(180deg, #7c3aed, #a78bfa); }
+        .sparkline-wrapper .sparkline .bar .bar-value {
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+        .sparkline-wrapper .sparkline .bar .bar-label {
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            font-weight: 500;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* ===== BURN BREAKDOWN ===== */
+        .burn-breakdown {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+        }
+        .burn-breakdown .burn-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .burn-breakdown .burn-header .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .burn-breakdown .burn-header .label i { color: #d97706; font-size: 13px; }
+        .burn-tabs {
+            display: flex;
+            gap: 3px;
+            background: var(--badge-bg);
+            border-radius: 100px;
+            padding: 2px;
+        }
+        .burn-tabs .tab {
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            font-family: inherit;
+        }
+        .burn-tabs .tab:hover { color: var(--text-primary); }
+        .burn-tabs .tab.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
+        }
+        .burn-content {
+            display: none;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 12px;
+            padding-top: 6px;
+            border-top: 1px solid var(--border-color);
+        }
+        .burn-content.active { display: flex; }
+        .burn-content .dir {
+            display: flex;
+            align-items: center;
+            gap: 3px 6px;
+            flex-wrap: wrap;
+        }
+        .burn-content .dir .item {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--direction-bg);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .burn-content .dir .item strong { font-weight: 700; color: var(--text-primary); }
+        .burn-content .dir .item .icon { font-size: 10px; color: var(--text-muted); }
+        .burn-content .dir .item .done-check { color: #16a34a; font-weight: 600; font-size: 9px; }
+        .burn-content .total-burn {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .burn-content .total-burn i { color: #d97706; }
+        .burn-content .calculation {
+            width: 100%;
+            font-size: 10px;
+            color: var(--text-muted);
+            background: var(--badge-bg);
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 2px;
+        }
+        .burn-content .calculation strong { color: var(--text-primary); }
+
+        /* ===== WEEKLY GOALS ===== */
+        .weekly-goals-wrapper {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+        }
+        .weekly-goals-wrapper .goals-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .weekly-goals-wrapper .goals-header h3 {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .weekly-goals-wrapper .goals-header h3 i { color: #2563eb; font-size: 13px; }
+        .weekly-goals-wrapper .goals-tabs {
+            display: flex;
+            gap: 3px;
+            background: var(--badge-bg);
+            border-radius: 100px;
+            padding: 2px;
+        }
+        .weekly-goals-wrapper .goals-tabs .gtab {
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            font-family: inherit;
+        }
+        .weekly-goals-wrapper .goals-tabs .gtab:hover { color: var(--text-primary); }
+        .weekly-goals-wrapper .goals-tabs .gtab.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
+        }
+        .goals-content {
+            display: none;
+            gap: 10px 20px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            padding-top: 6px;
+            border-top: 1px solid var(--border-color);
+        }
+        .goals-content.active { display: flex; }
+        .goals-content .left { flex: 1; min-width: 160px; }
+        .goals-content .left ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .goals-content .left ul li {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 1px 0;
+        }
+        .goals-content .left ul li .status-icon { font-size: 12px; width: 16px; text-align: center; }
+        .goals-content .left ul li .status-icon.green { color: #16a34a; }
+        .goals-content .left ul li .status-icon.amber { color: #d97706; }
+        .goals-content .left ul li .status-icon.red { color: #dc2626; }
+        .goals-content .left ul li .day {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--badge-bg);
+            padding: 0 8px;
+            border-radius: 100px;
+        }
+        .goals-content .right {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 100px;
+        }
+        .goals-content .right .rag-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .goals-content .right .rag-item .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .goals-content .right .rag-item .dot.green { background: #16a34a; }
+        .goals-content .right .rag-item .dot.amber { background: #d97706; }
+        .goals-content .right .rag-item .dot.red { background: #dc2626; }
+
+        /* ===== BLOCKERS ===== */
+        .blockers {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 8px 16px;
+            border-left: 3px solid #dc2626;
+        }
+        .blockers .icon { font-size: 16px; color: #dc2626; margin-top: 1px; }
+        .blockers .content { flex: 1; }
+        .blockers .content h4 { font-size: 12px; font-weight: 700; color: #dc2626; margin-bottom: 2px; }
+        .blockers .content ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 12px;
+        }
+        .blockers .content ul li {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .blockers .content ul li .priority {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 100px;
+        }
+        .blockers .content ul li .priority.critical { background: #fee2e2; color: #991b1b; }
+        .blockers .content ul li .priority.high { background: #fef9c3; color: #854d0e; }
+        .blockers .content ul li .priority.medium { background: #dbeafe; color: #1e40af; }
+
+        /* ===== METRICS ===== */
+        .metrics {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px; margin-bottom: 12px;
+        }
+        .metric-card {
+            background: var(--bg-card); border-radius: 12px; padding: 10px 12px 8px;
+            border: 1px solid var(--border-color); box-shadow: var(--shadow);
+            transition: var(--transition); animation: slideUp 0.3s ease backwards;
+        }
+        .metric-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+        .metric-card:nth-child(1) { animation-delay: 0.02s; }
+        .metric-card:nth-child(2) { animation-delay: 0.04s; }
+        .metric-card:nth-child(3) { animation-delay: 0.06s; }
+        .metric-card:nth-child(4) { animation-delay: 0.08s; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .metric-label { font-size: 10px; font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+        .metric-value { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-top: 1px; letter-spacing: -0.2px; }
+        .metric-value small { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-left: 1px; }
+        .metric-trend { font-size: 10px; margin-top: 2px; font-weight: 500; display: flex; align-items: center; gap: 3px; }
+        .metric-trend.green { color: #16a34a; }
+        .metric-trend.amber { color: #d97706; }
+        .metric-trend.blue { color: #2563eb; }
+
+        /* ===== SECTION BLOCKS ===== */
+        .section-block {
+            background: var(--section-bg);
+            border-radius: 12px;
+            padding: 10px 12px 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .section-title .count {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--badge-bg);
+            padding: 0 8px;
+            border-radius: 100px;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 8px;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease backwards;
+        }
+        .module-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-1px);
+        }
+        .module-card.done {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+        [data-theme="dark"] .module-card.done {
+            background: #0a2a1a;
+            border-color: #22c55e;
+        }
+
+        .module-card .mod-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 1px;
+        }
+        .module-card .mod-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        .module-card .mod-title .badge {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 9px;
+        }
+        .module-card .mod-status {
+            font-size: 9px;
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 100px;
+            white-space: nowrap;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            flex-shrink: 0;
+        }
+        .module-card .mod-status.green { background: #dcfce7; color: #166534; }
+        .module-card .mod-status.yellow { background: #fef9c3; color: #854d0e; }
+        .module-card .mod-status.red { background: #fee2e2; color: #991b1b; }
+        .module-card .mod-status.gray { background: var(--badge-bg); color: var(--badge-text); }
+        .module-card .mod-status.green-done { background: #dcfce7; color: #166534; }
+
+        .module-card .mod-stats {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 3px 8px;
+            margin: 2px 0 2px;
+            font-size: 10px;
+        }
+        .module-card .mod-stats .stat {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .module-card .mod-stats .stat strong {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .module-card .mod-stats .stat .risk-badge {
+            background: var(--risk-bg);
+            color: var(--risk-text);
+            padding: 0 4px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 8px;
+            border: 1px solid var(--risk-border);
+        }
+        .module-card .mod-stats .stat .fact-done { color: #16a34a; font-weight: 600; }
+        .module-card .mod-stats .stat .fact-done-all { color: #16a34a; font-weight: 700; }
+
+        .module-card .mod-directions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1px 6px;
+            margin: 2px 0 2px;
+            padding: 3px 6px;
+            background: var(--direction-bg);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        .module-card .mod-directions .dir-item {
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            font-size: 9px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .module-card .mod-directions .dir-item .icon { font-size: 8px; color: var(--text-muted); }
+        .module-card .mod-directions .dir-item strong { font-weight: 600; color: var(--text-primary); }
+        .module-card .mod-directions .dir-item .fact {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 8px;
+        }
+        .module-card .mod-directions .dir-item .fact.done { color: #16a34a; font-weight: 500; }
+        .module-card .mod-directions .dir-item .fact.api { color: #d97706; font-weight: 600; }
+        .module-card .mod-directions .dir-divider { color: var(--border-color); font-size: 10px; }
+
+        .module-card .mod-progress { margin: 2px 0 1px; }
+        .module-card .mod-progress .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .module-card .mod-progress .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: var(--progress-bg);
+            border-radius: 100px;
+            margin-top: 1px;
+            overflow: hidden;
+        }
+        .module-card .mod-progress .progress-bar .fill {
+            height: 3px;
+            border-radius: 100px;
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+        .module-card .mod-progress .progress-bar .fill.green { background: linear-gradient(90deg, #16a34a, #22c55e); }
+        .module-card .mod-progress .progress-bar .fill.yellow { background: linear-gradient(90deg, #d97706, #f59e0b); }
+        .module-card .mod-progress .progress-bar .fill.blue { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+        .module-card .mod-progress .progress-bar .fill.gray { background: linear-gradient(90deg, #64748b, #94a3b8); }
+        .module-card .mod-progress .progress-bar .fill.red { background: linear-gradient(90deg, #dc2626, #ef4444); }
+
+        .footer-note {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            box-shadow: var(--shadow);
+            margin-top: 2px;
+        }
+        .footer-note .left { display: flex; align-items: center; gap: 6px; font-weight: 500; color: var(--text-primary); font-size: 10px; flex-wrap: wrap; }
+        .footer-note .left i { color: #2563eb; font-size: 12px; }
+        .footer-note .right { display: flex; flex-wrap: wrap; gap: 3px; }
+        .tag {
+            background: var(--badge-bg);
+            padding: 1px 8px;
+            border-radius: 100px;
+            font-size: 9px;
+            font-weight: 500;
+            color: var(--badge-text);
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .tag i { color: #2563eb; font-size: 8px; }
+        .tag.red { background: #fee2e2; color: #991b1b; }
+        .tag.red i { color: #dc2626; }
+        .tag.green { background: #dcfce7; color: #166534; }
+        .tag.green i { color: #16a34a; }
+        .tag.amber { background: #fef9c3; color: #854d0e; }
+        .tag.amber i { color: #d97706; }
+
+        @media (max-width: 480px) {
+            body { padding: 6px; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .metrics { grid-template-columns: 1fr 1fr; }
+            .status-hero { flex-direction: column; align-items: stretch; }
+            .status-hero .main { justify-content: center; }
+            .plan-block { flex-direction: column; align-items: stretch; }
+            .plan-block .right { justify-content: space-around; }
+            .burn-tabs { flex-wrap: wrap; }
+            .goals-tabs { flex-wrap: wrap; }
+        }
+        @media (min-width: 481px) and (max-width: 768px) {
+            .modules-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+            .metrics { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+
+    <div class="skeleton-wrapper" id="skeleton">
+        <div class="skeleton-metrics">
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+            <div class="skeleton-metric"></div>
+        </div>
+        <div class="skeleton-cards">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+        </div>
+    </div>
+
+    <div class="content-wrapper active" id="content">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-cubes" style="color:#2563eb;margin-right:4px;background:none;-webkit-text-fill-color:#2563eb;"></i>ОЗП — Дашборд</h1>
+                <div class="sub">
+                    <span><i class="fas fa-calendar-alt"></i> 07.07 – 17.07</span>
+                    <span><i class="fas fa-sync-alt"></i> Обновлено: сегодня</span>
+                    <span class="status-pill"><i class="fas fa-check-circle"></i> 25 модулей</span>
+                    <span class="status-pill" style="background:#dcfce7;color:#166534;"><i class="fas fa-check-double"></i> 4 конструктора ✅</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="badge-date"><i class="fas fa-flag-checkered"></i> Спринт до <strong>17.07</strong></div>
+                <div class="theme-toggle" id="themeToggle" role="button" tabindex="0">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                    <span id="themeLabel">Тёмная</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAN BLOCK -->
+        <div class="plan-block" id="planBlock">
+            <div class="left">
+                <div class="icon"><i class="fas fa-bullseye"></i></div>
+                <div class="title">
+                    <strong id="totalPlanCounter">283</strong>
+                    <span>дней — общий план по всем модулям</span>
+                    <span class="done-label"><i class="fas fa-check-circle"></i> 4 конструктора выполнены!</span>
+                </div>
+            </div>
+            <div class="right">
+                <div class="stat"><span class="value green" id="remainingCounter">124.1</span><span class="label">Осталось</span></div>
+                <div class="stat"><span class="value amber" id="burnCounter">64.5</span><span class="label">Сжигаем (план)</span></div>
+                <div class="stat"><span class="value blue" id="burnedCounter">96.5</span><span class="label">Сожгли (факт)</span></div>
+                <div class="stat"><span class="value green" id="doneCounter">5</span><span class="label">Модуля готово</span></div>
+                <div class="stat"><span class="value amber" id="riskCounter">21.9</span><span class="label">Риски</span></div>
+            </div>
+        </div>
+
+        <!-- STATUS HERO -->
+        <div class="status-hero">
+            <div class="main">
+                <div class="icon-ring"><i class="fas fa-rocket"></i></div>
+                <div class="info">
+                    <h2>Статус проекта <span class="highlight">🚀 36%</span></h2>
+                    <div class="sub">
+                        <span>Прогресс выполнения</span>
+                        <span class="pill-big"><i class="fas fa-check-circle"></i> на графике</span>
+                        <span style="color:var(--text-muted);font-weight:400;">•</span>
+                        <span style="color:var(--text-muted);font-weight:400;">MVP: 30.07.2026</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="item"><span class="num green">5</span><span class="lbl">готово</span></div>
+                <div class="item"><span class="num amber">20</span><span class="lbl">в работе</span></div>
+                <div class="item"><span class="num blue">124.1</span><span class="lbl">дн осталось</span></div>
+                <div class="item"><span class="num amber">161</span><span class="lbl">дн сожжено</span></div>
+            </div>
+        </div>
+
+        <!-- SPARKLINE -->
+        <div class="sparkline-wrapper">
+            <div class="label"><i class="fas fa-chart-bar"></i> Динамика остатка дней по неделям (план)</div>
+            <div class="sparkline">
+                <div class="bar blue" style="height:38px;"><span class="bar-value">145.7</span><span class="tooltip">Нед.1: 145.7 дн</span><span class="bar-label">Нед.1</span></div>
+                <div class="bar green" style="height:32px;"><span class="bar-value">124.1</span><span class="tooltip">Нед.2: 124.1 дн</span><span class="bar-label">Нед.2</span></div>
+                <div class="bar amber" style="height:24px;"><span class="bar-value">~72</span><span class="tooltip">Нед.3: ~72.1 дн</span><span class="bar-label">Нед.3</span></div>
+                <div class="bar green" style="height:16px;"><span class="bar-value">~40</span><span class="tooltip">Нед.4: ~40 дн</span><span class="bar-label">Нед.4</span></div>
+                <div class="bar purple" style="height:6px;"><span class="bar-value">0</span><span class="tooltip">Финиш</span><span class="bar-label">Финиш</span></div>
+            </div>
+            <span style="font-size:10px;color:var(--text-muted);">⏳ график на основе плановых данных</span>
+        </div>
+
+        <!-- BURN BREAKDOWN — ИСПРАВЛЕН: активна неделя 2 -->
+        <div class="burn-breakdown">
+            <div class="burn-header">
+                <span class="label"><i class="fas fa-fire"></i> Сжигание дней по неделям</span>
+                <div class="burn-tabs">
+                    <button class="tab" data-week="week1">Неделя 1</button>
+                    <button class="tab active" data-week="week2">Неделя 2</button>
+                    <button class="tab" data-week="week3">Неделя 3</button>
+                </div>
+            </div>
+
+            <!-- НЕДЕЛЯ 1 (07-11.07) — ФАКТ -->
+            <div class="burn-content" id="week1">
+                <div class="dir">
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> Дизайн <strong>3</strong> дн <span class="done-check">✅</span><span class="tooltip-text">Дизайн: 3 дня — ВСЕ ВЫПОЛНЕНЫ</span></span>
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> Аналитика <strong>7</strong> дн <span class="done-check">✅</span><span class="tooltip-text">Аналитика: 7 дней — ВСЕ ВЫПОЛНЕНЫ</span></span>
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> Frontend <strong>49</strong> дн <span class="done-check">✅</span><span class="tooltip-text">Frontend: 49 дней — ВСЕ ВЫПОЛНЕНЫ</span></span>
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> Backend <strong>29</strong> дн <span class="done-check">✅</span><span class="tooltip-text">Backend: 29 дней — ВСЕ ВЫПОЛНЕНЫ</span></span>
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> Тестирование <strong>8.5</strong> дн <span class="done-check">✅</span><span class="tooltip-text">Тестирование: 8.5 дней — ВСЕ ВЫПОЛНЕНЫ</span></span>
+                </div>
+                <span class="total-burn"><i class="fas fa-check-circle" style="color:#16a34a;"></i> Факт: <strong>96.5</strong> дн</span>
+                <div class="calculation"><i class="fas fa-calculator" style="color:#2563eb;"></i> Расчёт: 3+7+49+29+8.5 = <strong>96.5</strong> дн</div>
+            </div>
+
+            <!-- НЕДЕЛЯ 2 (13-17.07) — ТЕКУЩАЯ (active по умолчанию) -->
+            <div class="burn-content active" id="week2">
+                <div class="dir">
+                    <span class="item tooltip-trigger" style="background:#fef9c3;border-color:#d97706;"><span class="icon"><i class="fas fa-file-alt" style="color:#d97706;"></i></span> Оценочные листы <strong>52</strong> дн<span class="tooltip-text">Оценочные листы: ТСО+ПТЭ+ОМСУ+бесхоз = 52 дн</span></span>
+                    <span class="item tooltip-trigger" style="background:#dbeafe;border-color:#2563eb;"><span class="icon"><i class="fas fa-cubes" style="color:#2563eb;"></i></span> Реестр (дизайн+аналитика) <strong>7</strong> дн<span class="tooltip-text">Реестр: дизайн 2 + аналитика 5 = 7 дн</span></span>
+                    <span class="item tooltip-trigger" style="background:#dbeafe;border-color:#2563eb;"><span class="icon"><i class="fas fa-file-signature" style="color:#2563eb;"></i></span> Акты (дизайн+аналитика) <strong>5.5</strong> дн<span class="tooltip-text">Акты: дизайн 1 + аналитика 4.5 = 5.5 дн</span></span>
+                </div>
+                <span class="total-burn">Итого: <strong>64.5</strong> дн</span>
+                <div class="calculation">Расчёт: 52 + 7 + 5.5 = <strong>64.5</strong> дн</div>
+            </div>
+
+            <!-- НЕДЕЛЯ 3 (план) -->
+            <div class="burn-content" id="week3">
+                <div class="dir">
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> Дизайн <strong>2</strong> дн<span class="tooltip-text">Дизайн: Акты 0.5 + Паспорта 0.5 + Реестр 1 = 2 дн</span></span>
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> Аналитика <strong>12</strong> дн<span class="tooltip-text">Аналитика: Акты 2.5 + Паспорта 2 + Реестр 4 + Старая система 3.5 = 12 дн</span></span>
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> Frontend <strong>8</strong> дн<span class="tooltip-text">Frontend: Акты 2.5 + Паспорта 2 + Реестр 2 + Печатные формы 0.5 = 7 дн</span></span>
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> Backend <strong>8</strong> дн<span class="tooltip-text">Backend: Акты 2 + Паспорта 2 + Реестр 2 + Старая система 2 = 8 дн</span></span>
+                    <span class="item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> Тестирование <strong>5</strong> дн<span class="tooltip-text">Тестирование: Акты 1 + Паспорта 1 + Реестр 1 + Печатные формы 1 + Старая система 1 = 5 дн</span></span>
+                </div>
+                <span class="total-burn"><i class="fas fa-clock"></i> План: <strong>~35</strong> дн</span>
+                <div class="calculation">Расчёт: 2+12+8+8+5 = <strong>35</strong> дн</div>
+            </div>
+        </div>
+
+        <!-- WEEKLY GOALS -->
+        <div class="weekly-goals-wrapper">
+            <div class="goals-header">
+                <h3><i class="fas fa-flag-checkered"></i> Цели по неделям</h3>
+                <div class="goals-tabs">
+                    <button class="gtab" data-goal="goal1">Неделя 1</button>
+                    <button class="gtab active" data-goal="goal2">Неделя 2</button>
+                    <button class="gtab" data-goal="goal3">Неделя 3</button>
+                </div>
+            </div>
+            <div class="goals-content" id="goal1">
+                <div class="left"><ul>
+                    <li><span class="status-icon green">✅</span> ТСО — Конструктор <span class="day">ВЫПОЛНЕН</span></li>
+                    <li><span class="status-icon green">✅</span> ПТЭ — Конструктор <span class="day">ВЫПОЛНЕН</span></li>
+                    <li><span class="status-icon green">✅</span> ОМСУ — Конструктор <span class="day">ВЫПОЛНЕН</span></li>
+                    <li><span class="status-icon green">✅</span> РТН/Минэнерго <span class="day">ВЫПОЛНЕН</span></li>
+                    <li><span class="status-icon red">🔴</span> Реестр — ТЗ в работе <span class="day">⚠️</span></li>
+                </ul></div>
+                <div class="right">
+                    <div class="rag-item"><span class="dot green"></span>ТСО 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>ПТЭ 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>ОМСУ 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>РТН 100%</div>
+                    <div class="rag-item"><span class="dot red"></span>Реестр 10%</div>
+                </div>
+            </div>
+            <div class="goals-content active" id="goal2">
+                <div class="left"><ul>
+                    <li><span class="status-icon amber">🔄</span> Оценочный лист ТСО — API, завершить <span class="day">цель</span></li>
+                    <li><span class="status-icon amber">🔄</span> Оценочный лист ПТЭ — API, завершить <span class="day">цель</span></li>
+                    <li><span class="status-icon amber">🔄</span> Оценочный лист ОМСУ — API, завершить <span class="day">цель</span></li>
+                    <li><span class="status-icon amber">🔄</span> Оценочный лист бесхоза — API, завершить <span class="day">цель</span></li>
+                    <li><span class="status-icon green">✅</span> Реестр — дизайн+аналитика готова <span class="day">ГОТОВО</span></li>
+                    <li><span class="status-icon green">✅</span> Акты — дизайн+аналитика готова <span class="day">ГОТОВО</span></li>
+                </ul></div>
+                <div class="right">
+                    <div class="rag-item"><span class="dot green"></span>ТСО 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>ПТЭ 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>ОМСУ 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>РТН 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>Реестр ✅</div>
+                    <div class="rag-item"><span class="dot green"></span>Акты ✅</div>
+                    <div class="rag-item"><span class="dot amber"></span>Оценочные в работе</div>
+                </div>
+            </div>
+            <div class="goals-content" id="goal3">
+                <div class="left"><ul>
+                    <li><span class="status-icon blue">⏳</span> Завершить Реестр <span class="day">план</span></li>
+                    <li><span class="status-icon blue">⏳</span> Доработка старой системы <span class="day">план</span></li>
+                    <li><span class="status-icon blue">⏳</span> Печатные формы <span class="day">план</span></li>
+                    <li><span class="status-icon blue">⏳</span> Акты оценки <span class="day">план</span></li>
+                    <li><span class="status-icon blue">⏳</span> Паспорта <span class="day">план</span></li>
+                </ul></div>
+                <div class="right">
+                    <div class="rag-item"><span class="dot green"></span>ТСО 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>ПТЭ 100%</div>
+                    <div class="rag-item"><span class="dot green"></span>ОМСУ 100%</div>
+                    <div class="rag-item"><span class="dot amber"></span>Реестр ~30%</div>
+                    <div class="rag-item"><span class="dot red"></span>Акты/Паспорта 0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOCKERS -->
+        <div class="blockers">
+            <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="content">
+                <h4>Блокеры и риски</h4>
+                <ul>
+                    <li><span class="priority critical">КРИТИЧЕСКИЙ</span> Реестр — ТЗ может затянуться</li>
+                    <li><span class="priority high">ВЫСОКИЙ</span> Оценочные листы — требуется API</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- METRICS — ИСПРАВЛЕНЫ -->
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-label"><i class="fas fa-layer-group" style="color:#2563eb;"></i> Всего</div>
+                <div class="metric-value">25 <small>модулей</small></div>
+                <div class="metric-trend green"><i class="fas fa-check-circle"></i> все в работе</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label"><i class="fas fa-check-double" style="color:#16a34a;"></i> Готово</div>
+                <div class="metric-value" id="doneCount2">5 <small>модулей</small></div>
+                <div class="metric-trend green"><i class="fas fa-arrow-up"></i> +4 конструктора</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label"><i class="fas fa-code" style="color:#d97706;"></i> В работе</div>
+                <div class="metric-value" id="inProgressCount2">20 <small>модулей</small></div>
+                <div class="metric-trend amber"><i class="fas fa-spinner"></i> оценочные листы</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label"><i class="fas fa-fire" style="color:#d97706;"></i> Сжигаем</div>
+                <div class="metric-value">161 <small>дн</small></div>
+                <div class="metric-trend amber"><i class="fas fa-arrow-up"></i> факт 96.5 + план 64.5</div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        БЛОК 1: КОНСТРУКТОРЫ (6)
+        ============================================================ -->
+        <div class="section-block" style="border:2px solid #16a34a;">
+            <div class="section-title"><i class="fas fa-cubes" style="color:#16a34a;"></i> Конструкторы реестров <span class="count" style="background:#dcfce7;color:#166534;">6 модулей · 4 ✅</span></div>
+            <div class="modules-grid">
+                <div class="module-card done" data-remaining="0"><div class="mod-header"><span class="mod-title">ТСО <span class="badge">· Конструктор</span></span><span class="mod-status green-done">100%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>36.5</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done-all">36.5</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#16a34a;"></i> <strong style="color:#16a34a;">0</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Дизайн: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>19</strong> <span class="fact done">✓19</span><span class="tooltip-text">Frontend: план 19 дн, выполнено 19 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>11</strong> <span class="fact done">✓11</span><span class="tooltip-text">Backend: план 11 дн, выполнено 11 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>4.5</strong> <span class="fact done">✓4.5</span><span class="tooltip-text">Тестирование: план 4.5 дн, выполнено 4.5 дн ✅</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>100%</span></div><div class="progress-bar"><div class="fill green" style="width: 100%;"></div></div></div></div>
+                <div class="module-card done" data-remaining="0"><div class="mod-header"><span class="mod-title">ПТЭ <span class="badge">· Конструктор</span></span><span class="mod-status green-done">100%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>30</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done-all">30</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#16a34a;"></i> <strong style="color:#16a34a;">0</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Дизайн: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>3</strong> <span class="fact done">✓3</span><span class="tooltip-text">Аналитика: план 3 дн, выполнено 3 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>18</strong> <span class="fact done">✓18</span><span class="tooltip-text">Frontend: план 18 дн, выполнено 18 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>7</strong> <span class="fact done">✓7</span><span class="tooltip-text">Backend: план 7 дн, выполнено 7 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Тестирование: план 1 дн, выполнено 1 дн ✅</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>100%</span></div><div class="progress-bar"><div class="fill green" style="width: 100%;"></div></div></div></div>
+                <div class="module-card done" data-remaining="0"><div class="mod-header"><span class="mod-title">ОМСУ <span class="badge">· Конструктор</span></span><span class="mod-status green-done">100%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>30</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done-all">30</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#16a34a;"></i> <strong style="color:#16a34a;">0</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Дизайн: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>3</strong> <span class="fact done">✓3</span><span class="tooltip-text">Аналитика: план 3 дн, выполнено 3 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>12</strong> <span class="fact done">✓12</span><span class="tooltip-text">Frontend: план 12 дн, выполнено 12 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>11</strong> <span class="fact done">✓11</span><span class="tooltip-text">Backend: план 11 дн, выполнено 11 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>3</strong> <span class="fact done">✓3</span><span class="tooltip-text">Тестирование: план 3 дн, выполнено 3 дн ✅</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>100%</span></div><div class="progress-bar"><div class="fill green" style="width: 100%;"></div></div></div></div>
+                <div class="module-card done" data-remaining="0"><div class="mod-header"><span class="mod-title">РТН/Минэнерго <span class="badge">· ОМСУ</span></span><span class="mod-status green-done">100%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>23</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done-all">23</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#16a34a;"></i> <strong style="color:#16a34a;">0</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>2</strong> <span class="fact done">✓2</span><span class="tooltip-text">Дизайн: план 2 дн, выполнено 2 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>5</strong> <span class="fact done">✓5</span><span class="tooltip-text">Аналитика: план 5 дн, выполнено 5 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>5</strong> <span class="fact done">✓5</span><span class="tooltip-text">Frontend: план 5 дн, выполнено 5 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>4</strong> <span class="fact done">✓4</span><span class="tooltip-text">Backend: план 4 дн, выполнено 4 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>1.5</strong> <span class="fact done">✓1.5</span><span class="tooltip-text">Тестирование: план 1.5 дн, выполнено 1.5 дн ✅</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>100%</span></div><div class="progress-bar"><div class="fill green" style="width: 100%;"></div></div></div></div>
+                <div class="module-card" data-remaining="21.7"><div class="mod-header"><span class="mod-title">Реестр объектов <span class="badge">ТСО, ПТЭ, ОМСУ</span></span><span class="mod-status yellow">~45%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>29</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done">7.3</span></span><span class="stat"><i class="fas fa-exclamation-triangle" style="color:#d97706;"></i> <span class="risk-badge">+5.2</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#d97706;"></i> <strong style="color:#d97706;">21.7</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>2</strong> <span class="fact done">✓2</span><span class="tooltip-text">Дизайн: план 2 дн, выполнено 2 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>5</strong> <span class="fact done">✓5</span><span class="tooltip-text">Аналитика: план 5 дн, выполнено 5 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>10</strong> <span class="fact">0.3</span><span class="tooltip-text">Frontend: план 10 дн, выполнено 0.3 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>10</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 10 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>2</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 2 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>~45%</span></div><div class="progress-bar"><div class="fill yellow" style="width: 45%;"></div></div></div></div>
+                <div class="module-card" data-remaining="9.6"><div class="mod-header"><span class="mod-title">Доработка старой системы <span class="badge">загрузка документов</span></span><span class="mod-status yellow">53%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>17</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done">9</span></span><span class="stat"><i class="fas fa-exclamation-triangle" style="color:#d97706;"></i> <span class="risk-badge">+1.6</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>9.6</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>3</strong> <span class="fact done">✓3</span><span class="tooltip-text">Аналитика: план 3 дн, выполнено 3 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>0</strong><span class="tooltip-text">Frontend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>11</strong> <span class="fact done">✓6</span><span class="tooltip-text">Backend: план 11 дн, выполнено 6 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>3</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 3 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>53%</span></div><div class="progress-bar"><div class="fill yellow" style="width: 53%;"></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        БЛОК 2: ОЦЕНОЧНЫЕ ЛИСТЫ (4)
+        ============================================================ -->
+        <div class="section-block" style="border:2px solid #d97706;">
+            <div class="section-title"><i class="fas fa-file-alt" style="color:#d97706;"></i> Оценочные листы <span class="count" style="background:#fef9c3;color:#854d0e;">4 модуля · ЦЕЛЬ НЕДЕЛИ 🎯</span></div>
+            <div class="modules-grid">
+                <div class="module-card" data-remaining="3.6"><div class="mod-header"><span class="mod-title">ТСО <span class="badge">· Оценочный лист</span></span><span class="mod-status yellow">~79%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>17</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done">13.4</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#d97706;"></i> <strong style="color:#d97706;">3.6</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Дизайн: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>4</strong> <span class="fact done">✓4</span><span class="tooltip-text">Аналитика: план 4 дн, выполнено 4 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>5</strong> <span class="fact api">⚡4+1 API</span><span class="tooltip-text">Frontend: 4 дн выполнено, 1 дн на подключение API</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>5</strong> <span class="fact">3.4</span><span class="tooltip-text">Backend: план 5 дн, выполнено 3.4 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>2</strong> <span class="fact">1</span><span class="tooltip-text">Тестирование: план 2 дн, выполнено 1 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>~79%</span></div><div class="progress-bar"><div class="fill yellow" style="width: 79%;"></div></div></div></div>
+                <div class="module-card" data-remaining="7.8"><div class="mod-header"><span class="mod-title">ПТЭ <span class="badge">· Оценочный лист</span></span><span class="mod-status yellow">~48%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>15</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done">7.2</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#d97706;"></i> <strong style="color:#d97706;">7.8</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Дизайн: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>4</strong> <span class="fact done">✓4</span><span class="tooltip-text">Аналитика: план 4 дн, выполнено 4 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>4</strong> <span class="fact api">⚡3+1 API</span><span class="tooltip-text">Frontend: 3 дн выполнено, 1 дн на подключение API</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>5</strong> <span class="fact">1.2</span><span class="tooltip-text">Backend: план 5 дн, выполнено 1.2 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 1 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>~48%</span></div><div class="progress-bar"><div class="fill yellow" style="width: 48%;"></div></div></div></div>
+                <div class="module-card" data-remaining="6"><div class="mod-header"><span class="mod-title">ОМСУ <span class="badge">· Оценочный лист</span></span><span class="mod-status yellow">~40%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>10</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done">4</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#d97706;"></i> <strong style="color:#d97706;">6</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Дизайн: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>3</strong> <span class="fact api">⚡2+1 API</span><span class="tooltip-text">Frontend: 2 дн выполнено, 1 дн на подключение API</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>4</strong> <span class="fact">0.8</span><span class="tooltip-text">Backend: план 4 дн, выполнено 0.8 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 1 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>~40%</span></div><div class="progress-bar"><div class="fill yellow" style="width: 40%;"></div></div></div></div>
+                <div class="module-card" data-remaining="6.2"><div class="mod-header"><span class="mod-title">Бесхоз <span class="badge">· Оценочный лист</span></span><span class="mod-status yellow">~38%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>10</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done">3.8</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#d97706;"></i> <strong style="color:#d97706;">6.2</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Дизайн: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact done">✓1</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 1 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>3</strong> <span class="fact api">⚡2+1 API</span><span class="tooltip-text">Frontend: 2 дн выполнено, 1 дн на подключение API</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>4</strong> <span class="fact">0.8</span><span class="tooltip-text">Backend: план 4 дн, выполнено 0.8 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 1 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>~38%</span></div><div class="progress-bar"><div class="fill yellow" style="width: 38%;"></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        БЛОК 3: ПЕЧАТНЫЕ ФОРМЫ (4)
+        ============================================================ -->
+        <div class="section-block">
+            <div class="section-title"><i class="fas fa-print" style="color:#2563eb;"></i> Доработка печатных форм <span class="count">4 модуля</span></div>
+            <div class="modules-grid">
+                <div class="module-card" data-remaining="2.4"><div class="mod-header"><span class="mod-title">ТСО <span class="badge">· Печатная форма</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>2</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>2.4</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>0</strong><span class="tooltip-text">Frontend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0</strong><span class="tooltip-text">Тестирование: план 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="2.4"><div class="mod-header"><span class="mod-title">ОМСУ <span class="badge">· Печатная форма</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>2</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>2.4</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>0</strong><span class="tooltip-text">Frontend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0</strong><span class="tooltip-text">Тестирование: план 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="2.4"><div class="mod-header"><span class="mod-title">ПТЭ <span class="badge">· Печатная форма</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>2</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>2.4</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>0</strong><span class="tooltip-text">Frontend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 0.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 0.5 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="2.4"><div class="mod-header"><span class="mod-title">Бесхоз <span class="badge">· Печатная форма</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>2</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>2.4</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>0</strong><span class="tooltip-text">Frontend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 0.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0</strong><span class="tooltip-text">Тестирование: план 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        БЛОК 4: АКТЫ (4)
+        ============================================================ -->
+        <div class="section-block">
+            <div class="section-title"><i class="fas fa-file-signature" style="color:#d97706;"></i> Доработка Актов оценки <span class="count">4 модуля</span></div>
+            <div class="modules-grid">
+                <div class="module-card" data-remaining="6"><div class="mod-header"><span class="mod-title">ТСО <span class="badge">· Акт оценки</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>5</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>6</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>2</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 2 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0</strong><span class="tooltip-text">Backend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0</strong><span class="tooltip-text">Тестирование: план 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="5.5"><div class="mod-header"><span class="mod-title">ОМСУ <span class="badge">· Акт оценки</span></span><span class="mod-status gray">8%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>5</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done">0.5</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>5.5</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0.5</strong> <span class="fact done">✓0.5</span><span class="tooltip-text">Дизайн: план 0.5 дн, выполнено 0.5 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1.5</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>1.5</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 1.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 0.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 0.5 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>8%</span></div><div class="progress-bar"><div class="fill gray" style="width: 8%;"></div></div></div></div>
+                <div class="module-card" data-remaining="3.6"><div class="mod-header"><span class="mod-title">ПТЭ <span class="badge">· Акт оценки</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>3</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>3.6</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0</strong><span class="tooltip-text">Backend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0</strong><span class="tooltip-text">Тестирование: план 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="4.2"><div class="mod-header"><span class="mod-title">Бесхоз <span class="badge">· Акт оценки</span></span><span class="mod-status gray">13%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>4</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done">0.5</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>4.2</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0.5</strong> <span class="fact done">✓0.5</span><span class="tooltip-text">Дизайн: план 0.5 дн, выполнено 0.5 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 0.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 0.5 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>13%</span></div><div class="progress-bar"><div class="fill gray" style="width: 13%;"></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        БЛОК 5: ПАСПОРТА (4)
+        ============================================================ -->
+        <div class="section-block">
+            <div class="section-title"><i class="fas fa-id-card" style="color:#7c3aed;"></i> Доработка Паспортов <span class="count">4 модуля</span></div>
+            <div class="modules-grid">
+                <div class="module-card" data-remaining="2"><div class="mod-header"><span class="mod-title">ТСО <span class="badge">· Паспорт</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>2</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>2</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0</strong><span class="tooltip-text">Backend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0</strong><span class="tooltip-text">Тестирование: план 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="2"><div class="mod-header"><span class="mod-title">ОМСУ <span class="badge">· Паспорт</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>2</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>2</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0</strong><span class="tooltip-text">Backend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 0.5 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="1.5"><div class="mod-header"><span class="mod-title">ПТЭ <span class="badge">· Паспорт</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>1.5</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>1.5</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 0.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 1 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0</strong><span class="tooltip-text">Backend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 0.5 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="2"><div class="mod-header"><span class="mod-title">Бесхоз <span class="badge">· Паспорт</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>2</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>2</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 0.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 0.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0.5</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 0.5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0</strong><span class="tooltip-text">Тестирование: план 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        БЛОК 6: ПРОЧЕЕ (3)
+        ============================================================ -->
+        <div class="section-block">
+            <div class="section-title"><i class="fas fa-ellipsis-h" style="color:#64748b;"></i> Прочие доработки <span class="count">3 модуля</span></div>
+            <div class="modules-grid">
+                <div class="module-card" data-remaining="13.2"><div class="mod-header"><span class="mod-title">Загрузка архивов <span class="badge">из старой системы</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>11</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>13.2</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0.2</strong> <span class="fact">0</span><span class="tooltip-text">Дизайн: план 0.2 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>4</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 4 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>2</strong> <span class="fact">0</span><span class="tooltip-text">Frontend: план 2 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>5</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 5 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 1 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card" data-remaining="8.4"><div class="mod-header"><span class="mod-title">Формирование архива <span class="badge">по оценочным листам</span></span><span class="mod-status gray">0%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>7</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> 0</span><span class="stat"><i class="fas fa-hourglass-end" style="color:#64748b;"></i> <strong>8.4</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>3</strong> <span class="fact">0</span><span class="tooltip-text">Аналитика: план 3 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>0</strong><span class="tooltip-text">Frontend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>3</strong> <span class="fact">0</span><span class="tooltip-text">Backend: план 3 дн, выполнено 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>1</strong> <span class="fact">0</span><span class="tooltip-text">Тестирование: план 1 дн, выполнено 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>0%</span></div><div class="progress-bar"><div class="fill gray" style="width:0%;"></div></div></div></div>
+                <div class="module-card done" data-remaining="0"><div class="mod-header"><span class="mod-title">Бизнес-процесс <span class="badge">ФП-2234</span></span><span class="mod-status green-done">100%</span></div><div class="mod-stats"><span class="stat"><i class="fas fa-calculator"></i> <strong>15</strong> дн</span><span class="stat"><i class="fas fa-check-circle" style="color:#16a34a;"></i> <span class="fact-done-all">15</span></span><span class="stat"><i class="fas fa-hourglass-end" style="color:#16a34a;"></i> <strong style="color:#16a34a;">0</strong> дн</span></div><div class="mod-directions"><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-pencil-ruler"></i></span> <strong>0</strong><span class="tooltip-text">Дизайн: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-chart-pie"></i></span> <strong>15</strong> <span class="fact done">✓15</span><span class="tooltip-text">Аналитика: план 15 дн, выполнено 15 дн ✅</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-code"></i></span> <strong>0</strong><span class="tooltip-text">Frontend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-server"></i></span> <strong>0</strong><span class="tooltip-text">Backend: план 0 дн</span></span><span class="dir-divider">·</span><span class="dir-item tooltip-trigger"><span class="icon"><i class="fas fa-vial"></i></span> <strong>0</strong><span class="tooltip-text">Тестирование: план 0 дн</span></span></div><div class="mod-progress"><div class="progress-meta"><span>Готовность</span><span>100%</span></div><div class="progress-bar"><div class="fill green" style="width: 100%;"></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-note">
+            <div class="left"><i class="fas fa-flag"></i><span><strong>✅ 4 конструктора выполнены!</strong> · Цель недели: оценочные листы · План сжечь 64.5 дня</span></div>
+            <div class="right">
+                <span class="tag green">ТСО 100%</span>
+                <span class="tag green">ПТЭ 100%</span>
+                <span class="tag green">ОМСУ 100%</span>
+                <span class="tag green">РТН ✅</span>
+                <span class="tag green">Реестр ✅</span>
+                <span class="tag green">Акты ✅</span>
+                <span class="tag amber">Оценочные в работе</span>
+                <span class="tag">🔥 161 дн</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const skeleton = document.getElementById('skeleton');
+        const content = document.getElementById('content');
+
+        setTimeout(function() {
+            skeleton.classList.remove('active');
+            content.classList.add('active');
+
+            document.querySelectorAll('.progress-bar .fill').forEach(function(bar) {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(function() { bar.style.width = width; }, 200);
+            });
+
+            animateCounters();
+            updateCounts();
+
+            // Burn tabs
+            document.querySelectorAll('.burn-tabs .tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.burn-tabs .tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.burn-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(this.dataset.week).classList.add('active');
+                });
+            });
+
+            // Goals tabs
+            document.querySelectorAll('.goals-tabs .gtab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.goals-tabs .gtab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.goals-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(this.dataset.goal).classList.add('active');
+                });
+            });
+
+        }, 1200);
+    });
+
+    function animateCounters() {
+        const targets = [
+            { id: 'totalPlanCounter', value: 283, decimals: 0 },
+            { id: 'remainingCounter', value: 124.1, decimals: 1 },
+            { id: 'burnCounter', value: 64.5, decimals: 1 },
+            { id: 'burnedCounter', value: 96.5, decimals: 1 },
+            { id: 'doneCounter', value: 5, decimals: 0 },
+            { id: 'riskCounter', value: 21.9, decimals: 1 }
+        ];
+        const duration = 1200;
+        const startTime = performance.now();
+        targets.forEach(function(target) {
+            const el = document.getElementById(target.id);
+            if (!el) return;
+            const endValue = target.value;
+            const isFloat = target.decimals > 0;
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = endValue * eased;
+                if (isFloat) el.textContent = current.toFixed(target.decimals);
+                else el.textContent = Math.round(current);
+                if (progress < 1) requestAnimationFrame(updateCounter);
+                else if (isFloat) el.textContent = endValue.toFixed(target.decimals);
+                else el.textContent = Math.round(endValue);
+            }
+            requestAnimationFrame(updateCounter);
+        });
+    }
+
+    function updateCounts() {
+        const cards = document.querySelectorAll('.module-card');
+        let done = 0, inProgress = 0;
+        cards.forEach(function(card) {
+            const remaining = parseFloat(card.dataset.remaining) || 0;
+            if (remaining <= 0.01) done++;
+            else inProgress++;
+        });
+        const doneEl = document.getElementById('doneCount2');
+        const progressEl = document.getElementById('inProgressCount2');
+        if (doneEl) doneEl.innerHTML = done + ' <small>модулей</small>';
+        if (progressEl) progressEl.innerHTML = inProgress + ' <small>модулей</small>';
+    }
+
+    function getWord(n, one, two, five) {
+        n = Math.abs(n) % 100;
+        if (n >= 5 && n <= 20) return five;
+        n %= 10;
+        if (n === 1) return one;
+        if (n >= 2 && n <= 4) return two;
+        return five;
+    }
+
+    (function() {
+        const toggle = document.getElementById('themeToggle');
+        const icon = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('ozp-theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const defaultTheme = savedTheme || (systemDark ? 'dark' : 'light');
+        html.setAttribute('data-theme', defaultTheme);
+        updateToggleUI(defaultTheme);
+        toggle.addEventListener('click', function() {
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('ozp-theme', next);
+            updateToggleUI(next);
+        });
+        toggle.addEventListener('keydown', function(e) { if (e.key === 'Enter') toggle.click(); });
+        function updateToggleUI(theme) {
+            if (theme === 'dark') { icon.className = 'fas fa-sun'; label.textContent = 'Светлая'; }
+            else { icon.className = 'fas fa-moon'; label.textContent = 'Тёмная'; }
+        }
+    })();
+</script>
+
+
+</body></html>
