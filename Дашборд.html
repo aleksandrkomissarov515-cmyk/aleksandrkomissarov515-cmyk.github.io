@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ГИС-ЖКХ Контур · Дашборд</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 20px; }
+        .container { max-width: 1800px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #0f2b3d, #1a4a6f); border-radius: 28px; padding: 22px 28px; margin-bottom: 24px; color: white; }
+        .upload-zone { background: white; border-radius: 24px; padding: 22px; margin-bottom: 24px; border: 2px dashed #cbd5e1; text-align: center; cursor: pointer; }
+        .upload-zone:hover { background: #f8fafc; border-color: #2c7a7b; }
+        .file-input-label { background: #2c7a7b; color: white; padding: 12px 28px; border-radius: 40px; cursor: pointer; display: inline-block; }
+        .file-input-label:hover { background: #1f5e6e; }
+        input[type="file"] { display: none; }
+        
+        .filter-bar { background: white; border-radius: 24px; padding: 18px 22px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+        .filter-group { flex: 1 1 120px; min-width: 110px; }
+        .filter-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #4b5563; display: block; margin-bottom: 6px; }
+        .filter-group select, .filter-group input { width: 100%; padding: 8px 12px; border-radius: 16px; border: 1px solid #cbd5e1; font-size: 13px; }
+        .filter-group .parent-filter { display: flex; gap: 8px; }
+        .filter-group .parent-filter select { flex: 3; }
+        .filter-group .parent-filter input { flex: 2; }
+        .reset-btn { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 32px; cursor: pointer; height: 42px; }
+        .export-btn { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 32px; cursor: pointer; height: 42px; }
+        
+        .kpi-row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 18px; margin-bottom: 28px; }
+        .kpi-card { background: white; border-radius: 24px; padding: 16px 20px; border-left: 5px solid #3b82f6; }
+        .kpi-value { font-size: 28px; font-weight: 800; margin-top: 8px; }
+        
+        .stats-card { background: white; border-radius: 24px; padding: 20px; margin-bottom: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .stats-card h3 { margin-bottom: 14px; font-size: 18px; }
+        
+        .two-columns { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; margin-bottom: 28px; }
+        .card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card h3 { margin-bottom: 14px; font-size: 18px; }
+        
+        .table-wrapper { overflow-x: auto; max-height: 500px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #eef2ff; padding: 12px 8px; position: sticky; top: 0; text-align: left; }
+        td { padding: 10px 8px; border-bottom: 1px solid #e2e8f0; }
+        
+        .task-link { color: #1a4a6f; text-decoration: none; font-weight: 600; }
+        .task-link:hover { text-decoration: underline; color: #2c7a7b; }
+        
+        .status-badge, .direction-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-open { background: #fef3c7; color: #92400e; }
+        .status-progress { background: #dbeafe; color: #1e40af; }
+        .status-review { background: #e0e7ff; color: #3730a3; }
+        .status-done { background: #dcfce7; color: #166534; }
+        .status-closed { background: #f1f5f9; color: #475569; }
+        .status-backlog { background: #e6ccb3; color: #5c3d1a; }
+        .direction-back { background: #dbeafe; color: #1e40af; }
+        .direction-front { background: #fef3c7; color: #92400e; }
+        .direction-improvement { background: #dcfce7; color: #166534; }
+        .direction-dev { background: #e0e7ff; color: #3730a3; }
+        .direction-other { background: #f1f5f9; color: #475569; }
+        
+        .stats-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .stats-table th, .stats-table td { padding: 8px; text-align: center; border: 1px solid #e2e8f0; }
+        .stats-table th { background: #f1f5f9; }
+        
+        .hours-remain { color: #e67e22; font-weight: 700; }
+        .negative { color: #ef4444; font-weight: 700; }
+        .badge { background: #e2e8f0; padding: 2px 6px; border-radius: 12px; font-size: 11px; }
+        .child-item { padding: 10px; border-left: 3px solid #3b82f6; margin-left: 12px; margin-bottom: 8px; background: #f9fafb; border-radius: 8px; }
+        .parent-selector { margin-bottom: 15px; }
+        .parent-selector select { width: 100%; padding: 10px; border-radius: 16px; border: 1px solid #cbd5e1; }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #2c7a7b; border-radius: 50%; animation: spin 1s linear infinite; vertical-align: middle; margin-right: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .debug-panel { background: #1e293b; color: #a5f3fc; border-radius: 16px; margin-bottom: 20px; font-family: monospace; font-size: 12px; overflow: hidden; }
+        .debug-header { background: #334155; padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .debug-header:hover { background: #475569; }
+        .debug-title { font-weight: 600; }
+        .debug-toggle { font-size: 16px; }
+        .debug-content { padding: 15px; max-height: 200px; overflow-y: auto; display: none; }
+        .debug-content.show { display: block; }
+        .error { color: #f87171; }
+        .success { color: #4ade80; }
+        
+        @media (max-width: 1000px) { .two-columns { grid-template-columns: 1fr; } .kpi-row { grid-template-columns: repeat(4,1fr); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🏗️ ГИС-ЖКХ Контур · Аналитика задач</h1>
+        <div>Название задачи = ссылка в RM | Статусы: Открыт, В работе, На ревью, Готово, Закрыт, Бэклог</div>
+    </div>
+
+    <div class="upload-zone">
+        <label class="file-input-label">
+            📂 Загрузить Excel файлы (можно несколько)
+            <input type="file" id="fileInput" multiple accept=".xlsx, .xls">
+        </label>
+        <div id="fileStatus" style="margin-top: 12px; color: #2d6a4f;">📎 Загрузите Excel файлы</div>
+    </div>
+
+    <div id="debugPanel" class="debug-panel">
+        <div class="debug-header" id="debugToggle">
+            <span class="debug-title">🐞 Панель отладки (нажмите, чтобы свернуть/развернуть)</span>
+            <span class="debug-toggle">▼</span>
+        </div>
+        <div class="debug-content" id="debugContent">
+            <div id="debugLog"></div>
+        </div>
+    </div>
+
+    <div id="dashboard" style="display: none;">
+        <div class="filter-bar">
+            <div class="filter-group"><label>📁 Блок</label><select id="filterBlock"></select></div>
+            <div class="filter-group"><label>🚀 Текущий релиз</label><select id="filterRelease"></select></div>
+            <div class="filter-group"><label>🏷️ Версия</label><select id="filterVersion"></select></div>
+            <div class="filter-group"><label>👤 Назначена</label><select id="filterAssignee"></select></div>
+            <div class="filter-group"><label>🧭 Направление</label><select id="filterDirection"></select></div>
+            <div class="filter-group"><label>📊 Статус</label><select id="filterStatus"></select></div>
+            <div class="filter-group">
+                <label>👪 Родительская задача</label>
+                <div class="parent-filter">
+                    <input type="text" id="filterParentText" placeholder="Поиск...">
+                    <select id="filterParentSelect"><option value="all">Все</option></select>
+                </div>
+            </div>
+            <div class="filter-group"><label>⚠️ Без оценки</label><select id="filterNoEstimate"><option value="all">Все</option><option value="yes">Без оценки</option></select></div>
+            <div class="filter-group"><button class="reset-btn" id="resetFilters">Сбросить</button></div>
+            <div class="filter-group"><button class="export-btn" id="exportBtn">📎 Выгрузить</button></div>
+        </div>
+
+        <div class="kpi-row">
+            <div class="kpi-card"><div class="kpi-title">📋 Всего задач</div><div class="kpi-value" id="totalTasks">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">⏱️ Оценка (ч)</div><div class="kpi-value" id="totalEstimate">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">⚙️ Трудозатраты (ч)</div><div class="kpi-value" id="totalSpent">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">📉 Осталось часов</div><div class="kpi-value" id="totalRemain">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">🔗 Со ссылкой RM</div><div class="kpi-value" id="tasksWithLink">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">👥 Исполнителей</div><div class="kpi-value" id="uniqueAssignees">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">🎯 Направлений</div><div class="kpi-value" id="directionCount">0</div></div>
+            <div class="kpi-card"><div class="kpi-title">📊 Статусов</div><div class="kpi-value" id="statusCount">0</div></div>
+        </div>
+
+        <div class="stats-card">
+            <h3>📈 Статистика по статусам задач (по блокам)</h3>
+            <div class="table-wrapper" style="max-height: 300px;">
+                <table class="stats-table">
+                    <thead>
+                        <tr><th>Блок</th><th>Открыт</th><th>В работе</th><th>На ревью</th><th>Готово</th><th>Закрыт</th><th>Бэклог</th><th>Всего</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="two-columns">
+            <div class="card">
+                <h3>📋 Список задач</h3>
+                <div class="table-wrapper">
+                    <table id="tasksTable">
+                        <thead><tr><th>#</th><th>Задача</th><th>Блок</th><th>Релиз</th><th>Версия</th><th>Назначена</th><th>Направление</th><th>Статус</th><th>Родительская</th><th>Оценка</th><th>Трудозатр</th><th>Осталось</th></tr></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <h3>🌲 Дочерние задачи</h3>
+                <div class="parent-selector"><select id="parentTaskSelect"><option value="">-- Выберите родительскую задачу --</option></select></div>
+                <div id="childTreeContainer">🔍 Выберите задачу</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📊 Оценка vs Трудозатраты</h3>
+            <canvas id="comparisonChart" height="400"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allTasks = [];
+    let chartInst = null;
+    let debugLog = [];
+
+    function addDebug(msg, isError = false) {
+        let timestamp = new Date().toLocaleTimeString();
+        debugLog.push({ time: timestamp, msg: msg, error: isError });
+        let debugDiv = document.getElementById("debugLog");
+        if (debugDiv) {
+            debugDiv.innerHTML = debugLog.slice(-30).map(d => `<div class="${d.error ? 'error' : 'success'}">[${d.time}] ${d.msg}</div>`).join('');
+        }
+        console.log(msg);
+    }
+
+    document.getElementById("debugToggle").addEventListener("click", function() {
+        let content = document.getElementById("debugContent");
+        let toggle = document.querySelector(".debug-toggle");
+        if (content.classList.contains("show")) {
+            content.classList.remove("show");
+            toggle.innerHTML = "▶";
+        } else {
+            content.classList.add("show");
+            toggle.innerHTML = "▼";
+        }
+    });
+
+    function getCellValue(row, possibleNames) {
+        for (let name of possibleNames) {
+            if (row[name] !== undefined && row[name] !== null && row[name] !== "") {
+                return String(row[name]).trim();
+            }
+            for (let key in row) {
+                if (key.toLowerCase() === name.toLowerCase() && row[key] !== undefined && row[key] !== null && row[key] !== "") {
+                    return String(row[key]).trim();
+                }
+            }
+        }
+        return "";
+    }
+
+    function getCellNumber(row, possibleNames) {
+        for (let name of possibleNames) {
+            if (row[name] !== undefined && row[name] !== null && row[name] !== "") {
+                let val = parseFloat(String(row[name]).replace(",", "."));
+                if (!isNaN(val)) return val;
+            }
+            for (let key in row) {
+                if (key.toLowerCase() === name.toLowerCase() && row[key] !== undefined && row[key] !== null && row[key] !== "") {
+                    let val = parseFloat(String(row[key]).replace(",", "."));
+                    if (!isNaN(val)) return val;
+                }
+            }
+        }
+        return 0;
+    }
+
+    function detectDirection(name, tracker) {
+        let text = (name + " " + tracker).toLowerCase();
+        if (text.includes("back") || text.includes("бэк") || text.includes("backend") || text.includes("сервер") || text.includes("api")) return "BACK";
+        if (text.includes("front") || text.includes("фронт") || text.includes("frontend") || text.includes("ui") || text.includes("интерфейс")) return "FRONT";
+        if (text.includes("улучш") || text.includes("improvement") || text.includes("enhancement")) return "Улучшение";
+        if (text.includes("разработк") || text.includes("dev") || text.includes("feature")) return "Разработка";
+        return "Другое";
+    }
+
+    function normalizeStatus(s) {
+        let t = (s || "").toLowerCase();
+        if (t.includes("открыт") || t === "open") return "Открыт";
+        if (t.includes("в работе") || t.includes("in progress")) return "В работе";
+        if (t.includes("ревью") || t.includes("review")) return "На ревью";
+        if (t.includes("готов") || t.includes("done") || t === "completed") return "Готово";
+        if (t.includes("закрыт") || t === "closed") return "Закрыт";
+        if (t.includes("бэклог") || t === "backlog") return "Бэклог";
+        return s || "Открыт";
+    }
+
+    function getStatusClass(status) {
+        if (status === "Открыт") return "status-open";
+        if (status === "В работе") return "status-progress";
+        if (status === "На ревью") return "status-review";
+        if (status === "Готово") return "status-done";
+        if (status === "Закрыт") return "status-closed";
+        if (status === "Бэклог") return "status-backlog";
+        return "status-open";
+    }
+
+    function parseExcelFile(buffer, fileName) {
+        addDebug(`Начинаем разбор файла: ${fileName}`);
+        
+        const wb = XLSX.read(buffer, { type: 'array' });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+        
+        if (!rows.length) {
+            addDebug(`Файл ${fileName} не содержит строк с данными`, true);
+            return [];
+        }
+        
+        let blockName = fileName.replace(/\.(xlsx|xls)$/i, "");
+        let results = [];
+        
+        let sampleRow = rows[0];
+        let columns = Object.keys(sampleRow);
+        addDebug(`Файл ${fileName}: найдены колонки: ${columns.slice(0, 10).join(", ")}${columns.length > 10 ? "..." : ""}`);
+        
+        for (let i = 0; i < rows.length; i++) {
+            let row = rows[i];
+            let taskName = getCellValue(row, ["Тема", "тема", "Task", "Название", "Задача", "task", "name"]);
+            
+            if (!taskName) continue;
+            
+            let issueId = getCellValue(row, ["#", "N", "ID", "id", "Номер", "number"]);
+            let rmLink = issueId ? `https://max.rm.mosreg.ru/issues/${issueId}` : "";
+            
+            let release = getCellValue(row, ["Текущий релиз", "Релиз", "Release", "release"]);
+            if (!release) release = "";
+            
+            let version = getCellValue(row, ["Версия", "Version", "версия", "version"]);
+            if (!version) version = "";
+            
+            let status = getCellValue(row, ["Статус", "Status", "статус", "status"]);
+            if (!status) status = "Не указан";
+            
+            let assignee = getCellValue(row, ["назначена", "Исполнитель", "Assignee", "Ответственный", "assignee"]);
+            if (!assignee) assignee = "";
+            
+            let parent = getCellValue(row, ["Родительская задача", "Родитель", "Parent", "parent"]);
+            
+            let estimate = getCellNumber(row, ["Оценка временных затрат", "Оценка", "Estimate", "План", "estimate"]);
+            let spent = getCellNumber(row, ["Трудозатраты", "Spent", "Затрачено", "spent"]);
+            let tracker = getCellValue(row, ["Трекер", "Tracker", "Тип", "tracker"]);
+            
+            results.push({
+                id: Math.random(),
+                name: taskName,
+                issueId: issueId,
+                rmLink: rmLink,
+                block: blockName,
+                release: release,
+                version: version,
+                assignee: assignee,
+                status: normalizeStatus(status),
+                estimate: estimate,
+                spent: spent,
+                rawParent: parent,
+                direction: detectDirection(taskName, tracker)
+            });
+        }
+        
+        addDebug(`Файл ${fileName}: загружено ${results.length} задач`);
+        return results;
+    }
+
+    document.getElementById("fileInput").addEventListener("change", async (e) => {
+        let files = Array.from(e.target.files);
+        if (files.length === 0) return;
+        
+        document.getElementById("debugContent").classList.add("show");
+        addDebug(`Выбрано файлов: ${files.length}`);
+        
+        document.getElementById("fileStatus").innerHTML = "<span class='loading'></span> Загрузка файлов...";
+        allTasks = [];
+        
+        for (let file of files) {
+            try {
+                let buffer = await file.arrayBuffer();
+                addDebug(`Чтение файла: ${file.name} (${buffer.byteLength} байт)`);
+                let tasks = parseExcelFile(buffer, file.name);
+                allTasks.push(...tasks);
+            } catch(err) {
+                addDebug(`Ошибка при чтении ${file.name}: ${err.message}`, true);
+            }
+        }
+        
+        if (allTasks.length === 0) {
+            addDebug("НЕ УДАЛОСЬ ЗАГРУЗИТЬ НИ ОДНОЙ ЗАДАЧИ!", true);
+            document.getElementById("fileStatus").innerHTML = "❌ Ошибка: не найдены данные. Подробности в панели отладки.";
+            return;
+        }
+        
+        addDebug(`ВСЕГО ЗАДАЧ: ${allTasks.length}`, false);
+        document.getElementById("dashboard").style.display = "block";
+        document.getElementById("fileStatus").innerHTML = `✅ Загружено файлов: ${files.length} | Задач: ${allTasks.length}`;
+        
+        updateAllFilters();
+        renderAll();
+    });
+
+    function getUniqueValuesFromTasks(tasks, field, includeEmpty = false) {
+        let values = new Set();
+        tasks.forEach(t => {
+            let val = t[field];
+            if (val && val !== "" && val !== "Не указан" && val !== "Не указана" && val !== "Не назначен") {
+                values.add(val);
+            }
+        });
+        let result = Array.from(values).sort();
+        if (includeEmpty) {
+            result.unshift("__EMPTY__");
+        }
+        return result;
+    }
+
+    function updateSelectOptions(selectId, tasks, field, includeEmpty = false, emptyLabel = "Без значения") {
+        let select = document.getElementById(selectId);
+        if (!select) return;
+        let values = getUniqueValuesFromTasks(tasks, field, includeEmpty);
+        let currentValue = select.value;
+        select.innerHTML = '<option value="all">Все</option>';
+        values.forEach(v => {
+            let option = document.createElement("option");
+            if (v === "__EMPTY__") {
+                option.value = "__EMPTY__";
+                option.textContent = emptyLabel;
+            } else {
+                option.value = v;
+                option.textContent = v;
+            }
+            select.appendChild(option);
+        });
+        if (currentValue !== "all" && values.includes(currentValue)) {
+            select.value = currentValue;
+        } else if (currentValue === "__EMPTY__" && values.includes("__EMPTY__")) {
+            select.value = "__EMPTY__";
+        } else {
+            select.value = "all";
+        }
+    }
+
+    function updateParentSelectOptions(tasks) {
+        let select = document.getElementById("filterParentSelect");
+        if (!select) return;
+        let values = getUniqueValuesFromTasks(tasks, "rawParent");
+        let currentValue = select.value;
+        select.innerHTML = '<option value="all">Все</option>';
+        values.forEach(v => {
+            let option = document.createElement("option");
+            option.value = v;
+            option.textContent = v.length > 50 ? v.substring(0,47)+"..." : v;
+            select.appendChild(option);
+        });
+        if (currentValue !== "all" && values.includes(currentValue)) {
+            select.value = currentValue;
+        } else {
+            select.value = "all";
+        }
+    }
+
+    function updateAllFilters() {
+        updateSelectOptions("filterBlock", allTasks, "block");
+        updateSelectOptions("filterRelease", allTasks, "release", true, "Без релиза");
+        updateSelectOptions("filterVersion", allTasks, "version", true, "Без версии");
+        updateSelectOptions("filterAssignee", allTasks, "assignee", true, "Не назначен");
+        updateSelectOptions("filterDirection", allTasks, "direction");
+        updateSelectOptions("filterStatus", allTasks, "status");
+        updateParentSelectOptions(allTasks);
+    }
+
+    function getFilteredTasks() {
+        let filtered = [...allTasks];
+        
+        let block = document.getElementById("filterBlock").value;
+        if (block !== "all") filtered = filtered.filter(t => t.block === block);
+        
+        let release = document.getElementById("filterRelease").value;
+        if (release !== "all") {
+            if (release === "__EMPTY__") {
+                filtered = filtered.filter(t => !t.release || t.release === "" || t.release === "Не указан");
+            } else {
+                filtered = filtered.filter(t => t.release === release);
+            }
+        }
+        
+        let version = document.getElementById("filterVersion").value;
+        if (version !== "all") {
+            if (version === "__EMPTY__") {
+                filtered = filtered.filter(t => !t.version || t.version === "" || t.version === "Не указана");
+            } else {
+                filtered = filtered.filter(t => t.version === version);
+            }
+        }
+        
+        let assignee = document.getElementById("filterAssignee").value;
+        if (assignee !== "all") {
+            if (assignee === "__EMPTY__") {
+                filtered = filtered.filter(t => !t.assignee || t.assignee === "" || t.assignee === "Не назначен");
+            } else {
+                filtered = filtered.filter(t => t.assignee === assignee);
+            }
+        }
+        
+        let direction = document.getElementById("filterDirection").value;
+        if (direction !== "all") filtered = filtered.filter(t => t.direction === direction);
+        
+        let status = document.getElementById("filterStatus").value;
+        if (status !== "all") filtered = filtered.filter(t => t.status === status);
+        
+        let parentText = document.getElementById("filterParentText").value.trim().toLowerCase();
+        let parentSelect = document.getElementById("filterParentSelect").value;
+        
+        if (parentText !== "") {
+            filtered = filtered.filter(t => t.rawParent.toLowerCase().includes(parentText));
+        } else if (parentSelect !== "all") {
+            filtered = filtered.filter(t => t.rawParent === parentSelect);
+        }
+        
+        let noEstimate = document.getElementById("filterNoEstimate").value;
+        if (noEstimate === "yes") filtered = filtered.filter(t => t.estimate === 0);
+        
+        return filtered;
+    }
+
+    function renderStatusStats(data) {
+        let blocks = [...new Set(data.map(d => d.block))].sort();
+        let statuses = ["Открыт", "В работе", "На ревью", "Готово", "Закрыт", "Бэклог"];
+        let stats = {};
+        blocks.forEach(b => { 
+            stats[b] = { "Открыт":0, "В работе":0, "На ревью":0, "Готово":0, "Закрыт":0, "Бэклог":0, "Всего":0 }; 
+        });
+        data.forEach(d => { 
+            if (stats[d.block]) { 
+                if (statuses.includes(d.status)) {
+                    stats[d.block][d.status]++; 
+                } else {
+                    stats[d.block]["Открыт"]++;
+                }
+                stats[d.block]["Всего"]++; 
+            } 
+        });
+        
+        let tbody = document.getElementById("statsBody");
+        if (blocks.length === 0) { tbody.innerHTML = '<tr><td colspan="7">Нет данных</tr>'; return; }
+        
+        let html = "";
+        blocks.forEach(b => {
+            html += `<tr>
+                        <td><strong>${escapeHtml(b)}</strong></td>
+                        <td>${stats[b]["Открыт"]}</td>
+                        <td>${stats[b]["В работе"]}</td>
+                        <td>${stats[b]["На ревью"]}</td>
+                        <td>${stats[b]["Готово"]}</td>
+                        <td>${stats[b]["Закрыт"]}</td>
+                        <td>${stats[b]["Бэклог"]}</td>
+                        <td><strong>${stats[b]["Всего"]}</strong></td>
+                      </tr>`;
+        });
+        
+        let total = { "Открыт":0, "В работе":0, "На ревью":0, "Готово":0, "Закрыт":0, "Бэклог":0, "Всего":0 };
+        blocks.forEach(b => { 
+            for (let s of statuses) total[s] += stats[b][s]; 
+            total["Всего"] += stats[b]["Всего"]; 
+        });
+        html += `<tr style="background:#eef2ff; font-weight:700;">
+                    <td>ИТОГО</td>
+                    <td>${total["Открыт"]}</td>
+                    <td>${total["В работе"]}</td>
+                    <td>${total["На ревью"]}</td>
+                    <td>${total["Готово"]}</td>
+                    <td>${total["Закрыт"]}</td>
+                    <td>${total["Бэклог"]}</td>
+                    <td>${total["Всего"]}</td>
+                 </tr>`;
+        tbody.innerHTML = html;
+    }
+
+    function getDirectionClass(direction) {
+        if (direction === "BACK") return "direction-back";
+        if (direction === "FRONT") return "direction-front";
+        if (direction === "Улучшение") return "direction-improvement";
+        if (direction === "Разработка") return "direction-dev";
+        return "direction-other";
+    }
+
+    function renderTable(data) {
+        let tbody = document.getElementById("tableBody");
+        if (!data.length) { tbody.innerHTML = '<tr><td colspan="12">Нет данных</td></tr>'; return; }
+        
+        let html = "";
+        data.forEach((d, idx) => {
+            let remain = (d.estimate - d.spent).toFixed(1);
+            let taskLink = d.rmLink ? `<a href="${d.rmLink}" target="_blank" class="task-link">${escapeHtml(d.name)}</a>` : escapeHtml(d.name);
+            let releaseDisplay = d.release || "—";
+            let versionDisplay = d.version || "—";
+            let assigneeDisplay = d.assignee || "—";
+            
+            html += `<tr>
+                        <td>${idx+1}</td>
+                        <td><strong>${taskLink}</strong></td>
+                        <td><span class="badge">${escapeHtml(d.block)}</span></td>
+                        <td>${escapeHtml(releaseDisplay)}</td>
+                        <td>${escapeHtml(versionDisplay)}</td>
+                        <td>${escapeHtml(assigneeDisplay)}</td>
+                        <td><span class="direction-badge ${getDirectionClass(d.direction)}">${d.direction}</span></td>
+                        <td><span class="status-badge ${getStatusClass(d.status)}">${d.status}</span></td>
+                        <td>${escapeHtml(d.rawParent.substring(0, 40))}</td>
+                        <td>${d.estimate.toFixed(1)}</td>
+                        <td>${d.spent.toFixed(1)}</td>
+                        <td class="${remain >= 0 ? 'hours-remain' : 'negative'}">${remain}</td>
+                      </tr>`;
+        });
+        tbody.innerHTML = html;
+        
+        document.getElementById("tasksWithLink").innerText = data.filter(d => d.rmLink && d.rmLink.length > 0).length;
+        document.getElementById("uniqueAssignees").innerText = new Set(data.map(d => d.assignee).filter(a => a && a !== "")).size;
+        document.getElementById("directionCount").innerText = new Set(data.map(d => d.direction)).size;
+        document.getElementById("statusCount").innerText = new Set(data.map(d => d.status)).size;
+    }
+
+    function updateKPI(data) {
+        document.getElementById("totalTasks").innerText = data.length;
+        let sumEst = data.reduce((s,d) => s + d.estimate, 0);
+        let sumSpent = data.reduce((s,d) => s + d.spent, 0);
+        document.getElementById("totalEstimate").innerText = sumEst.toFixed(1);
+        document.getElementById("totalSpent").innerText = sumSpent.toFixed(1);
+        document.getElementById("totalRemain").innerText = (sumEst - sumSpent).toFixed(1);
+    }
+
+    function updateChart(data) {
+        let map = new Map();
+        data.forEach(d => {
+            if (!d.assignee || d.assignee === "") return;
+            if (!map.has(d.assignee)) map.set(d.assignee, { est: 0, spent: 0 });
+            let m = map.get(d.assignee);
+            m.est += d.estimate;
+            m.spent += d.spent;
+        });
+        
+        let sorted = Array.from(map.entries()).map(([name, vals]) => ({ name, estimate: vals.est, spent: vals.spent }))
+            .sort((a,b) => (b.estimate + b.spent) - (a.estimate + a.spent)).slice(0, 15);
+        
+        let ctx = document.getElementById("comparisonChart").getContext("2d");
+        if (chartInst) chartInst.destroy();
+        
+        if (sorted.length === 0) {
+            chartInst = new Chart(ctx, { type: 'bar', data: { labels: ['Нет данных'], datasets: [] } });
+            return;
+        }
+        
+        chartInst = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sorted.map(t => t.name.length > 20 ? t.name.substring(0, 17) + "..." : t.name),
+                datasets: [
+                    { label: 'Оценка (ч)', data: sorted.map(t => t.estimate), backgroundColor: '#3b82f6', borderRadius: 6 },
+                    { label: 'Трудозатраты (ч)', data: sorted.map(t => t.spent), backgroundColor: '#f97316', borderRadius: 6 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    function updateParentSelector(data) {
+        let select = document.getElementById("parentTaskSelect");
+        let parents = [...new Set(data.filter(d => d.rawParent && d.rawParent.trim() !== "").map(d => d.rawParent))];
+        let current = select.value;
+        select.innerHTML = '<option value="">-- Выберите родительскую задачу --</option>';
+        parents.forEach(p => {
+            let option = document.createElement("option");
+            option.value = p;
+            option.textContent = p.length > 60 ? p.substring(0,57)+"..." : p;
+            select.appendChild(option);
+        });
+        if (current && parents.includes(current)) select.value = current;
+        renderChildTree();
+    }
+
+    function renderChildTree() {
+        let select = document.getElementById("parentTaskSelect");
+        let parentKey = select.value;
+        if (!parentKey) {
+            document.getElementById("childTreeContainer").innerHTML = "<div>🔍 Выберите задачу</div>";
+            return;
+        }
+        
+        let filtered = getFilteredTasks();
+        let children = filtered.filter(d => d.rawParent === parentKey);
+        let parentTask = filtered.find(d => d.name === parentKey);
+        
+        if (children.length === 0) {
+            document.getElementById("childTreeContainer").innerHTML = `<div>📭 Нет дочерних задач</div>`;
+            return;
+        }
+        
+        let total = 0;
+        let html = `<div style="background:#eef2ff; padding:10px; border-radius:12px; margin-bottom:10px;">
+                        <strong>🌿 Родитель:</strong> ${escapeHtml(parentKey)}<br>
+                        🔹 Остаток: <strong>${parentTask ? (parentTask.estimate - parentTask.spent).toFixed(1) : "—"} ч</strong>
+                    </div>
+                    <div><strong>📌 Дочерние задачи (${children.length})</strong></div>`;
+        children.forEach(c => {
+            let remain = (c.estimate - c.spent).toFixed(1);
+            total += parseFloat(remain);
+            let taskLink = c.rmLink ? `<a href="${c.rmLink}" target="_blank" style="color:#1a4a6f; text-decoration:none;">${escapeHtml(c.name)}</a>` : escapeHtml(c.name);
+            html += `<div class="child-item">
+                        <strong>📎 ${taskLink}</strong><br>
+                        🕐 Осталось: <strong class="${remain >= 0 ? 'hours-remain' : 'negative'}">${remain} ч</strong><br>
+                        👤 ${escapeHtml(c.assignee) || "—"} | 📊 ${c.status}
+                    </div>`;
+        });
+        html += `<div style="margin-top:12px; padding:8px; background:#f1f5f9; border-radius:8px;">
+                    <strong>📊 Сумма остатков: ${total.toFixed(1)} ч</strong>
+                </div>`;
+        document.getElementById("childTreeContainer").innerHTML = html;
+    }
+
+    function exportToExcel() {
+        let data = getFilteredTasks();
+        if (data.length === 0) { alert("Нет данных для выгрузки"); return; }
+        let exportData = data.map((d, idx) => ({
+            "№": idx+1, "Задача": d.name, "Ссылка RM": d.rmLink, "Блок": d.block,
+            "Текущий релиз": d.release || "", "Версия": d.version || "", "Назначена": d.assignee || "", "Направление": d.direction,
+            "Статус": d.status, "Родительская": d.rawParent,
+            "Оценка(ч)": d.estimate, "Трудозатраты(ч)": d.spent, "Осталось(ч)": (d.estimate - d.spent).toFixed(1)
+        }));
+        let ws = XLSX.utils.json_to_sheet(exportData);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Задачи");
+        XLSX.writeFile(wb, `GIS-ZHKH_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+    }
+
+    function resetFilters() {
+        document.getElementById("filterBlock").value = "all";
+        document.getElementById("filterRelease").value = "all";
+        document.getElementById("filterVersion").value = "all";
+        document.getElementById("filterAssignee").value = "all";
+        document.getElementById("filterDirection").value = "all";
+        document.getElementById("filterStatus").value = "all";
+        document.getElementById("filterParentText").value = "";
+        document.getElementById("filterParentSelect").value = "all";
+        document.getElementById("filterNoEstimate").value = "all";
+        renderAll();
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function updateDynamicFilters(currentDisplayedTasks) {
+        updateSelectOptions("filterBlock", currentDisplayedTasks, "block");
+        updateSelectOptions("filterRelease", currentDisplayedTasks, "release", true, "Без релиза");
+        updateSelectOptions("filterVersion", currentDisplayedTasks, "version", true, "Без версии");
+        updateSelectOptions("filterAssignee", currentDisplayedTasks, "assignee", true, "Не назначен");
+        updateSelectOptions("filterDirection", currentDisplayedTasks, "direction");
+        updateSelectOptions("filterStatus", currentDisplayedTasks, "status");
+        updateParentSelectOptions(currentDisplayedTasks);
+    }
+
+    function renderAll() {
+        let currentFiltered = getFilteredTasks();
+        updateDynamicFilters(currentFiltered);
+        let finalFiltered = getFilteredTasks();
+        renderTable(finalFiltered);
+        updateKPI(finalFiltered);
+        updateChart(finalFiltered);
+        renderStatusStats(finalFiltered);
+        updateParentSelector(finalFiltered);
+    }
+
+    let filterElements = ["filterBlock", "filterRelease", "filterVersion", "filterAssignee", "filterDirection", "filterStatus", "filterParentSelect", "filterNoEstimate"];
+    filterElements.forEach(id => {
+        let el = document.getElementById(id);
+        if (el) el.addEventListener("change", () => renderAll());
+    });
+    
+    let parentText = document.getElementById("filterParentText");
+    if (parentText) parentText.addEventListener("input", () => renderAll());
+    
+    let resetBtn = document.getElementById("resetFilters");
+    if (resetBtn) resetBtn.addEventListener("click", resetFilters);
+    
+    let exportBtn = document.getElementById("exportBtn");
+    if (exportBtn) exportBtn.addEventListener("click", exportToExcel);
+    
+    let parentSelect = document.getElementById("parentTaskSelect");
+    if (parentSelect) parentSelect.addEventListener("change", () => renderChildTree());
+</script>
+</body>
+</html>
