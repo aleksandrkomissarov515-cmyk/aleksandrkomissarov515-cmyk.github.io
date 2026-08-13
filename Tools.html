@@ -1,0 +1,3272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>⚡ Analyst Toolkit Pro — полный комбайн для ТЗ</title>
+
+    <!-- ===== MERMAID ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
+    </script>
+
+    <!-- ===== PEERJS ===== -->
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js">
+    </script>
+
+    <script>
+        const APP_CONFIG = Object.freeze({
+            VERSION: '6.4.1',
+            STORAGE_PREFIX: 'analyst_toolkit_',
+            TABS: ['requirements', 'structure', 'mermaid', 'prompts', 'checklist', 'email', 'export', 'mindmap',
+                'testcases', 'risks', 'collab', 'generate'
+            ],
+            TAB_NAMES: {
+                requirements: '🧹 Сбор',
+                structure: '📄 Структура',
+                mermaid: '📊 Диаграммы',
+                prompts: '🤖 Промпты',
+                checklist: '✅ Чек-лист',
+                email: '📧 Письмо',
+                export: '💾 Экспорт',
+                mindmap: '🧠 Mind Map',
+                testcases: '🧪 Тесты',
+                risks: '⚠️ Риски',
+                collab: '👥 Совместно',
+                generate: '✨ Генерация ТЗ'
+            },
+            CHECKLIST_ITEMS: [
+                'Каждое требование сформулировано однозначно (без «удобный», «быстрый», «надежный» без цифр)',
+                'На каждое требование можно провести тест-кейс',
+                'Описаны все роли и их права',
+                'Есть раздел «Что НЕ входит в систему»',
+                'Указаны критерии приемки по каждому сценарию',
+                'Есть описание обработки ошибок и исключений',
+                'Указаны внешние системы и характер взаимодействия',
+                'Есть глоссарий (термины расшифрованы)',
+                'Время отклика, нагрузка, объем данных — указаны в цифрах'
+            ],
+            PROMPTS: [{
+                title: 'Генерация Use Case',
+                text: 'Ты — системный аналитик с 10-летним опытом. Опиши сценарий использования «[название сценария]» для системы «[название системы]» в формате: акторы, предусловия, основной поток (пошагово), альтернативные потоки (не менее 3), постусловия. Используй язык, понятный бизнес-заказчику, но с четкой структурой.'
+            }, {
+                title: 'Проверка полноты ТЗ',
+                text: 'Ниже — черновик ТЗ. Проверь его по стандарту IEEE 830. Выяви: 1) пропущенные разделы, 2) неоднозначные формулировки, 3) противоречия, 4) нефункциональные требования, которые не указаны. Дай рекомендации по доработке в виде таблицы: «Раздел — Проблема — Предложение».'
+            }, {
+                title: 'Превращение встречи в ТЗ',
+                text: 'Вот расшифровка (стенограмма) встречи с заказчиком: [вставьте текст]. Извлеки все требования, классифицируй их на функциональные, нефункциональные и ограничения. Оформи в виде структурированного документа с разделами: Цели, Пользователи, Сценарии, Интеграции, Приоритеты.'
+            }],
+            STRUCTURE_SECTIONS: [
+                { level: 0, text: '1. Введение' },
+                { level: 1, text: '1.1. Цель документа' },
+                { level: 1, text: '1.2. Область применения' },
+                { level: 1, text: '1.3. Термины и сокращения' },
+                { level: 0, text: '2. Общее описание системы' },
+                { level: 1, text: '2.1. Бизнес-контекст' },
+                { level: 1, text: '2.2. Основные функции' },
+                { level: 1, text: '2.3. Границы системы (что НЕ входит)' },
+                { level: 0, text: '3. Функциональные требования' },
+                { level: 1, text: '3.1. Роли и права доступа' },
+                { level: 1, text: '3.2. Описание сценариев (Use Case)' },
+                { level: 0, text: '4. Нефункциональные требования' },
+                { level: 1, text: '4.1. Производительность (время, RPS)' },
+                { level: 1, text: '4.2. Надежность (SLA, бэкапы)' },
+                { level: 1, text: '4.3. Безопасность' },
+                { level: 1, text: '4.4. UI/UX' },
+                { level: 1, text: '4.5. Технологический стек' },
+                { level: 0, text: '5. Требования к данным' },
+                { level: 1, text: '5.1. Модель данных (ER)' },
+                { level: 1, text: '5.2. Форматы ввода/вывода' },
+                { level: 1, text: '5.3. Хранение и архивация' },
+                { level: 0, text: '6. Требования к интеграциям' },
+                { level: 1, text: '6.1. Схема взаимодействия' },
+                { level: 1, text: '6.2. Протоколы и API' },
+                { level: 1, text: '6.3. SLA внешних систем' },
+                { level: 0, text: '7. Этапы внедрения и приемки' },
+                { level: 1, text: '7.1. План-график' },
+                { level: 1, text: '7.2. Критерии приемки' },
+                { level: 1, text: '7.3. Порядок сдачи-приемки' }
+            ],
+            EMAIL_TEMPLATE: `Кому: [Имя заказчика]
+        Тема: Согласование Технического задания на систему [Название системы]
+
+        Уважаемый [Имя],
+
+        Направляю на согласование проект Технического задания на систему [Название системы].
+
+        Основные разделы:
+        — Цели и KPI: [1–2 предложения]
+        — Ключевые сценарии: [перечислить 3–5]
+        — Сроки: [даты]
+
+        Прошу:
+        1. Подтвердить, что функциональные требования описаны корректно.
+        2. Обратить внимание на раздел «Что НЕ входит» — это важно для управления ожиданиями.
+        3. Согласовать документ или прислать замечания до [дата согласования].
+
+        С уважением,
+        [Ваше имя]`,
+            INDUSTRY_TEMPLATES: {
+                fintech: {
+                    name: 'FinTech / Банкинг',
+                    sections: {
+                        'Безопасность': 'Требования к шифрованию, 2FA, аудит, PCI DSS',
+                        'Масштабирование': 'Нагрузка до 100K RPS, отказоустойчивость',
+                        'Интеграции': 'СБП, ЦБ, платежные шлюзы, DWH'
+                    }
+                },
+                ecommerce: {
+                    name: 'E-commerce / Retail',
+                    sections: {
+                        'Каталог': 'Товары, категории, фильтры, поиск, рекомендации',
+                        'Корзина': 'Добавление, удаление, промокоды, скидки',
+                        'Оплата': 'Карты, Apple/Google Pay, кредиты, рассрочка'
+                    }
+                },
+                healthcare: {
+                    name: 'Healthcare / Медицина',
+                    sections: {
+                        'Данные': 'Медицинские записи, история, анализы',
+                        'Безопасность': '152-ФЗ, шифрование, аудит, роли',
+                        'Интеграции': 'МИС, ЕМИАС, лаборатории, телемедицина'
+                    }
+                }
+            }
+        });
+    </script>
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-body: #f0f4f8;
+            --bg-card: #ffffff;
+            --bg-header: linear-gradient(135deg, #1a365d, #2b6cb0);
+            --text-primary: #1a202c;
+            --text-secondary: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --accent: #2b6cb0;
+            --accent-hover: #1a365d;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --danger: #e53e3e;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --radius: 16px;
+            --transition: 0.25s ease;
+            --font: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f1419;
+            --bg-card: #1a202c;
+            --text-primary: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --text-muted: #a0aec0;
+            --border-color: #2d3748;
+            --bg-header: linear-gradient(135deg, #0d1b2a, #1a365d);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 16px;
+            min-height: 100vh;
+            transition: background var(--transition), color var(--transition);
+            line-height: 1.6;
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .app-header {
+            background: var(--bg-header);
+            color: white;
+            padding: clamp(20px, 4vw, 40px);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            transition: background var(--transition);
+        }
+
+        .app-header h1 {
+            font-size: clamp(22px, 4vw, 32px);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-header .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(15deg);
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .badge-online {
+            background: var(--success);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            background: var(--bg-card);
+            padding: 8px;
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            transition: background var(--transition);
+        }
+
+        .tab-btn {
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-size: clamp(11px, 1vw, 13px);
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            flex: 1 1 auto;
+            text-align: center;
+            min-height: 44px;
+        }
+
+        .tab-btn:hover {
+            background: var(--border-color);
+        }
+
+        .tab-btn:active {
+            transform: scale(0.97);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(43, 108, 176, 0.3);
+        }
+
+        /* ===== TAB CONTENT ===== */
+        .tab-content {
+            display: none;
+            animation: fadeSlideIn 0.35s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: clamp(20px, 3vw, 32px);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition);
+        }
+
+        .card h2 {
+            font-size: clamp(18px, 2vw, 22px);
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: clamp(16px, 1.4vw, 18px);
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        /* ===== GRID ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+            .grid-3 {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .grid-4 {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+            body {
+                padding: 24px;
+            }
+        }
+
+        /* ===== QUESTION BLOCKS ===== */
+        .question-block {
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent);
+            transition: background var(--transition);
+        }
+
+        .question-block strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .question-block textarea,
+        .question-block input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 14px;
+            resize: vertical;
+            transition: border var(--transition);
+            font-family: var(--font);
+        }
+
+        .question-block textarea {
+            min-height: 60px;
+        }
+
+        .question-block input {
+            min-height: 40px;
+        }
+
+        .question-block textarea:focus,
+        .question-block input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .voice-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all var(--transition);
+            margin-top: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .voice-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02);
+        }
+
+        .voice-btn.recording {
+            background: var(--danger);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* ===== STRUCTURE TREE ===== */
+        .structure-tree {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: clamp(13px, 1.1vw, 15px);
+            line-height: 2.2;
+            background: var(--bg-body);
+            padding: 20px 24px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            transition: background var(--transition);
+        }
+
+        .structure-tree .num {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .structure-tree .section-level-0 {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .structure-tree .section-level-1 {
+            padding-left: 28px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== MERMAID ===== */
+        .mermaid-container {
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition);
+            overflow: auto;
+            width: 100%;
+        }
+
+        .mermaid-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .mermaid-container textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: 'SF Mono', monospace;
+            font-size: 13px;
+            resize: vertical;
+        }
+
+        .mermaid-container textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .mermaid-container .mermaid-placeholder {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .mermaid-container .mermaid-placeholder .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* ===== CHECKLIST ===== */
+        .checklist {
+            list-style: none;
+            padding: 0 !important;
+        }
+
+        .checklist li {
+            padding: 12px 16px;
+            background: var(--bg-body);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            border-left: 4px solid var(--border-color);
+            font-size: clamp(14px, 1vw, 15px);
+            cursor: pointer;
+            transition: all var(--transition);
+            color: var(--text-secondary);
+            user-select: none;
+        }
+
+        .checklist li:hover {
+            background: var(--border-color);
+            transform: translateX(4px);
+        }
+
+        .checklist li::before {
+            content: "☐";
+            font-size: 22px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            transition: all var(--transition);
+        }
+
+        .checklist li.done {
+            border-left-color: var(--success);
+            opacity: 0.85;
+        }
+
+        .checklist li.done::before {
+            content: "☑";
+            color: var(--success);
+        }
+
+        /* ===== EMAIL ===== */
+        .email-template {
+            background: var(--bg-body);
+            border: 1px solid var(--success);
+            border-radius: 12px;
+            padding: 20px 24px;
+            line-height: 1.9;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: var(--font);
+            transition: background var(--transition);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(43, 108, 176, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            opacity: 0.85;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.85;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            opacity: 0.85;
+        }
+
+        .footer-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        /* ===== PROGRESS ===== */
+        .progress-text {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* ===== MIND MAP ===== */
+        .mindmap-container {
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 400px;
+            overflow: auto;
+            transition: background var(--transition);
+            width: 100%;
+            font-family: var(--font);
+        }
+
+        .mindmap-tree {
+            font-size: 14px;
+            user-select: none;
+        }
+
+        .mindmap-tree .node {
+            padding: 4px 0;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mindmap-tree .node:hover {
+            background: var(--border-color);
+            border-radius: 6px;
+        }
+
+        .mindmap-tree .node .toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .mindmap-tree .node .toggle:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .mindmap-tree .node .toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .mindmap-tree .node .icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .mindmap-tree .node .label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .mindmap-tree .node.level-0 .label {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--accent);
+        }
+
+        .mindmap-tree .node.level-1 .label {
+            font-weight: 400;
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-left: 4px;
+        }
+
+        .mindmap-tree .children {
+            padding-left: 28px;
+            border-left: 2px solid var(--border-color);
+            margin-left: 10px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            max-height: 9999px;
+            opacity: 1;
+        }
+
+        .mindmap-tree .children.hidden {
+            max-height: 0;
+            opacity: 0;
+            padding-left: 0;
+            border-left: none;
+        }
+
+        /* ===== TEST CASES ===== */
+        .testcase {
+            background: var(--bg-body);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--accent);
+            transition: background var(--transition);
+        }
+
+        .testcase .title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .testcase .steps {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            padding-left: 16px;
+        }
+
+        /* ===== RISKS ===== */
+        .risk-item {
+            background: var(--bg-body);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--warning);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            transition: background var(--transition);
+        }
+
+        .risk-item .severity {
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .severity-medium {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .severity-low {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        /* ===== COLLABORATION ===== */
+        .collab-status {
+            padding: 8px 12px;
+            background: var(--bg-body);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: background var(--transition);
+            min-height: 40px;
+        }
+
+        .collab-peers {
+            padding: 8px 12px;
+            background: var(--bg-body);
+            border-radius: 8px;
+            min-height: 40px;
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: background var(--transition);
+        }
+
+        .collab-peers .peer {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            margin: 2px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+        }
+
+        .collab-messages {
+            padding: 12px;
+            background: var(--bg-body);
+            border-radius: 8px;
+            min-height: 150px;
+            max-height: 250px;
+            overflow: auto;
+            margin-bottom: 8px;
+            font-size: 13px;
+            transition: background var(--transition);
+        }
+
+        .collab-messages .msg {
+            margin-bottom: 4px;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* ===== GENERATE TZ ===== */
+        .generated-tz {
+            background: var(--bg-body);
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 500px;
+            overflow: auto;
+            font-size: 14px;
+            white-space: pre-wrap;
+            font-family: 'Segoe UI', sans-serif;
+            transition: background var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .generated-tz h1 {
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        .generated-tz h2 {
+            color: var(--text-primary);
+            font-size: 17px;
+            margin-top: 16px;
+        }
+
+        .generated-tz h3 {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-top: 12px;
+        }
+
+        .generated-tz ul {
+            padding-left: 20px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            transform: translateY(120px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        /* ===== FOOTER ===== */
+        .app-footer {
+            text-align: center;
+            padding: 20px 0 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 12px;
+            transition: all var(--transition);
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-body);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover);
+        }
+
+        /* ===== EXPORT PREVIEW ===== */
+        .export-preview {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 300px;
+            overflow: auto;
+            font-size: 13px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header class="app-header">
+            <h1>
+                ⚡ Analyst Toolkit Pro
+                <span style="font-size:0.5em;opacity:0.8;">v6.4.1</span>
+            </h1>
+            <div class="header-actions">
+                <span class="badge" id="dateBadge">📅 Загрузка...</span>
+                <span class="badge" id="storageBadge">💾 Автосохранение</span>
+                <span class="badge" id="collabBadge" style="display:none;">👥 Онлайн</span>
+                <button class="theme-toggle" id="themeToggle">🌙</button>
+            </div>
+        </header>
+
+        <!-- ===== TABS ===== -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="requirements">🧹 Сбор</button>
+            <button class="tab-btn" data-tab="structure">📄 Структура</button>
+            <button class="tab-btn" data-tab="mermaid">📊 Диаграммы</button>
+            <button class="tab-btn" data-tab="prompts">🤖 Промпты</button>
+            <button class="tab-btn" data-tab="checklist">✅ Чек-лист</button>
+            <button class="tab-btn" data-tab="email">📧 Письмо</button>
+            <button class="tab-btn" data-tab="export">💾 Экспорт</button>
+            <button class="tab-btn" data-tab="mindmap">🧠 Mind Map</button>
+            <button class="tab-btn" data-tab="testcases">🧪 Тесты</button>
+            <button class="tab-btn" data-tab="risks">⚠️ Риски</button>
+            <button class="tab-btn" data-tab="collab">👥 Совместно</button>
+            <button class="tab-btn" data-tab="generate">✨ Генерация ТЗ</button>
+        </nav>
+
+        <!-- ===== TOAST ===== -->
+        <div class="toast" id="toast"></div>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: REQUIREMENTS ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content active" id="tab-requirements">
+            <div class="card">
+                <h2>🧹 Сбор требований</h2>
+                <p style="color:var(--text-secondary);margin-bottom:16px;">💾 Автосохранение · 🎤 Голосовой ввод</p>
+
+                <div class="grid-2">
+                    <div>
+                        <div class="question-block">
+                            <strong>🎯 Цель</strong>
+                            <input data-field="goal" placeholder="Бизнес-задача?" />
+                            <input data-field="kpi" placeholder="KPI?" style="margin-top:6px;" />
+                        </div>
+                        <div class="question-block">
+                            <strong>👥 Пользователи</strong>
+                            <input data-field="users" placeholder="Роли?" />
+                            <input data-field="userCount" placeholder="Количество?" style="margin-top:6px;" />
+                        </div>
+                        <div class="question-block">
+                            <strong>📌 Сценарии</strong>
+                            <textarea data-field="scenarios" placeholder="3–5 главных сценариев"></textarea>
+                            <button class="voice-btn" data-target="scenarios">🎤 Диктовать</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="question-block">
+                            <strong>🔗 Интеграции</strong>
+                            <textarea data-field="integrations" placeholder="С какими системами?"></textarea>
+                            <button class="voice-btn" data-target="integrations">🎤 Диктовать</button>
+                        </div>
+                        <div class="question-block">
+                            <strong>🔒 Ограничения</strong>
+                            <textarea data-field="constraints" placeholder="Бюджет, сроки, технологии"></textarea>
+                        </div>
+                        <div class="question-block">
+                            <strong>📊 Приоритеты</strong>
+                            <textarea data-field="priorities" placeholder="Что обязательно, что отложить?"></textarea>
+                        </div>
+                        <div class="question-block" style="border-left-color:var(--success);">
+                            <strong>📝 Заметки</strong>
+                            <textarea data-field="notes" placeholder="Всё, что услышали..."></textarea>
+                            <button class="voice-btn" data-target="notes">🎤 Диктовать</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px;padding:16px;background:var(--bg-body);border-radius:12px;transition:background var(--transition);">
+                    <strong>📋 Быстрый старт — шаблоны по отраслям:</strong>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                        <button class="btn btn-outline" data-template="fintech">🏦 FinTech</button>
+                        <button class="btn btn-outline" data-template="ecommerce">🛒 E-commerce</button>
+                        <button class="btn btn-outline" data-template="healthcare">🏥 Healthcare</button>
+                    </div>
+                    <div id="templatePreview" style="margin-top:8px;font-size:14px;color:var(--text-muted);"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: STRUCTURE ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-structure">
+            <div class="card">
+                <h2>📄 Структура ТЗ</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">Универсальный каркас для 90% систем.</p>
+                <div class="structure-tree" id="structureTree"></div>
+                <div class="footer-actions">
+                    <button class="btn btn-primary" id="copyStructureBtn">📋 Копировать</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: MERMAID ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-mermaid">
+            <div class="card">
+                <h2>📊 Mermaid диаграммы</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">
+                    Генерация диаграмм <strong>прямо в браузере</strong> — без сервера и без CORS-проблем.
+                </p>
+
+                <div class="grid-2">
+                    <div>
+                        <h3>📝 Код диаграммы</h3>
+                        <textarea id="mermaidCode" style="width:100%;min-height:250px;padding:12px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-family:monospace;font-size:13px;resize:vertical;">graph TD
+        A[Техническое задание] --> B[Введение]
+        A --> C[Общее описание]
+        A --> D[Функциональные требования]
+        A --> E[Нефункциональные требования]
+        A --> F[Требования к данным]
+        A --> G[Интеграции]
+        A --> H[Внедрение]
+
+        D --> D1[Роли и права]
+        D --> D2[Use Case]
+
+        E --> E1[Производительность]
+        E --> E2[Безопасность]
+        E --> E3[UI/UX]</textarea>
+                        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="btn btn-primary" id="generateMermaidBtn">🔄 Сгенерировать</button>
+                            <button class="btn btn-outline" id="mermaidExampleBtn">📝 Примеры</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🖼️ Диаграмма</h3>
+                        <div class="mermaid-container" id="mermaidContainer">
+                            <div class="mermaid-placeholder">
+                                <div class="icon">📊</div>
+                                <p>Нажмите "Сгенерировать"</p>
+                                <p style="font-size:12px;margin-top:8px;">Работает локально, без интернета</p>
+                            </div>
+                            <div id="mermaidOutput" class="mermaid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: PROMPTS ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-prompts">
+            <div class="card">
+                <h2>🤖 Промпты для ИИ</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">Используйте ИИ как помощника, а не генератора.</p>
+                <div id="promptsContainer"></div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: CHECKLIST ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-checklist">
+            <div class="card">
+                <h2>✅ Чек-лист самопроверки</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">Кликайте по пунктам для отметки.</p>
+                <ul class="checklist" id="checklistContainer"></ul>
+                <div class="footer-actions">
+                    <button class="btn btn-success" id="resetChecklistBtn">🔄 Сбросить</button>
+                    <span class="progress-text" id="checkProgress">Выполнено: 0 / 0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: EMAIL ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-email">
+            <div class="card">
+                <h2>📧 Шаблон письма</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">Отправьте на согласование заказчику.</p>
+                <div class="email-template" id="emailTemplate"></div>
+                <div class="footer-actions">
+                    <button class="btn btn-primary" id="copyEmailBtn">📋 Копировать</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: EXPORT ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-export">
+            <div class="card">
+                <h2>💾 Экспорт</h2>
+                <p style="color:var(--text-secondary);margin-bottom:16px;">Экспортируйте собранные данные в разных форматах.</p>
+
+                <div class="grid-4" style="margin-bottom:16px;">
+                    <div style="background:var(--bg-body);padding:20px;border-radius:12px;text-align:center;transition:background var(--transition);">
+                        <div style="font-size:32px;">📝</div>
+                        <h3>Markdown</h3>
+                        <button class="btn btn-primary" id="exportMarkdownBtn" style="margin-top:8px;">⬇️ .md</button>
+                    </div>
+                    <div style="background:var(--bg-body);padding:20px;border-radius:12px;text-align:center;transition:background var(--transition);">
+                        <div style="font-size:32px;">📄</div>
+                        <h3>DOCX</h3>
+                        <button class="btn btn-primary" id="exportDocxBtn" style="margin-top:8px;">⬇️ .docx</button>
+                    </div>
+                    <div style="background:var(--bg-body);padding:20px;border-radius:12px;text-align:center;transition:background var(--transition);">
+                        <div style="font-size:32px;">📊</div>
+                        <h3>JSON</h3>
+                        <button class="btn btn-primary" id="exportJsonBtn" style="margin-top:8px;">⬇️ .json</button>
+                    </div>
+                    <div style="background:var(--bg-body);padding:20px;border-radius:12px;text-align:center;transition:background var(--transition);">
+                        <div style="font-size:32px;">📕</div>
+                        <h3>PDF</h3>
+                        <button class="btn btn-success" id="exportPdfBtn" style="margin-top:8px;">⬇️ .pdf</button>
+                    </div>
+                </div>
+
+                <div style="background:var(--bg-body);border-radius:12px;padding:16px;transition:background var(--transition);">
+                    <h3>📋 Предпросмотр</h3>
+                    <div class="export-preview" id="exportPreview">Нажмите на кнопку экспорта для предпросмотра...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: MIND MAP ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-mindmap">
+            <div class="card">
+                <h2>🧠 Mind Map</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">
+                    Интерактивное дерево структуры ТЗ. <strong>Кликайте по узлам</strong> для сворачивания/разворачивания.
+                </p>
+                <div class="mindmap-container" id="mindmapContainer">
+                    <div id="mindmapTree"></div>
+                </div>
+                <div class="footer-actions">
+                    <button class="btn btn-outline" id="expandAllBtn">📂 Развернуть всё</button>
+                    <button class="btn btn-outline" id="collapseAllBtn">📁 Свернуть всё</button>
+                    <button class="btn btn-success" id="exportMindmapBtn">💾 Экспорт (TXT)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: TEST CASES ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-testcases">
+            <div class="card">
+                <h2>🧪 Генерация тест-кейсов</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">
+                    Автоматическая генерация тест-кейсов на основе Use Case и сценариев
+                </p>
+
+                <div style="margin-bottom:16px;">
+                    <label><strong>Use Case / Сценарий:</strong></label>
+                    <textarea id="testcaseInput" style="width:100%;min-height:100px;padding:12px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:14px;resize:vertical;" placeholder="Введите сценарий или Use Case..."></textarea>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                        <button class="btn btn-primary" id="generateTestcasesBtn">🧪 Сгенерировать тест-кейсы</button>
+                        <button class="btn btn-outline" id="testcaseExampleBtn">📝 Вставить пример</button>
+                    </div>
+                </div>
+
+                <div id="testcasesContainer">
+                    <span style="color:var(--text-muted);">Тест-кейсы появятся здесь...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: RISKS ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-risks">
+            <div class="card">
+                <h2>⚠️ Анализ рисков</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">
+                    Анализ собранных требований на наличие потенциальных рисков
+                </p>
+
+                <div style="margin-bottom:16px;">
+                    <button class="btn btn-primary" id="analyzeRisksBtn">🔍 Анализировать риски</button>
+                    <span style="margin-left:8px;color:var(--text-muted);font-size:13px;">Анализирует все введённые данные</span>
+                </div>
+
+                <div id="risksContainer">
+                    <span style="color:var(--text-muted);">Нажмите "Анализировать риски" для выявления...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: COLLABORATION (исправлена для GitHub Pages) ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-collab">
+            <div class="card">
+                <h2>👥 Совместная работа</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">
+                    <strong>Автоматический выбор:</strong> PeerJS (между устройствами) или BroadcastChannel (локально).
+                    <span style="color:var(--success);">✅ Работает на GitHub Pages</span>
+                </p>
+
+                <div class="grid-2">
+                    <div>
+                        <h3>🔗 Подключение</h3>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                            <input type="text" id="collabRoomId" placeholder="ID комнаты (латиница)" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);" value="Project-123" />
+                            <button class="btn btn-primary" id="collabCreateBtn">📡 Создать</button>
+                            <button class="btn btn-success" id="collabJoinBtn">🔗 Подключиться</button>
+                            <button class="btn btn-danger" id="collabLeaveBtn" style="display:none;">⛔ Выйти</button>
+                        </div>
+
+                        <div class="collab-status" id="collabStatus">
+                            ⚪ Не подключено
+                        </div>
+
+                        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="btn btn-outline" id="collabCopyInviteBtn">📋 Скопировать ссылку</button>
+                            <button class="btn btn-success" id="collabSyncBtn" style="display:none;">🔄 Синхронизировать</button>
+                            <button class="btn btn-warning" id="collabFallbackBtn">📡 Только локально (BroadcastChannel)</button>
+                        </div>
+
+                        <div class="collab-peers" id="collabPeers">
+                            👤 Участников нет
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3>💬 Чат</h3>
+                        <div class="collab-messages" id="collabMessages">
+                            <span style="color:var(--text-muted);">Сообщения появятся здесь...</span>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" id="collabChatInput" placeholder="Введите сообщение..." style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);" />
+                            <button class="btn btn-primary" id="collabSendBtn">📤 Отправить</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px;padding:12px;background:var(--bg-body);border-radius:8px;border-left:4px solid var(--success);transition:background var(--transition);">
+                    <strong>💡 Как поделиться ссылкой:</strong>
+                    <ul style="margin:4px 0 0 20px;font-size:13px;color:var(--text-muted);">
+                        <li>1. Создайте комнату → ссылка автоматически скопируется</li>
+                        <li>2. Отправьте ссылку коллегам</li>
+                        <li>3. Они откроют её и автоматически подключатся</li>
+                        <li>📌 Ссылка вида: <code>https://ваш-username.github.io/analyst-toolkit/?room=Project-123</code></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== TAB: GENERATE TZ ===== -->
+        <!-- ============================================================ -->
+        <section class="tab-content" id="tab-generate">
+            <div class="card">
+                <h2>✨ Генерация черновика ТЗ</h2>
+                <p style="color:var(--text-secondary);margin-bottom:12px;">
+                    <strong>Промпт</strong> задаёт структуру и содержание. Данные из <strong>«Сбора требований»</strong> подставляются автоматически.
+                </p>
+
+                <div style="margin-bottom:16px;padding:12px;background:var(--bg-body);border-radius:8px;">
+                    <p style="font-size:14px;color:var(--text-muted);">
+                        📊 <strong>Источники:</strong>
+                        <span style="display:inline-block;margin-left:8px;padding:2px 10px;background:var(--bg-card);border-radius:30px;border:1px solid var(--border-color);font-size:12px;">📝 Промпт (основа)</span>
+                        <span style="display:inline-block;margin-left:4px;padding:2px 10px;background:var(--bg-card);border-radius:30px;border:1px solid var(--border-color);font-size:12px;">🧹 Сбор требований (данные)</span>
+                    </p>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label><strong>📝 Промпт для генерации:</strong></label>
+                    <textarea id="generatePrompt" style="width:100%;min-height:120px;padding:12px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:14px;resize:vertical;" placeholder="Опишите, какую систему нужно разработать...">Создай черновик технического задания на разработку системы управления проектами (Project Management System).
+
+        Ключевые требования:
+        - Управление проектами, задачами и командами
+        - Назначение исполнителей и контроль сроков
+        - Отчёты по проектам и задачам
+        - Роли: администратор, менеджер проекта, исполнитель
+
+        Используй данные из сбора требований для заполнения разделов:
+        - Цель: {goal}
+        - Пользователи: {users}
+        - Сценарии: {scenarios}
+        - Интеграции: {integrations}
+        - Ограничения: {constraints}
+        - Приоритеты: {priorities}
+        - Заметки: {notes}</textarea>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                        <button class="btn btn-primary" id="generateTzBtn">✨ Сгенерировать ТЗ</button>
+                        <button class="btn btn-success" id="applyTzBtn" style="display:none;">📋 Применить в поля</button>
+                        <button class="btn btn-outline" id="clearTzBtn">🗑️ Очистить</button>
+                        <button class="btn btn-outline" id="resetPromptBtn">🔄 Сбросить промпт</button>
+                    </div>
+                </div>
+
+                <div id="generatedTzContainer">
+                    <div class="generated-tz" id="generatedTzContent" style="color:var(--text-muted);">
+                        Нажмите "Сгенерировать ТЗ" для создания черновика...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- ===== FOOTER ===== -->
+        <!-- ============================================================ -->
+        <footer class="app-footer">
+            <span>⚙️ Analyst Toolkit Pro v6.4.1</span>
+            <span style="margin:0 8px;">·</span>
+            <span>12 модулей для полного цикла ТЗ</span>
+            <span style="display:block;margin-top:4px;font-size:12px;">
+                🎯 Принцип: <strong>помогаем, а не заменяем аналитика</strong>
+            </span>
+        </footer>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== JAVASCRIPT ===== -->
+    <!-- ============================================================ -->
+    <script>
+        'use strict';
+
+        // =================================================================
+        // 1. УТИЛИТЫ
+        // =================================================================
+        const Utils = {
+            copyText: async (text, feedbackElement) => {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    if (feedbackElement) {
+                        const orig = feedbackElement.textContent;
+                        feedbackElement.textContent = '✅ Скопировано';
+                        feedbackElement.classList.add('copied');
+                        setTimeout(() => {
+                            feedbackElement.textContent = orig;
+                            feedbackElement.classList.remove('copied');
+                        }, 2000);
+                    }
+                    return true;
+                } catch (_) {
+                    const area = document.createElement('textarea');
+                    area.value = text;
+                    document.body.appendChild(area);
+                    area.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(area);
+                    return true;
+                }
+            },
+            formatDate: (date) => date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+            getEl: (selector) => document.querySelector(selector),
+            getAllEl: (selector) => document.querySelectorAll(selector),
+            showToast: (message, type = 'success') => {
+                const toast = Utils.getEl('#toast');
+                if (!toast) return;
+                toast.textContent = message;
+                toast.className = `toast ${type} show`;
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), 3000);
+            },
+            downloadFile: (content, filename, type) => {
+                const blob = new Blob([content], { type });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        };
+
+        // =================================================================
+        // 2. ХРАНЕНИЕ
+        // =================================================================
+        const StorageManager = {
+            PREFIX: APP_CONFIG.STORAGE_PREFIX,
+            save(key, data) {
+                try { localStorage.setItem(`${this.PREFIX}${key}`, JSON.stringify(data)); return true; } catch (_) { return false; }
+            },
+            load(key, defaultValue = null) {
+                try {
+                    const data = localStorage.getItem(`${this.PREFIX}${key}`);
+                    return data ? JSON.parse(data) : defaultValue;
+                } catch (_) { return defaultValue; }
+            },
+            remove(key) {
+                try { localStorage.removeItem(`${this.PREFIX}${key}`); return true; } catch (_) { return false; }
+            }
+        };
+
+        // =================================================================
+        // 3. ТЕМА
+        // =================================================================
+        const ThemeManager = {
+            currentTheme: 'light',
+            init() {
+                const saved = StorageManager.load('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                this.currentTheme = saved || (prefersDark ? 'dark' : 'light');
+                this.applyTheme(this.currentTheme);
+                Utils.getEl('#themeToggle')?.addEventListener('click', () => this.toggle());
+            },
+            applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                this.currentTheme = theme;
+                StorageManager.save('theme', theme);
+                const btn = Utils.getEl('#themeToggle');
+                if (btn) btn.textContent = theme === 'light' ? '🌙' : '☀️';
+            },
+            toggle() {
+                this.applyTheme(this.currentTheme === 'light' ? 'dark' : 'light');
+                Utils.showToast(`🌓 Тема: ${this.currentTheme === 'light' ? 'светлая' : 'тёмная'}`, 'success');
+            }
+        };
+
+        // =================================================================
+        // 4. ВКЛАДКИ
+        // =================================================================
+        const TabManager = {
+            init() {
+                Utils.getAllEl('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const tabId = btn.dataset.tab;
+                        if (tabId) this.switchTab(tabId);
+                    });
+                });
+            },
+            switchTab(tabId) {
+                Utils.getAllEl('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                    btn.setAttribute('aria-selected', btn.dataset.tab === tabId ? 'true' : 'false');
+                });
+                Utils.getAllEl('.tab-content').forEach(content => {
+                    content.classList.toggle('active', content.id === `tab-${tabId}`);
+                });
+            }
+        };
+
+        // =================================================================
+        // 5. ТРЕБОВАНИЯ
+        // =================================================================
+        const RequirementsManager = {
+            FIELDS: ['goal', 'kpi', 'users', 'userCount', 'scenarios', 'exceptions', 'integrations', 'constraints',
+                'priorities', 'notes'
+            ],
+            init() {
+                const saved = StorageManager.load('requirements', {});
+                this.FIELDS.forEach(field => {
+                    const input = Utils.getEl(`[data-field="${field}"]`);
+                    if (input && saved[field] !== undefined) input.value = saved[field];
+                });
+                Utils.getAllEl('[data-field]').forEach(el => {
+                    el.addEventListener('input', () => this.save());
+                    el.addEventListener('change', () => this.save());
+                });
+
+                Utils.getAllEl('.voice-btn').forEach(btn => {
+                    btn.addEventListener('click', () => this.startVoice(btn.dataset.target));
+                });
+
+                Utils.getAllEl('[data-template]').forEach(btn => {
+                    btn.addEventListener('click', () => this.applyTemplate(btn.dataset.template));
+                });
+
+                Utils.getEl('#storageBadge').textContent = '💾 Автосохранение ✓';
+            },
+            save() {
+                const data = {};
+                this.FIELDS.forEach(field => {
+                    const input = Utils.getEl(`[data-field="${field}"]`);
+                    if (input) data[field] = input.value;
+                });
+                StorageManager.save('requirements', data);
+            },
+            getData() {
+                const data = {};
+                this.FIELDS.forEach(field => {
+                    const input = Utils.getEl(`[data-field="${field}"]`);
+                    if (input) data[field] = input.value;
+                });
+                return data;
+            },
+            startVoice(target) {
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    Utils.showToast('❌ Голосовой ввод не поддерживается', 'error');
+                    return;
+                }
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ru-RU';
+                recognition.continuous = false;
+                recognition.interimResults = true;
+
+                const btn = Utils.getEl(`.voice-btn[data-target="${target}"]`);
+                btn.textContent = '⏺️ Слушаю...';
+                btn.classList.add('recording');
+
+                let finalText = '';
+
+                recognition.onresult = (event) => {
+                    let interim = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            finalText += event.results[i][0].transcript + ' ';
+                        } else {
+                            interim = event.results[i][0].transcript;
+                        }
+                    }
+                    const textarea = Utils.getEl(`[data-field="${target}"]`);
+                    if (textarea) {
+                        textarea.value = finalText + interim;
+                        textarea.dispatchEvent(new Event('input'));
+                    }
+                };
+
+                recognition.onend = () => {
+                    btn.textContent = '🎤 Диктовать';
+                    btn.classList.remove('recording');
+                    if (finalText) Utils.showToast('✅ Голосовой ввод завершён', 'success');
+                };
+
+                recognition.onerror = (event) => {
+                    btn.textContent = '🎤 Диктовать';
+                    btn.classList.remove('recording');
+                    Utils.showToast(`❌ Ошибка: ${event.error}`, 'error');
+                };
+
+                recognition.start();
+            },
+            applyTemplate(template) {
+                const tpl = APP_CONFIG.INDUSTRY_TEMPLATES[template];
+                if (!tpl) return;
+                const data = this.getData();
+                let note = `🏢 ${tpl.name}\n\n`;
+                Object.entries(tpl.sections).forEach(([key, value]) => {
+                    note += `**${key}:**\n${value}\n\n`;
+                });
+                const notesField = Utils.getEl('[data-field="notes"]');
+                if (notesField) {
+                    notesField.value = data.notes ? `${data.notes}\n\n---\n${note}` : note;
+                    notesField.dispatchEvent(new Event('input'));
+                }
+                Utils.showToast(`✅ Шаблон "${tpl.name}" применён`, 'success');
+                const preview = Utils.getEl('#templatePreview');
+                if (preview) preview.innerHTML = `<strong>Применён шаблон:</strong> ${tpl.name}`;
+            }
+        };
+
+        // =================================================================
+        // 6. СТРУКТУРА
+        // =================================================================
+        const StructureRenderer = {
+            render() {
+                const container = Utils.getEl('#structureTree');
+                if (!container) return;
+                container.innerHTML = APP_CONFIG.STRUCTURE_SECTIONS.map(s =>
+                    `<div class="section-level-${s.level}"><span class="num">${s.text.split('.')[0]}.</span> ${s.text.split('.').slice(1).join('.')}</div>`
+                ).join('');
+            },
+            copy() {
+                const text = APP_CONFIG.STRUCTURE_SECTIONS.map(s => '  '.repeat(s.level) + s.text).join('\n');
+                const btn = Utils.getEl('#copyStructureBtn');
+                Utils.copyText(text, btn);
+                Utils.showToast('📋 Структура скопирована', 'success');
+            }
+        };
+
+        // =================================================================
+        // 7. MERMAID
+        // =================================================================
+        const MermaidManager = {
+            initialized: false,
+
+            init() {
+                if (this.initialized) return;
+                mermaid.initialize({
+                    theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default',
+                    startOnLoad: false,
+                    securityLevel: 'loose',
+                    fontFamily: 'Segoe UI, sans-serif',
+                    themeVariables: {
+                        primaryColor: '#2b6cb0',
+                        primaryTextColor: '#1a202c',
+                        primaryBorderColor: '#2b6cb0',
+                        lineColor: '#2b6cb0',
+                        secondaryColor: '#ebf8ff',
+                        tertiaryColor: '#edf2f7'
+                    }
+                });
+                this.initialized = true;
+            },
+
+            async generate() {
+                this.init();
+
+                const code = Utils.getEl('#mermaidCode').value.trim();
+                if (!code) {
+                    Utils.showToast('⚠️ Введите код диаграммы', 'error');
+                    return;
+                }
+
+                const output = Utils.getEl('#mermaidOutput');
+                const container = Utils.getEl('#mermaidContainer');
+                const placeholder = container?.querySelector('.mermaid-placeholder');
+
+                output.innerHTML = '';
+                output.textContent = '';
+
+                try {
+                    const id = 'mermaid-' + Date.now();
+                    const { svg } = await mermaid.render(id, code);
+                    output.innerHTML = svg;
+                    if (placeholder) placeholder.style.display = 'none';
+                    Utils.showToast('📊 Диаграмма сгенерирована!', 'success');
+
+                } catch (e) {
+                    console.error('Mermaid error:', e);
+                    Utils.showToast(`❌ Ошибка: ${e.message || 'Неверный синтаксис диаграммы'}`, 'error');
+
+                    if (placeholder) {
+                        placeholder.style.display = 'block';
+                        placeholder.innerHTML = `
+                                    <div class="icon">❌</div>
+                                    <p style="color:var(--danger);">Ошибка генерации</p>
+                                    <p style="font-size:12px;color:var(--text-muted);">${e.message || 'Проверьте синтаксис диаграммы'}</p>
+                                `;
+                    }
+                }
+            },
+
+            insertExample() {
+                const examples = [
+                    `graph TD
+        A[Техническое задание] --> B[Введение]
+        A --> C[Общее описание]
+        A --> D[Функциональные требования]
+        A --> E[Нефункциональные требования]
+        A --> F[Требования к данным]
+        A --> G[Интеграции]
+        A --> H[Внедрение]
+
+        D --> D1[Роли и права]
+        D --> D2[Use Case]
+
+        E --> E1[Производительность]
+        E --> E2[Безопасность]
+        E --> E3[UI/UX]`,
+                    `sequenceDiagram
+        participant Пользователь
+        participant Система
+        participant БД
+        
+        Пользователь->>Система: Авторизация
+        Система->>БД: Проверка данных
+        БД-->>Система: Результат
+        Система-->>Пользователь: Успешный вход`,
+                    `erDiagram
+        ПРОЕКТ {
+            int id PK
+            string название
+            date дата_создания
+        }
+        ЗАДАЧА {
+            int id PK
+            string название
+            string статус
+            int проект_id FK
+        }
+        ПОЛЬЗОВАТЕЛЬ {
+            int id PK
+            string имя
+            string роль
+        }
+        ПРОЕКТ ||--o{ ЗАДАЧА : содержит
+        ПОЛЬЗОВАТЕЛЬ ||--o{ ЗАДАЧА : выполняет`
+                ];
+
+                const current = Utils.getEl('#mermaidCode').value.trim();
+                let index = 0;
+                if (current) {
+                    const currentIndex = examples.indexOf(current);
+                    index = (currentIndex + 1) % examples.length;
+                }
+                Utils.getEl('#mermaidCode').value = examples[index];
+                Utils.showToast('📝 Пример вставлен', 'success');
+            },
+
+            exportSvg() {
+                const svg = Utils.getEl('#mermaidOutput').querySelector('svg');
+                if (!svg) {
+                    Utils.showToast('⚠️ Сначала сгенерируйте диаграмму', 'error');
+                    return;
+                }
+                const serializer = new XMLSerializer();
+                const svgStr = serializer.serializeToString(svg);
+                const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mermaid_diagram.svg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                Utils.showToast('💾 SVG скачан!', 'success');
+            }
+        };
+
+        // =================================================================
+        // 8. ПРОМПТЫ
+        // =================================================================
+        const PromptsRenderer = {
+            render() {
+                const container = Utils.getEl('#promptsContainer');
+                if (!container) return;
+                container.innerHTML = APP_CONFIG.PROMPTS.map((prompt, index) => `
+                            <div style="margin-bottom:24px;">
+                                <h3>🔹 Промпт ${index + 1}. ${prompt.title}</h3>
+                                <div style="background:var(--bg-body);padding:18px 22px;border-radius:12px;border-left:4px solid var(--success);position:relative;transition:background var(--transition);">
+                                    <button class="copy-btn" data-prompt-index="${index}" style="position:absolute;top:10px;right:12px;padding:4px 14px;border-radius:6px;border:1px solid var(--border-color);background:var(--bg-card);cursor:pointer;font-size:12px;transition:all var(--transition);">Копировать</button>
+                                    ${prompt.text}
+                                </div>
+                            </div>
+                        `).join('');
+                container.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const index = parseInt(btn.dataset.promptIndex);
+                        Utils.copyText(APP_CONFIG.PROMPTS[index]?.text || '', btn);
+                        Utils.showToast('📋 Промпт скопирован', 'success');
+                    });
+                });
+            }
+        };
+
+        // =================================================================
+        // 9. ЧЕК-ЛИСТ
+        // =================================================================
+        const ChecklistManager = {
+            items: [],
+            loadState() {
+                const saved = StorageManager.load('checklist');
+                return (saved && Array.isArray(saved) && saved.length === APP_CONFIG.CHECKLIST_ITEMS.length) ?
+                    saved : APP_CONFIG.CHECKLIST_ITEMS.map(() => false);
+            },
+            render() {
+                const container = Utils.getEl('#checklistContainer');
+                if (!container) return;
+                this.items = this.loadState();
+                container.innerHTML = APP_CONFIG.CHECKLIST_ITEMS.map((text, index) =>
+                    `<li data-index="${index}" class="${this.items[index] ? 'done' : ''}">${text}</li>`
+                ).join('');
+                container.querySelectorAll('li').forEach(li => {
+                    li.addEventListener('click', () => {
+                        const index = parseInt(li.dataset.index);
+                        this.toggle(index);
+                    });
+                });
+                this.updateProgress();
+            },
+            toggle(index) {
+                if (index < 0 || index >= this.items.length) return;
+                this.items[index] = !this.items[index];
+                StorageManager.save('checklist', this.items);
+                this.render();
+            },
+            reset() {
+                this.items = this.items.map(() => false);
+                StorageManager.save('checklist', this.items);
+                this.render();
+                Utils.showToast('🔄 Чек-лист сброшен', 'success');
+            },
+            updateProgress() {
+                const done = this.items.filter(Boolean).length;
+                const total = this.items.length;
+                const el = Utils.getEl('#checkProgress');
+                if (el) el.textContent = `Выполнено: ${done} / ${total}`;
+            }
+        };
+
+        // =================================================================
+        // 10. EMAIL
+        // =================================================================
+        const EmailManager = {
+            render() {
+                const container = Utils.getEl('#emailTemplate');
+                if (container) container.textContent = APP_CONFIG.EMAIL_TEMPLATE;
+            },
+            copy() {
+                const btn = Utils.getEl('#copyEmailBtn');
+                Utils.copyText(APP_CONFIG.EMAIL_TEMPLATE, btn);
+                Utils.showToast('📧 Письмо скопировано', 'success');
+            }
+        };
+
+        // =================================================================
+        // 11. ЭКСПОРТ
+        // =================================================================
+        const ExportManager = {
+            getData() {
+                const req = RequirementsManager.getData();
+                const checklist = StorageManager.load('checklist', []);
+                return {
+                    requirements: req,
+                    checklist: checklist,
+                    structure: APP_CONFIG.STRUCTURE_SECTIONS.map(s => s.text),
+                    timestamp: new Date().toISOString(),
+                    version: APP_CONFIG.VERSION
+                };
+            },
+            preview(content) {
+                const preview = Utils.getEl('#exportPreview');
+                if (preview) {
+                    preview.textContent = typeof content === 'string' ?
+                        content.substring(0, 1500) + (content.length > 1500 ? '\n\n... (обрезано)' : '') :
+                        JSON.stringify(content, null, 2);
+                }
+            },
+            exportMarkdown() {
+                const data = this.getData();
+                let md = `# Техническое задание\n\n`;
+                md += `## 📋 Сбор требований\n\n`;
+                const labels = { goal: '🎯 Цель', kpi: '📊 KPI', users: '👥 Пользователи', userCount: '👤 Количество',
+                    scenarios: '📌 Сценарии', exceptions: '⚠️ Исключения', integrations: '🔗 Интеграции',
+                    constraints: '🔒 Ограничения', priorities: '📊 Приоритеты', notes: '📝 Заметки' };
+                Object.entries(data.requirements).forEach(([key, value]) => {
+                    if (value) md += `### ${labels[key] || key}\n${value}\n\n`;
+                });
+                md += `## 📄 Структура ТЗ\n\n`;
+                APP_CONFIG.STRUCTURE_SECTIONS.forEach(s => {
+                    md += `${'  '.repeat(s.level)}- ${s.text}\n`;
+                });
+                md += `\n## ✅ Чек-лист готовности\n\n`;
+                APP_CONFIG.CHECKLIST_ITEMS.forEach((item, i) => {
+                    md += `- [${data.checklist[i] ? 'x' : ' '}] ${item}\n`;
+                });
+                md += `\n---\n*Сгенерировано Analyst Toolkit v${APP_CONFIG.VERSION}*\n`;
+                md += `*Дата: ${new Date().toLocaleString('ru-RU')}*`;
+                Utils.downloadFile(md, 'technical_specification.md', 'text/markdown');
+                Utils.showToast('📝 Markdown экспортирован', 'success');
+                this.preview(md);
+            },
+            exportDocx() {
+                const data = this.getData();
+                let html = `<html><head><meta charset="UTF-8"><title>Техническое задание</title>
+                            <style>body{font-family:Arial;max-width:800px;margin:40px auto;padding:20px;}
+                            h1{color:#2b6cb0;}h2{color:#1a365d;margin-top:24px;}
+                            .section{margin:12px 0;padding-left:20px;border-left:3px solid #2b6cb0;}
+                            ul{list-style:none;padding:0;}</style></head><body>`;
+                html += `<h1>📋 Техническое задание</h1><p><strong>Дата:</strong> ${new Date().toLocaleString('ru-RU')}</p>`;
+                html += `<h2>📋 Сбор требований</h2>`;
+                const labels = { goal: 'Цель', kpi: 'KPI', users: 'Пользователи', userCount: 'Количество',
+                    scenarios: 'Сценарии', exceptions: 'Исключения', integrations: 'Интеграции',
+                    constraints: 'Ограничения', priorities: 'Приоритеты', notes: 'Заметки' };
+                Object.entries(data.requirements).forEach(([key, value]) => {
+                    if (value) html +=
+                        `<div class="section"><strong>${labels[key] || key}:</strong><br>${value.replace(/\n/g, '<br>')}</div>`;
+                });
+                html += `<h2>📄 Структура ТЗ</h2><ul>`;
+                APP_CONFIG.STRUCTURE_SECTIONS.forEach(s => {
+                    html += `<li style="padding-left:${s.level * 20}px;">${s.text}</li>`;
+                });
+                html += `</ul><h2>✅ Чек-лист готовности</h2><ul>`;
+                APP_CONFIG.CHECKLIST_ITEMS.forEach((item, i) => {
+                    html += `<li>${data.checklist[i] ? '✅' : '⬜'} ${item}</li>`;
+                });
+                html += `</ul></body></html>`;
+                const blob = new Blob([html], { type: 'application/msword' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'technical_specification.doc';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                Utils.showToast('📄 DOCX экспортирован', 'success');
+                this.preview(html.replace(/<[^>]*>/g, ' ').substring(0, 500) + '...');
+            },
+            exportJson() {
+                const data = this.getData();
+                const json = JSON.stringify(data, null, 2);
+                Utils.downloadFile(json, 'technical_specification.json', 'application/json');
+                Utils.showToast('📊 JSON экспортирован', 'success');
+                this.preview(json);
+            },
+            exportPdf() {
+                const data = this.getData();
+                const labels = { goal: 'Цель', kpi: 'KPI', users: 'Пользователи', userCount: 'Количество',
+                    scenarios: 'Сценарии', exceptions: 'Исключения', integrations: 'Интеграции',
+                    constraints: 'Ограничения', priorities: 'Приоритеты', notes: 'Заметки' };
+
+                let html = `
+                            <html>
+                                <head>
+                                    <meta charset="UTF-8">
+                                    <title>Техническое задание</title>
+                                    <style>
+                                        body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
+                                        h1 { color: #2b6cb0; }
+                                        h2 { color: #1a365d; margin-top: 24px; }
+                                        .section { margin: 8px 0; padding-left: 20px; border-left: 3px solid #2b6cb0; }
+                                        ul { padding-left: 20px; }
+                                        hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <h1>📋 Техническое задание</h1>
+                                    <p><strong>Дата:</strong> ${new Date().toLocaleString('ru-RU')}</p>
+                                    <p><strong>Версия:</strong> ${APP_CONFIG.VERSION}</p>
+                                    <hr>
+                                    <h2>📋 Сбор требований</h2>
+                            `;
+
+                Object.entries(data.requirements).forEach(([key, value]) => {
+                    if (value) html +=
+                        `<div class="section"><strong>${labels[key] || key}:</strong><br>${value.replace(/\n/g, '<br>')}</div>`;
+                });
+
+                html += `<h2>📄 Структура ТЗ</h2><ul>`;
+                APP_CONFIG.STRUCTURE_SECTIONS.forEach(s => {
+                    html += `<li style="padding-left:${s.level * 20}px;">${s.text}</li>`;
+                });
+                html += `</ul><h2>✅ Чек-лист готовности</h2><ul>`;
+                APP_CONFIG.CHECKLIST_ITEMS.forEach((item, i) => {
+                    html += `<li>${data.checklist[i] ? '✅' : '⬜'} ${item}</li>`;
+                });
+                html += `</ul></body></html>`;
+
+                const iframe = document.createElement('iframe');
+                iframe.style.position = 'fixed';
+                iframe.style.left = '-9999px';
+                iframe.style.top = '-9999px';
+                document.body.appendChild(iframe);
+
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                doc.open();
+                doc.write(html);
+                doc.close();
+
+                setTimeout(() => {
+                    iframe.contentWindow.print();
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                    }, 1000);
+                }, 500);
+
+                Utils.showToast('📕 PDF отправлен на печать', 'success');
+                this.preview(html.replace(/<[^>]*>/g, ' ').substring(0, 500) + '...');
+            }
+        };
+
+        // =================================================================
+        // 12. MIND MAP
+        // =================================================================
+        const MindMapManager = {
+            _collapsed: {},
+
+            render() {
+                const container = Utils.getEl('#mindmapTree');
+                if (!container) return;
+
+                const sections = APP_CONFIG.STRUCTURE_SECTIONS;
+                const html = this._buildTree(sections);
+                container.innerHTML = html;
+
+                // Восстанавливаем состояние
+                document.querySelectorAll('.mindmap-tree .children').forEach(el => {
+                    const parentId = el.dataset.parentId;
+                    if (this._collapsed[parentId]) {
+                        el.classList.add('hidden');
+                        const toggle = document.querySelector(`[data-id="${parentId}"] .toggle`);
+                        if (toggle) toggle.classList.add('collapsed');
+                    }
+                });
+
+                document.querySelectorAll('.mindmap-tree .node').forEach(node => {
+                    node.addEventListener('click', (e) => {
+                        if (e.target.closest('.toggle')) return;
+                        const id = node.dataset.id;
+                        if (id) this._toggleNode(id);
+                    });
+                });
+
+                document.querySelectorAll('.mindmap-tree .toggle').forEach(toggle => {
+                    toggle.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = toggle.closest('.node').dataset.id;
+                        if (id) this._toggleNode(id);
+                    });
+                });
+            },
+
+            _buildTree(sections) {
+                let html = '<div class="mindmap-tree">';
+
+                sections.forEach((section, index) => {
+                    const id = 'node-' + index;
+                    const level = section.level;
+
+                    if (level === 0) {
+                        html += `<div class="node level-0" data-id="${id}">
+                                    <span class="toggle" data-id="${id}">▼</span>
+                                    <span class="icon">📁</span>
+                                    <span class="label">${section.text}</span>
+                                </div>`;
+                        html += `<div class="children" data-parent-id="${id}">`;
+                    } else if (level === 1) {
+                        html += `<div class="node level-1" data-id="${id}">
+                                    <span class="toggle" data-id="${id}">▼</span>
+                                    <span class="icon">📄</span>
+                                    <span class="label">${section.text}</span>
+                                </div>`;
+                        // Закрываем группу после последнего level 1
+                        const next = sections[index + 1];
+                        if (!next || next.level === 0) {
+                            html += '</div>';
+                        }
+                    }
+                });
+
+                // Закрываем последнюю группу
+                if (!html.endsWith('</div>')) {
+                    html += '</div>';
+                }
+
+                html += '</div>';
+                return html;
+            },
+
+            _toggleNode(id) {
+                const children = document.querySelector(`.children[data-parent-id="${id}"]`);
+                const toggle = document.querySelector(`[data-id="${id}"] .toggle`);
+
+                if (!children) return;
+
+                const isHidden = children.classList.toggle('hidden');
+                if (toggle) {
+                    toggle.classList.toggle('collapsed', isHidden);
+                }
+
+                this._collapsed[id] = isHidden;
+                StorageManager.save('mindmap_state', this._collapsed);
+
+                const icon = document.querySelector(`[data-id="${id}"] .icon`);
+                if (icon) {
+                    icon.textContent = isHidden ? '📂' : '📁';
+                }
+            },
+
+            expandAll() {
+                document.querySelectorAll('.mindmap-tree .children').forEach(el => {
+                    el.classList.remove('hidden');
+                    const parentId = el.dataset.parentId;
+                    if (parentId) {
+                        this._collapsed[parentId] = false;
+                        const toggle = document.querySelector(`[data-id="${parentId}"] .toggle`);
+                        if (toggle) toggle.classList.remove('collapsed');
+                        const icon = document.querySelector(`[data-id="${parentId}"] .icon`);
+                        if (icon) icon.textContent = '📁';
+                    }
+                });
+                StorageManager.save('mindmap_state', this._collapsed);
+                Utils.showToast('📂 Всё развёрнуто', 'success');
+            },
+
+            collapseAll() {
+                document.querySelectorAll('.mindmap-tree .children').forEach(el => {
+                    el.classList.add('hidden');
+                    const parentId = el.dataset.parentId;
+                    if (parentId) {
+                        this._collapsed[parentId] = true;
+                        const toggle = document.querySelector(`[data-id="${parentId}"] .toggle`);
+                        if (toggle) toggle.classList.add('collapsed');
+                        const icon = document.querySelector(`[data-id="${parentId}"] .icon`);
+                        if (icon) icon.textContent = '📂';
+                    }
+                });
+                StorageManager.save('mindmap_state', this._collapsed);
+                Utils.showToast('📁 Всё свернуто', 'success');
+            },
+
+            exportText() {
+                const text = APP_CONFIG.STRUCTURE_SECTIONS.map(s => '  '.repeat(s.level) + s.text).join('\n');
+                Utils.downloadFile(text, 'mindmap_structure.txt', 'text/plain');
+                Utils.showToast('💾 Структура экспортирована в TXT', 'success');
+            },
+
+            loadState() {
+                const saved = StorageManager.load('mindmap_state', {});
+                this._collapsed = saved;
+            }
+        };
+
+        // =================================================================
+        // 13. ТЕСТ-КЕЙСЫ
+        // =================================================================
+        const TestCaseManager = {
+            generate() {
+                const input = Utils.getEl('#testcaseInput').value;
+                if (!input.trim()) {
+                    Utils.showToast('⚠️ Введите сценарий или Use Case', 'error');
+                    return;
+                }
+                const testCases = this._generateFromText(input);
+                const container = Utils.getEl('#testcasesContainer');
+                container.innerHTML = testCases.map((tc, i) => `
+                            <div class="testcase">
+                                <div class="title">🧪 Тест-кейс #${i + 1}: ${tc.title}</div>
+                                <div class="steps">
+                                    <strong>Предусловия:</strong> ${tc.preconditions || '—'}<br>
+                                    <strong>Шаги:</strong><br>
+                                    ${tc.steps.map((s, idx) => `${idx + 1}. ${s}`).join('<br>')}<br>
+                                    <strong>Ожидаемый результат:</strong> ${tc.expected}
+                                </div>
+                            </div>
+                        `).join('');
+                Utils.showToast(`✅ Сгенерировано ${testCases.length} тест-кейсов`, 'success');
+            },
+
+            insertExample() {
+                const input = Utils.getEl('#testcaseInput');
+                input.value = `Пользователь авторизуется в системе, создаёт новый проект, добавляет в него задачи, назначает исполнителей и отслеживает статус выполнения. Проект должен иметь возможность архивации после завершения.`;
+                input.dispatchEvent(new Event('input'));
+                Utils.showToast('📝 Пример вставлен', 'success');
+            },
+
+            _generateFromText(text) {
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+                const testCases = [];
+
+                testCases.push({
+                    title: 'Основной сценарий (Happy Path)',
+                    preconditions: 'Система работает, пользователь авторизован',
+                    steps: [
+                        `Выполнить действие: ${sentences[0]?.trim() || 'основной сценарий'}`,
+                        'Проверить корректность выполнения',
+                        'Проверить результат в системе'
+                    ],
+                    expected: 'Операция выполнена успешно, данные сохранены корректно'
+                });
+
+                if (sentences.length > 1) {
+                    testCases.push({
+                        title: 'Альтернативный сценарий',
+                        preconditions: 'Система работает',
+                        steps: [
+                            `Выполнить действие: ${sentences[1]?.trim() || 'альтернативный сценарий'}`,
+                            'Проверить обработку альтернативного потока',
+                            'Проверить корректность данных'
+                        ],
+                        expected: 'Система корректно обработала альтернативный сценарий'
+                    });
+                }
+
+                testCases.push({
+                    title: 'Обработка ошибок',
+                    preconditions: 'Система работает',
+                    steps: [
+                        'Ввести некорректные данные',
+                        'Отправить запрос с ошибкой',
+                        'Проверить реакцию системы'
+                    ],
+                    expected: 'Система показала понятное сообщение об ошибке'
+                });
+
+                if (text.length > 50) {
+                    testCases.push({
+                        title: 'Граничные условия',
+                        preconditions: 'Система работает',
+                        steps: [
+                            'Проверить максимальные значения',
+                            'Проверить минимальные значения',
+                            'Проверить пустые/нулевые значения'
+                        ],
+                        expected: 'Система корректно обрабатывает граничные значения'
+                    });
+                }
+
+                return testCases;
+            }
+        };
+
+        // =================================================================
+        // 14. АНАЛИЗ РИСКОВ
+        // =================================================================
+        const RiskManager = {
+            analyze() {
+                const data = RequirementsManager.getData();
+                const risks = [];
+                const text = Object.values(data).join(' ').toLowerCase();
+
+                const riskPatterns = [{
+                    keywords: ['не определено', 'неизвестно', 'не уточнено', 'tbd', 'todo'],
+                    title: 'Неопределённые требования',
+                    severity: 'high',
+                    desc: 'Есть неопределённые или незаполненные требования'
+                }, {
+                    keywords: ['сроки', 'дедлайн', 'время', 'ограничение по времени'],
+                    title: 'Временные ограничения',
+                    severity: 'high',
+                    desc: 'Есть жёсткие сроки, которые могут не соблюдаться'
+                }, {
+                    keywords: ['бюджет', 'стоимость', 'финансы', 'дорого'],
+                    title: 'Бюджетные риски',
+                    severity: 'high',
+                    desc: 'Есть финансовые ограничения, которые могут повлиять на качество'
+                }, {
+                    keywords: ['интеграция', 'api', 'внешняя система', 'подключение'],
+                    title: 'Риски интеграции',
+                    severity: 'medium',
+                    desc: 'Есть интеграции с внешними системами — потенциальные точки отказа'
+                }, {
+                    keywords: ['безопасность', 'защита', 'шифрование', 'доступ'],
+                    title: 'Риски безопасности',
+                    severity: 'high',
+                    desc: 'Требования к безопасности требуют детальной проработки'
+                }, {
+                    keywords: ['масштабирование', 'нагрузка', 'производительность', 'rps'],
+                    title: 'Риски производительности',
+                    severity: 'medium',
+                    desc: 'Требования к производительности могут быть недостижимы'
+                }, {
+                    keywords: ['пользователь', 'интерфейс', 'ui', 'ux', 'удобство'],
+                    title: 'UX/UI риски',
+                    severity: 'low',
+                    desc: 'Требования к интерфейсу требуют уточнения с заказчиком'
+                }, {
+                    keywords: ['данные', 'база', 'хранение', 'миграция'],
+                    title: 'Риски данных',
+                    severity: 'medium',
+                    desc: 'Работа с данными требует тщательного планирования'
+                }];
+
+                riskPatterns.forEach(pattern => {
+                    const found = pattern.keywords.some(kw => text.includes(kw));
+                    if (found) {
+                        risks.push({
+                            title: pattern.title,
+                            severity: pattern.severity,
+                            desc: pattern.desc
+                        });
+                    }
+                });
+
+                const filledFields = Object.values(data).filter(v => v && v.trim().length > 0).length;
+                if (filledFields < 5) {
+                    risks.push({
+                        title: 'Недостаточно требований',
+                        severity: 'high',
+                        desc: 'Заполнено менее 5 полей требований. Риск неполного ТЗ'
+                    });
+                }
+
+                const checklist = StorageManager.load('checklist', []);
+                if (checklist.filter(Boolean).length < 5) {
+                    risks.push({
+                        title: 'Непроверенное ТЗ',
+                        severity: 'medium',
+                        desc: 'Менее 5 пунктов чек-листа отмечено. Риск пропущенных требований'
+                    });
+                }
+
+                this._render(risks);
+            },
+
+            _render(risks) {
+                const container = Utils.getEl('#risksContainer');
+                if (risks.length === 0) {
+                    container.innerHTML =
+                        `<div style="padding:20px;text-align:center;color:var(--success);font-size:18px;">✅ Значительных рисков не обнаружено!</div>`;
+                    return;
+                }
+
+                const severityColors = { high: 'severity-high', medium: 'severity-medium', low: 'severity-low' };
+                const severityLabels = { high: '🔴 Высокий', medium: '🟡 Средний', low: '🟢 Низкий' };
+
+                container.innerHTML = `
+                            <div style="margin-bottom:12px;">
+                                <strong>⚠️ Найдено ${risks.length} потенциальных рисков:</strong>
+                            </div>
+                            ${risks.map(r => `
+                                <div class="risk-item">
+                                    <div>
+                                        <strong>${r.title}</strong>
+                                        <div style="font-size:13px;color:var(--text-muted);">${r.desc}</div>
+                                    </div>
+                                    <span class="severity ${severityColors[r.severity]}">${severityLabels[r.severity]}</span>
+                                </div>
+                            `).join('')}
+                            <div style="margin-top:12px;padding:12px;background:var(--bg-body);border-radius:8px;font-size:13px;color:var(--text-muted);">
+                                💡 <strong>Рекомендация:</strong> Проработайте все выявленные риски с командой и заказчиком.
+                            </div>
+                        `;
+                Utils.showToast(`⚠️ Найдено ${risks.length} рисков`, risks.length > 3 ? 'error' : 'success');
+            }
+        };
+
+        // =================================================================
+        // 15. СОВМЕСТНАЯ РАБОТА (исправлена для GitHub Pages)
+        // =================================================================
+        const CollaborationManager = {
+            _peer: null,
+            _conn: null,
+            _roomId: '',
+            _isHost: false,
+            _peers: [],
+            _messages: [],
+            _inviteLink: '',
+            _useFallback: false,
+            _channel: null,
+            _reconnectAttempts: 0,
+            _maxReconnectAttempts: 3,
+
+            init() {
+                this._bindUI();
+                this._restoreState();
+                this._checkAutoJoin();
+            },
+
+            _bindUI() {
+                Utils.getEl('#collabCreateBtn')?.addEventListener('click', () => this.createRoom());
+                Utils.getEl('#collabJoinBtn')?.addEventListener('click', () => this.joinRoom());
+                Utils.getEl('#collabLeaveBtn')?.addEventListener('click', () => this.leaveRoom());
+                Utils.getEl('#collabSendBtn')?.addEventListener('click', () => this.sendMessage());
+                Utils.getEl('#collabSyncBtn')?.addEventListener('click', () => this.syncDocument());
+                Utils.getEl('#collabCopyInviteBtn')?.addEventListener('click', () => this.copyInvite());
+                Utils.getEl('#collabFallbackBtn')?.addEventListener('click', () => this.enableFallback());
+
+                Utils.getEl('#collabChatInput')?.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') this.sendMessage();
+                });
+
+                Utils.getAllEl('[data-field]').forEach(el => {
+                    el.addEventListener('input', () => {
+                        if (this._conn && this._conn.open) {
+                            this._sendUpdate(el.dataset.field, el.value);
+                        }
+                        if (this._channel) {
+                            this._channel.postMessage({
+                                type: 'update',
+                                field: el.dataset.field,
+                                value: el.value
+                            });
+                        }
+                    });
+                });
+            },
+
+            _restoreState() {
+                const saved = StorageManager.load('collab_state');
+                if (saved) {
+                    this._messages = saved.messages || [];
+                    this._peers = saved.peers || [];
+                    this._renderMessages();
+                    this._renderPeers();
+                }
+                const room = StorageManager.load('collab_room');
+                if (room) {
+                    this._roomId = room.roomId;
+                    this._isHost = room.isHost;
+                    Utils.getEl('#collabRoomId').value = room.roomId;
+                    if (room.isHost) {
+                        setTimeout(() => this.createRoom(), 500);
+                    } else {
+                        setTimeout(() => this.joinRoom(), 500);
+                    }
+                }
+            },
+
+            _checkAutoJoin() {
+                const params = new URLSearchParams(window.location.search);
+                let room = params.get('room');
+                if (room) {
+                    room = this._sanitizeRoomId(room);
+                    Utils.getEl('#collabRoomId').value = room;
+                    setTimeout(() => {
+                        this.joinRoom();
+                    }, 800);
+                }
+            },
+
+            _generateRoomId() {
+                const words = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Omega', 'Sigma', 'Project', 'Team', 'Work', 'Task'];
+                const word = words[Math.floor(Math.random() * words.length)];
+                const num = Math.floor(1000 + Math.random() * 9000);
+                return `${word}-${num}`;
+            },
+
+            _sanitizeRoomId(id) {
+                const clean = id.replace(/[^a-zA-Z0-9-]/g, '');
+                return clean.substring(0, 50) || this._generateRoomId();
+            },
+
+            // ===== ИСПРАВЛЕННАЯ ГЕНЕРАЦИЯ ССЫЛКИ =====
+            copyInvite() {
+                let baseUrl = window.location.origin;
+
+                // Если file:// — предупреждаем
+                if (baseUrl.startsWith('file://')) {
+                    const roomId = this._sanitizeRoomId(this._roomId || Utils.getEl('#collabRoomId').value.trim());
+                    if (roomId) {
+                        navigator.clipboard.writeText(`ID комнаты: ${roomId}`);
+                        Utils.showToast('⚠️ Файл открыт локально. Загрузите на хостинг (GitHub Pages, Netlify). ID комнаты скопирован.', 'warning');
+                    }
+                    return;
+                }
+
+                const roomId = this._sanitizeRoomId(this._roomId || Utils.getEl('#collabRoomId').value.trim());
+                if (!roomId) {
+                    Utils.showToast('⚠️ Сначала создайте комнату', 'error');
+                    return;
+                }
+
+                const fullUrl = `${baseUrl}${window.location.pathname}?room=${encodeURIComponent(roomId)}`;
+                navigator.clipboard.writeText(fullUrl);
+                this._inviteLink = fullUrl;
+                Utils.showToast('📋 Ссылка-приглашение скопирована!', 'success');
+            },
+
+            enableFallback() {
+                if (this._channel) {
+                    this._channel.close();
+                    this._channel = null;
+                }
+                try {
+                    const roomId = this._sanitizeRoomId(this._roomId || Utils.getEl('#collabRoomId').value.trim() ||
+                        'default');
+                    this._channel = new BroadcastChannel('collab-' + roomId);
+                    this._channel.onmessage = (event) => {
+                        const data = event.data;
+                        if (data.type === 'update' && data.field) {
+                            const input = Utils.getEl(`[data-field="${data.field}"]`);
+                            if (input && input.value !== data.value) {
+                                input.value = data.value;
+                                input.dispatchEvent(new Event('input'));
+                            }
+                        }
+                        if (data.type === 'chat') {
+                            this._addMessage(data.user || 'Участник', data.text);
+                        }
+                    };
+                    this._updateStatus('🟢 Fallback-режим (BroadcastChannel) — работает локально');
+                    Utils.showToast('📡 Fallback-режим включён (работает на одном устройстве)', 'success');
+                    this._useFallback = true;
+                    this._peers = [{ id: 'local', name: 'Вы (локальный)' }];
+                    this._renderPeers();
+                } catch (e) {
+                    Utils.showToast('❌ BroadcastChannel не поддерживается', 'error');
+                }
+            },
+
+            createRoom() {
+                let roomId = Utils.getEl('#collabRoomId').value.trim();
+                roomId = this._sanitizeRoomId(roomId);
+                if (!roomId) roomId = this._generateRoomId();
+                Utils.getEl('#collabRoomId').value = roomId;
+
+                this._roomId = roomId;
+                this._isHost = true;
+                this._reconnectAttempts = 0;
+
+                try {
+                    this._peer = new Peer(roomId, {
+                        config: {
+                            iceServers: [
+                                { urls: 'stun:stun.l.google.com:19302' },
+                                { urls: 'stun:stun1.l.google.com:19302' }
+                            ]
+                        }
+                    });
+
+                    this._peer.on('open', (id) => {
+                        this._updateStatus(`🟢 Комната "${roomId}" создана!`);
+                        this._updateButtons('host');
+                        Utils.showToast(`📡 Комната "${roomId}" создана!`, 'success');
+
+                        this._peers = [{ id: id, name: 'Вы (хост)' }];
+                        this._renderPeers();
+
+                        StorageManager.save('collab_room', { roomId, isHost: true });
+                        Utils.getEl('#collabBadge').style.display = 'inline-block';
+                        Utils.getEl('#collabBadge').className = 'badge badge-online';
+                        Utils.getEl('#collabBadge').textContent = `👥 ${roomId}`;
+
+                        // Автокопирование ссылки после создания
+                        setTimeout(() => {
+                            const baseUrl = window.location.origin;
+                            if (!baseUrl.startsWith('file://')) {
+                                const fullUrl =
+                                    `${baseUrl}${window.location.pathname}?room=${encodeURIComponent(roomId)}`;
+                                this._inviteLink = fullUrl;
+                                navigator.clipboard.writeText(fullUrl);
+                                Utils.showToast('📋 Ссылка для приглашения автоматически скопирована в буфер!', 'success');
+                            }
+                        }, 500);
+
+                        this._reconnectAttempts = 0;
+                    });
+
+                    this._peer.on('connection', (conn) => {
+                        this._conn = conn;
+                        this._setupConnection(conn);
+                        this._updateStatus(`🟢 Подключён участник!`);
+                        Utils.showToast('👤 Участник подключился!', 'success');
+                        setTimeout(() => this.syncDocument(), 500);
+                    });
+
+                    this._peer.on('error', (err) => {
+                        if (err.type === 'unavailable-id') {
+                            Utils.showToast(`❌ Комната "${roomId}" уже занята.`, 'error');
+                            this._updateButtons('disconnected');
+                            this.enableFallback();
+                        } else if (err.type === 'disconnected' || err.message === 'Lost connection to server.') {
+                            this._handleDisconnect();
+                        } else {
+                            Utils.showToast(`❌ Ошибка PeerJS: ${err.message}`, 'error');
+                            if (this._reconnectAttempts < this._maxReconnectAttempts) {
+                                this._reconnectAttempts++;
+                                setTimeout(() => this.enableFallback(), 1000);
+                            }
+                        }
+                    });
+                } catch (e) {
+                    Utils.showToast(`❌ Ошибка: ${e.message}. Включаю локальный режим.`, 'error');
+                    this.enableFallback();
+                }
+            },
+
+            joinRoom() {
+                let roomId = Utils.getEl('#collabRoomId').value.trim();
+                if (!roomId) {
+                    roomId = prompt('Введите ID комнаты для подключения:');
+                    if (!roomId) return;
+                }
+                roomId = this._sanitizeRoomId(roomId);
+                Utils.getEl('#collabRoomId').value = roomId;
+
+                this._roomId = roomId;
+                this._isHost = false;
+                this._reconnectAttempts = 0;
+
+                try {
+                    const myId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+                    this._peer = new Peer(myId, {
+                        config: {
+                            iceServers: [
+                                { urls: 'stun:stun.l.google.com:19302' },
+                                { urls: 'stun:stun1.l.google.com:19302' }
+                            ]
+                        }
+                    });
+
+                    this._peer.on('open', () => {
+                        this._updateStatus(`🟡 Подключение к "${roomId}"...`);
+                        const conn = this._peer.connect(roomId);
+                        if (conn) {
+                            this._conn = conn;
+                            this._setupConnection(conn);
+                            StorageManager.save('collab_room', { roomId, isHost: false });
+                        } else {
+                            this.enableFallback();
+                        }
+                    });
+
+                    this._peer.on('error', (err) => {
+                        if (err.type === 'disconnected' || err.message === 'Lost connection to server.') {
+                            this._handleDisconnect();
+                        } else {
+                            Utils.showToast(`❌ Ошибка подключения: ${err.message}`, 'error');
+                            this._updateButtons('disconnected');
+                            if (this._reconnectAttempts < this._maxReconnectAttempts) {
+                                this._reconnectAttempts++;
+                                setTimeout(() => this.enableFallback(), 1000);
+                            } else {
+                                Utils.showToast('💡 Попробуйте кнопку "Только локально (BroadcastChannel)"', 'warning');
+                            }
+                        }
+                    });
+                } catch (e) {
+                    Utils.showToast(`❌ Ошибка: ${e.message}. Включаю локальный режим.`, 'error');
+                    this.enableFallback();
+                }
+            },
+
+            _handleDisconnect() {
+                this._updateStatus('🔴 Потеря соединения. Переключаюсь на локальный режим...');
+                Utils.showToast('🔄 Потеря соединения. Переключаюсь на BroadcastChannel', 'warning');
+
+                if (this._peer) {
+                    this._peer.destroy();
+                    this._peer = null;
+                }
+                if (this._conn) {
+                    this._conn.close();
+                    this._conn = null;
+                }
+
+                this.enableFallback();
+            },
+
+            _setupConnection(conn) {
+                conn.on('open', () => {
+                    this._updateStatus(`🟢 Подключено к "${this._roomId}"!`);
+                    this._updateButtons('connected');
+                    Utils.showToast('✅ Соединение установлено!', 'success');
+
+                    this._sendData({
+                        type: 'join',
+                        user: 'Участник',
+                        time: new Date().toISOString()
+                    });
+
+                    setTimeout(() => {
+                        this._sendData({ type: 'sync-request' });
+                    }, 300);
+
+                    conn.on('data', (data) => this._handleData(data));
+
+                    Utils.getEl('#collabBadge').style.display = 'inline-block';
+                    Utils.getEl('#collabBadge').className = 'badge badge-online';
+                    Utils.getEl('#collabBadge').textContent = `👥 ${this._roomId}`;
+
+                    this._reconnectAttempts = 0;
+                });
+
+                conn.on('close', () => {
+                    this._updateStatus('🔴 Отключено');
+                    this._updateButtons('disconnected');
+                    Utils.showToast('⛔ Соединение разорвано', 'error');
+                    Utils.getEl('#collabBadge').style.display = 'none';
+                    this.enableFallback();
+                });
+            },
+
+            _handleData(data) {
+                try {
+                    const msg = typeof data === 'string' ? JSON.parse(data) : data;
+
+                    switch (msg.type) {
+                        case 'join':
+                            this._peers.push({ id: msg.userId || 'peer', name: msg.user || 'Участник' });
+                            this._renderPeers();
+                            this._addMessage('Система', `${msg.user || 'Участник'} присоединился`);
+                            break;
+                        case 'chat':
+                            this._addMessage(msg.user || 'Участник', msg.text);
+                            break;
+                        case 'update':
+                            this._applyUpdate(msg.field, msg.value);
+                            break;
+                        case 'sync':
+                            this._applySync(msg.data);
+                            Utils.showToast('🔄 Документ синхронизирован', 'success');
+                            break;
+                        case 'sync-request':
+                            if (this._isHost) {
+                                setTimeout(() => this.syncDocument(), 200);
+                            }
+                            break;
+                        case 'leave':
+                            this._peers = this._peers.filter(p => p.id !== msg.userId);
+                            this._renderPeers();
+                            this._addMessage('Система', `${msg.user || 'Участник'} покинул комнату`);
+                            break;
+                    }
+                } catch (e) {
+                    console.warn('Неверный формат сообщения:', e);
+                }
+            },
+
+            _sendData(data) {
+                if (this._conn && this._conn.open) {
+                    this._conn.send(JSON.stringify(data));
+                }
+                if (this._channel) {
+                    this._channel.postMessage(data);
+                }
+            },
+
+            _sendUpdate(field, value) {
+                this._sendData({
+                    type: 'update',
+                    field: field,
+                    value: value,
+                    time: new Date().toISOString()
+                });
+            },
+
+            _applyUpdate(field, value) {
+                const input = Utils.getEl(`[data-field="${field}"]`);
+                if (input && input.value !== value) {
+                    input.value = value;
+                    input.dispatchEvent(new Event('input'));
+                }
+            },
+
+            _applySync(data) {
+                if (!data) return;
+                Object.entries(data).forEach(([field, value]) => {
+                    this._applyUpdate(field, value);
+                });
+            },
+
+            syncDocument() {
+                if (!this._conn || !this._conn.open) {
+                    if (!this._channel) {
+                        Utils.showToast('⚠️ Нет активного соединения', 'error');
+                        return;
+                    }
+                }
+                const data = RequirementsManager.getData();
+                this._sendData({
+                    type: 'sync',
+                    data: data,
+                    time: new Date().toISOString()
+                });
+                Utils.showToast('🔄 Документ синхронизирован', 'success');
+            },
+
+            sendMessage() {
+                const input = Utils.getEl('#collabChatInput');
+                const text = input.value.trim();
+                if (!text) return;
+
+                if (!this._conn || !this._conn.open) {
+                    if (!this._channel) {
+                        Utils.showToast('⚠️ Нет активного соединения', 'error');
+                        return;
+                    }
+                }
+
+                this._sendData({
+                    type: 'chat',
+                    user: 'Вы',
+                    text: text,
+                    time: new Date().toISOString()
+                });
+
+                this._addMessage('Вы', text);
+                input.value = '';
+            },
+
+            _addMessage(user, text) {
+                this._messages.push({ user, text, time: new Date().toLocaleTimeString() });
+                StorageManager.save('collab_state', { messages: this._messages, peers: this._peers });
+                this._renderMessages();
+            },
+
+            leaveRoom() {
+                if (this._conn && this._conn.open) {
+                    this._sendData({
+                        type: 'leave',
+                        userId: this._peer?.id || 'unknown',
+                        user: 'Вы',
+                        time: new Date().toISOString()
+                    });
+                    this._conn.close();
+                    this._conn = null;
+                }
+
+                if (this._peer) {
+                    this._peer.destroy();
+                    this._peer = null;
+                }
+
+                if (this._channel) {
+                    this._channel.close();
+                    this._channel = null;
+                }
+
+                this._peers = [];
+                this._renderPeers();
+                this._updateStatus('⚪ Отключено');
+                this._updateButtons('disconnected');
+                StorageManager.remove('collab_room');
+                Utils.getEl('#collabBadge').style.display = 'none';
+                Utils.showToast('⛔ Вы вышли из комнаты', 'info');
+                this._useFallback = false;
+                this._reconnectAttempts = 0;
+            },
+
+            _updateStatus(text) {
+                const el = Utils.getEl('#collabStatus');
+                if (el) el.textContent = text;
+            },
+
+            _updateButtons(state) {
+                const createBtn = Utils.getEl('#collabCreateBtn');
+                const joinBtn = Utils.getEl('#collabJoinBtn');
+                const leaveBtn = Utils.getEl('#collabLeaveBtn');
+                const syncBtn = Utils.getEl('#collabSyncBtn');
+
+                switch (state) {
+                    case 'host':
+                    case 'connected':
+                        createBtn.style.display = 'none';
+                        joinBtn.style.display = 'none';
+                        leaveBtn.style.display = 'inline-flex';
+                        syncBtn.style.display = 'inline-flex';
+                        break;
+                    default:
+                        createBtn.style.display = 'inline-flex';
+                        joinBtn.style.display = 'inline-flex';
+                        leaveBtn.style.display = 'none';
+                        syncBtn.style.display = 'none';
+                }
+            },
+
+            _renderMessages() {
+                const container = Utils.getEl('#collabMessages');
+                if (!container) return;
+                if (this._messages.length === 0) {
+                    container.innerHTML = '<span style="color:var(--text-muted);">Сообщения появятся здесь...</span>';
+                    return;
+                }
+                container.innerHTML = this._messages.map(m =>
+                    `<div class="msg"><strong>${m.user}</strong> <span style="color:var(--text-muted);font-size:11px;">${m.time}</span><br>${m.text}</div>`
+                ).join('');
+                container.scrollTop = container.scrollHeight;
+            },
+
+            _renderPeers() {
+                const container = Utils.getEl('#collabPeers');
+                if (!container) return;
+                if (this._peers.length === 0) {
+                    container.innerHTML = '👤 Участников нет';
+                    return;
+                }
+                container.innerHTML = this._peers.map(p =>
+                    `<span class="peer">🟢 ${p.name}</span>`
+                ).join('');
+            }
+        };
+
+        // =================================================================
+        // 16. ГЕНЕРАЦИЯ ТЗ
+        // =================================================================
+        const GenerateTzManager = {
+            DEFAULT_PROMPT: `Создай черновик технического задания на разработку системы управления проектами (Project Management System).
+
+        Ключевые требования:
+        - Управление проектами, задачами и командами
+        - Назначение исполнителей и контроль сроков
+        - Отчёты по проектам и задачам
+        - Роли: администратор, менеджер проекта, исполнитель
+
+        Используй данные из сбора требований для заполнения разделов:
+        - Цель: {goal}
+        - Пользователи: {users}
+        - Сценарии: {scenarios}
+        - Интеграции: {integrations}
+        - Ограничения: {constraints}
+        - Приоритеты: {priorities}
+        - Заметки: {notes}`,
+
+            generate() {
+                const req = RequirementsManager.getData();
+                let prompt = Utils.getEl('#generatePrompt').value.trim();
+
+                if (!prompt || prompt === 'Опишите, какую систему нужно разработать...') {
+                    prompt = this.DEFAULT_PROMPT;
+                }
+
+                let filledPrompt = prompt;
+                Object.entries(req).forEach(([key, value]) => {
+                    const placeholder = `{${key}}`;
+                    filledPrompt = filledPrompt.replaceAll(placeholder, value || '[не указано]');
+                });
+
+                const tz = this._generateFromPrompt(filledPrompt, req);
+                const container = Utils.getEl('#generatedTzContent');
+                container.innerHTML = tz;
+                Utils.getEl('#applyTzBtn').style.display = 'inline-flex';
+                Utils.showToast('✨ Черновик ТЗ сгенерирован на основе промпта и данных!', 'success');
+            },
+
+            _generateFromPrompt(prompt, req) {
+                const title = req.goal || 'Техническое задание';
+                const projectName = title.split(' ').slice(0, 3).join(' ') || 'Система';
+
+                let html = `<h1>📋 ${title}</h1>`;
+                html += `<p><strong>Дата:</strong> ${new Date().toLocaleString('ru-RU')}</p>`;
+                html += `<p><strong>Версия:</strong> 0.1 (черновик)</p>`;
+                html += `<p><strong>Проект:</strong> ${projectName}</p><hr>`;
+
+                html += `<h2>1. Введение</h2>`;
+                html += `<h3>1.1. Цель документа</h3>`;
+                html += `<p>${req.goal || 'Определить требования к системе "' + projectName + '".'}</p>`;
+
+                html += `<h2>2. Общее описание системы</h2>`;
+                html += `<h3>2.1. Бизнес-контекст</h3>`;
+                html += `<p>${this._extractContext(prompt) || 'Разработка системы для автоматизации бизнес-процессов.'}</p>`;
+
+                html += `<h2>3. Функциональные требования</h2>`;
+                html += `<h3>3.1. Основные функции</h3>`;
+                const functions = this._extractFunctions(prompt);
+                if (functions.length > 0) {
+                    html += `<ul>`;
+                    functions.forEach(f => {
+                        html += `<li>${f}</li>`;
+                    });
+                    html += `</ul>`;
+                } else {
+                    html += `<p>Функциональные требования не указаны. Требуется уточнение.</p>`;
+                }
+
+                html += `<h3>3.2. Роли и права доступа</h3>`;
+                const roles = this._extractRoles(req);
+                if (roles.length > 0) {
+                    html += `<ul>`;
+                    roles.forEach(r => {
+                        html += `<li>${r}</li>`;
+                    });
+                    html += `</ul>`;
+                } else {
+                    html += `<ul>`;
+                    html += `<li>Администратор — полный доступ</li>`;
+                    html += `<li>Пользователь — базовый доступ</li>`;
+                    html += `</ul>`;
+                }
+
+                html += `<h2>4. Нефункциональные требования</h2>`;
+                html += `<h3>4.1. Производительность</h3>`;
+                html += `<p>Время отклика не более 2 секунд, поддержка до 1000 одновременных пользователей.</p>`;
+                html += `<h3>4.2. Безопасность</h3>`;
+                html += `<p>Аутентификация, авторизация, шифрование данных, аудит действий.</p>`;
+
+                html += `<h2>5. Требования к данным</h2>`;
+                html += `<p>Требуется уточнение модели данных.</p>`;
+
+                html += `<h2>6. Требования к интеграциям</h2>`;
+                if (req.integrations) {
+                    const integrations = req.integrations.split('\n').filter(s => s.trim());
+                    html += `<ul>`;
+                    integrations.forEach(i => {
+                        html += `<li>${i.trim()}</li>`;
+                    });
+                    html += `</ul>`;
+                } else {
+                    html += `<p>Интеграции не указаны. Требуется уточнение.</p>`;
+                }
+
+                if (req.constraints) {
+                    html += `<h2>7. Ограничения</h2>`;
+                    html += `<p>${req.constraints}</p>`;
+                }
+
+                if (req.priorities) {
+                    html += `<h2>8. Приоритеты реализации</h2>`;
+                    html += `<p>${req.priorities}</p>`;
+                }
+
+                if (req.scenarios) {
+                    html += `<h2>9. Основные сценарии использования</h2>`;
+                    const scenarios = req.scenarios.split('\n').filter(s => s.trim());
+                    html += `<ul>`;
+                    scenarios.forEach(s => {
+                        html += `<li>${s.trim()}</li>`;
+                    });
+                    html += `</ul>`;
+                }
+
+                html += `<h2>10. Структура документа</h2>`;
+                html += `<ul>`;
+                APP_CONFIG.STRUCTURE_SECTIONS.forEach(s => {
+                    if (s.level === 0) {
+                        html += `<li><strong>${s.text}</strong></li>`;
+                    } else {
+                        html += `<li style="padding-left:20px;">${s.text}</li>`;
+                    }
+                });
+                html += `</ul>`;
+
+                if (req.notes) {
+                    html += `<h2>11. Дополнительные заметки</h2>`;
+                    html += `<p>${req.notes}</p>`;
+                }
+
+                html += `<hr><p style="color:var(--text-muted);font-size:13px;">
+                            ⚠️ Это <strong>черновик</strong> ТЗ, сгенерированный на основе промпта и введённых данных. 
+                            Требует доработки и согласования с заказчиком.
+                        </p>`;
+
+                return html;
+            },
+
+            _extractContext(prompt) {
+                const sentences = prompt.split(/[.!?]+/).filter(s => s.trim().length > 20);
+                return sentences.slice(0, 3).join('. ') + '.';
+            },
+
+            _extractFunctions(prompt) {
+                const functions = [];
+                const keywords = ['управление', 'создание', 'редактирование', 'удаление', 'просмотр', 'отчёт', 'экспорт',
+                    'импорт', 'поиск', 'фильтрация', 'назначение', 'контроль', 'мониторинг'
+                ];
+                keywords.forEach(kw => {
+                    if (prompt.toLowerCase().includes(kw)) {
+                        functions.push(`${kw.charAt(0).toUpperCase() + kw.slice(1)} данных и операций`);
+                    }
+                });
+                if (functions.length === 0) {
+                    functions.push('CRUD-операции с основными сущностями');
+                    functions.push('Поиск и фильтрация данных');
+                    functions.push('Генерация отчётов');
+                }
+                return functions.slice(0, 6);
+            },
+
+            _extractRoles(req) {
+                const roles = [];
+                if (req.users) {
+                    const userRoles = req.users.split(/[,;]\s*/).filter(r => r.trim());
+                    if (userRoles.length > 0) {
+                        return userRoles.map(r => r.trim());
+                    }
+                }
+                if (req.users?.toLowerCase().includes('администратор')) roles.push('Администратор — управление системой');
+                if (req.users?.toLowerCase().includes('менеджер')) roles.push('Менеджер — управление проектами');
+                if (req.users?.toLowerCase().includes('исполнитель')) roles.push('Исполнитель — выполнение задач');
+                if (req.users?.toLowerCase().includes('пользователь')) roles.push('Пользователь — базовый доступ');
+                return roles;
+            },
+
+            resetPrompt() {
+                Utils.getEl('#generatePrompt').value = this.DEFAULT_PROMPT;
+                Utils.showToast('🔄 Промпт сброшен к стандартному', 'success');
+            },
+
+            applyToFields() {
+                const container = Utils.getEl('#generatedTzContent');
+                const text = container.textContent || container.innerText;
+                if (!text || text.includes('Нажмите "Сгенерировать ТЗ"')) {
+                    Utils.showToast('⚠️ Сначала сгенерируйте ТЗ', 'error');
+                    return;
+                }
+
+                const sections = {
+                    goal: /Цель[^:]*:?\s*([^.]*\.)/i,
+                    notes: /Дополнительные заметки[^:]*:?\s*([^.]*\.)/i,
+                    integrations: /Интеграци[^:]*:?\s*([^.]*\.)/i,
+                    constraints: /Ограничени[^:]*:?\s*([^.]*\.)/i,
+                    priorities: /Приоритеты[^:]*:?\s*([^.]*\.)/i
+                };
+
+                let applied = 0;
+                Object.entries(sections).forEach(([field, pattern]) => {
+                    const match = text.match(pattern);
+                    if (match && match[1]) {
+                        const input = Utils.getEl(`[data-field="${field}"]`);
+                        if (input) {
+                            const current = input.value;
+                            input.value = current ? `${current}\n${match[1].trim()}` : match[1].trim();
+                            input.dispatchEvent(new Event('input'));
+                            applied++;
+                        }
+                    }
+                });
+
+                if (applied > 0) {
+                    Utils.showToast(`✅ Применено ${applied} разделов в поля`, 'success');
+                } else {
+                    Utils.showToast('⚠️ Не удалось извлечь данные для полей', 'warning');
+                }
+            },
+
+            clear() {
+                const container = Utils.getEl('#generatedTzContent');
+                container.innerHTML = '<span style="color:var(--text-muted);">Нажмите "Сгенерировать ТЗ" для создания черновика...</span>';
+                Utils.getEl('#applyTzBtn').style.display = 'none';
+                Utils.showToast('🗑️ Очищено', 'success');
+            }
+        };
+
+        // =================================================================
+        // 17. ДАТА
+        // =================================================================
+        const DateManager = {
+            render() {
+                const el = Utils.getEl('#dateBadge');
+                if (el) el.textContent = `📅 ${Utils.formatDate(new Date())}`;
+            }
+        };
+
+        // =================================================================
+        // 18. ИНИЦИАЛИЗАЦИЯ
+        // =================================================================
+        const init = () => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+                return;
+            }
+
+            ThemeManager.init();
+            TabManager.init();
+            DateManager.render();
+            RequirementsManager.init();
+            StructureRenderer.render();
+            PromptsRenderer.render();
+            ChecklistManager.render();
+            EmailManager.render();
+            MindMapManager.loadState();
+            MindMapManager.render();
+            CollaborationManager.init();
+
+            // Mermaid
+            Utils.getEl('#generateMermaidBtn')?.addEventListener('click', () => MermaidManager.generate());
+            Utils.getEl('#mermaidExampleBtn')?.addEventListener('click', () => MermaidManager.insertExample());
+
+            // Экспорт
+            Utils.getEl('#exportMarkdownBtn')?.addEventListener('click', () => ExportManager.exportMarkdown());
+            Utils.getEl('#exportDocxBtn')?.addEventListener('click', () => ExportManager.exportDocx());
+            Utils.getEl('#exportJsonBtn')?.addEventListener('click', () => ExportManager.exportJson());
+            Utils.getEl('#exportPdfBtn')?.addEventListener('click', () => ExportManager.exportPdf());
+
+            // Mind Map
+            Utils.getEl('#expandAllBtn')?.addEventListener('click', () => MindMapManager.expandAll());
+            Utils.getEl('#collapseAllBtn')?.addEventListener('click', () => MindMapManager.collapseAll());
+            Utils.getEl('#exportMindmapBtn')?.addEventListener('click', () => MindMapManager.exportText());
+
+            // Тест-кейсы
+            Utils.getEl('#generateTestcasesBtn')?.addEventListener('click', () => TestCaseManager.generate());
+            Utils.getEl('#testcaseExampleBtn')?.addEventListener('click', () => TestCaseManager.insertExample());
+
+            // Риски
+            Utils.getEl('#analyzeRisksBtn')?.addEventListener('click', () => RiskManager.analyze());
+
+            // Структура, чек-лист, email
+            Utils.getEl('#copyStructureBtn')?.addEventListener('click', () => StructureRenderer.copy());
+            Utils.getEl('#resetChecklistBtn')?.addEventListener('click', () => ChecklistManager.reset());
+            Utils.getEl('#copyEmailBtn')?.addEventListener('click', () => EmailManager.copy());
+
+            // Генерация ТЗ
+            Utils.getEl('#generateTzBtn')?.addEventListener('click', () => GenerateTzManager.generate());
+            Utils.getEl('#applyTzBtn')?.addEventListener('click', () => GenerateTzManager.applyToFields());
+            Utils.getEl('#clearTzBtn')?.addEventListener('click', () => GenerateTzManager.clear());
+            Utils.getEl('#resetPromptBtn')?.addEventListener('click', () => GenerateTzManager.resetPrompt());
+
+            const observer = new MutationObserver(() => {
+                if (MermaidManager.initialized) {
+                    mermaid.initialize({
+                        theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+                    });
+                }
+            });
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+            console.log(`⚡ Analyst Toolkit Pro v${APP_CONFIG.VERSION} инициализирован`);
+            console.log('📊 Mermaid диаграммы работают локально, без сервера!');
+            console.log('🧠 Mind Map — интерактивное дерево со сворачиванием');
+            console.log('✨ Генерация ТЗ на основе промпта + данных из сбора требований');
+            console.log('🔗 Совместная работа: ссылки корректно генерируются для GitHub Pages');
+        };
+
+        init();
+    </script>
+
+</body>
+</html>
