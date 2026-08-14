@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>⚡ Analyst Toolkit Pro — полный комбайн для ТЗ</title>
 
-    <!-- ===== PEERJS ДЛЯ СОВМЕСТНОЙ РАБОТЫ ===== -->
+    <!-- ===== PEERJS ===== -->
     <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js">
     </script>
 
-    <!-- ===== MERMAID ДЛЯ ДИАГРАММ ===== -->
+    <!-- ===== MERMAID ===== -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js">
     </script>
 
     <script>
         const APP_CONFIG = Object.freeze({
-            VERSION: '7.1.0',
+            VERSION: '7.5.0',
             STORAGE_PREFIX: 'analyst_toolkit_',
             TABS: ['requirements', 'structure', 'mermaid', 'prompts', 'checklist', 'email', 'export', 'mindmap',
                 'testcases', 'risks', 'collab', 'generate'
@@ -245,6 +245,7 @@
             --success: #38a169;
             --warning: #d69e2e;
             --danger: #e53e3e;
+            --info: #3182ce;
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             --radius: 16px;
             --transition: 0.25s ease;
@@ -976,6 +977,22 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .server-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .server-select:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
         /* ===== GENERATE TZ ===== */
         .generated-tz {
             background: var(--bg-body);
@@ -1036,6 +1053,27 @@
             overflow: auto;
             font-size: 12px;
             font-family: 'SF Mono', monospace;
+            white-space: pre-wrap;
+        }
+
+        .generated-tz .http-code {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .generated-tz .http-code-2xx {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .generated-tz .http-code-4xx {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        .generated-tz .http-code-5xx {
+            background: #fefcbf;
+            color: #744210;
         }
 
         /* ===== TOAST ===== */
@@ -1069,6 +1107,9 @@
         }
         .toast.warning {
             border-left: 4px solid var(--warning);
+        }
+        .toast.info {
+            border-left: 4px solid var(--info);
         }
 
         /* ===== FOOTER ===== */
@@ -1124,6 +1165,17 @@
             border-color: var(--accent);
             outline: none;
         }
+
+        /* ===== EXPORT TZ BUTTON ===== */
+        .export-tz-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .export-tz-btn:hover {
+            opacity: 0.85;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -1134,7 +1186,7 @@
         <header class="app-header">
             <h1>
                 ⚡ Analyst Toolkit Pro
-                <span style="font-size:0.5em;opacity:0.8;">v7.1</span>
+                <span style="font-size:0.5em;opacity:0.8;">v7.5</span>
             </h1>
             <div class="header-actions">
                 <span class="badge" id="dateBadge">📅 Загрузка...</span>
@@ -1445,19 +1497,28 @@
         </section>
 
         <!-- ============================================================ -->
-        <!-- ===== TAB: COLLABORATION (исправленная PeerJS) ===== -->
+        <!-- ===== TAB: COLLABORATION ===== -->
         <!-- ============================================================ -->
         <section class="tab-content" id="tab-collab">
             <div class="card">
-                <h2>👥 Совместная работа (PeerJS)</h2>
+                <h2>👥 Совместная работа</h2>
                 <p style="color:var(--text-secondary);margin-bottom:12px;">
-                    <strong>Создайте комнату</strong> и отправьте ссылку коллегам. Все изменения синхронизируются в реальном времени.
-                    <span style="color:var(--success);">✅ Работает на GitHub Pages</span>
+                    <strong>Выберите сервер</strong> для подключения. Если один не работает — попробуйте другой.
+                    <span style="color:var(--success);">✅ Автоматический fallback</span>
                 </p>
 
                 <div class="grid-2">
                     <div>
                         <h3>🔗 Подключение</h3>
+
+                        <!-- Выбор сервера -->
+                        <div style="margin-bottom:12px;">
+                            <label style="font-size:13px;font-weight:600;color:var(--text-secondary);">🌐 Сервер PeerJS:</label>
+                            <select id="peerjsServerSelect" class="server-select">
+                                <!-- Заполняется из JS -->
+                            </select>
+                        </div>
+
                         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
                             <input type="text" id="collabRoomId" placeholder="ID комнаты (латиница)" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);" value="Project-123" />
                             <button class="btn btn-primary" id="collabCreateBtn">📡 Создать</button>
@@ -1465,14 +1526,15 @@
                             <button class="btn btn-danger" id="collabLeaveBtn" style="display:none;">⛔ Выйти</button>
                         </div>
 
-                        <div class="collab-status" id="collabStatus">
-                            ⚪ Не подключено
-                        </div>
-
-                        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                            <button class="btn btn-warning" id="collabReconnectBtn" style="display:none;">🔄 Переподключиться</button>
                             <button class="btn btn-outline" id="collabCopyInviteBtn">📋 Скопировать ссылку</button>
                             <button class="btn btn-success" id="collabSyncBtn" style="display:none;">🔄 Синхронизировать</button>
-                            <button class="btn btn-warning" id="collabFallbackBtn">📡 Fallback (BroadcastChannel)</button>
+                            <button class="btn btn-outline" id="collabFallbackBtn">📡 Только локально (BroadcastChannel)</button>
+                        </div>
+
+                        <div class="collab-status" id="collabStatus">
+                            ⚪ Не подключено
                         </div>
 
                         <div class="collab-peers" id="collabPeers">
@@ -1492,14 +1554,14 @@
                     </div>
                 </div>
 
-                <div style="margin-top:16px;padding:12px;background:var(--bg-body);border-radius:8px;border-left:4px solid var(--success);transition:background var(--transition);">
-                    <strong>💡 Как поделиться ссылкой:</strong>
+                <div style="margin-top:16px;padding:12px;background:var(--bg-body);border-radius:8px;border-left:4px solid var(--info);transition:background var(--transition);">
+                    <strong>💡 Как это работает:</strong>
                     <ul style="margin:4px 0 0 20px;font-size:13px;color:var(--text-muted);">
-                        <li>1. Создайте комнату → ссылка автоматически скопируется</li>
-                        <li>2. Отправьте ссылку коллегам</li>
-                        <li>3. Они откроют её и автоматически подключатся</li>
-                        <li>📌 Ссылка вида: <code>https://ваш-username.github.io/analyst-toolkit/?room=Project-123</code></li>
-                        <li>👥 В блоке <strong>«Участников»</strong> отображаются все подключенные пользователи</li>
+                        <li><strong>🌐 Выбор сервера:</strong> выбирайте из списка, если текущий не работает</li>
+                        <li><strong>🔄 Переподключение:</strong> принудительно переподключается с новым сервером</li>
+                        <li><strong>📡 BroadcastChannel:</strong> работает на одном устройстве (офлайн, без интернета)</li>
+                        <li><strong>🔄 Автоматический fallback:</strong> если сервер не доступен — пробуем следующий</li>
+                        <li><strong>👥 Участники:</strong> в блоке «Участников» отображаются все подключенные пользователи</li>
                     </ul>
                 </div>
             </div>
@@ -1538,6 +1600,7 @@
                         <button class="btn btn-success" id="applyTzBtn" style="display:none;">📋 Применить в поля</button>
                         <button class="btn btn-outline" id="clearTzBtn">🗑️ Очистить</button>
                         <button class="btn btn-outline" id="resetPromptBtn">🔄 Сбросить промпт</button>
+                        <button class="btn export-tz-btn" id="exportTzBtn" style="display:none;">📥 Экспортировать ТЗ (HTML)</button>
                     </div>
                 </div>
 
@@ -1553,7 +1616,7 @@
         <!-- ===== FOOTER ===== -->
         <!-- ============================================================ -->
         <footer class="app-footer">
-            <span>⚙️ Analyst Toolkit Pro v7.1</span>
+            <span>⚙️ Analyst Toolkit Pro v7.5</span>
             <span style="margin:0 8px;">·</span>
             <span>12 модулей для полного цикла ТЗ</span>
             <span style="display:block;margin-top:4px;font-size:12px;">
@@ -1564,7 +1627,7 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT — ПОЛНАЯ МОДУЛЬНАЯ АРХИТЕКТУРА ===== -->
+    <!-- ===== JAVASCRIPT ===== -->
     <!-- ============================================================ -->
     <script>
         'use strict';
@@ -2641,7 +2704,7 @@
         };
 
         // =================================================================
-        // 15. СОВМЕСТНАЯ РАБОТА (PEERJS — ИСПРАВЛЕННАЯ ВЕРСИЯ)
+        // 15. СОВМЕСТНАЯ РАБОТА (С ВЫБОРОМ СЕРВЕРА)
         // =================================================================
         const CollaborationManager = {
             _peer: null,
@@ -2652,14 +2715,36 @@
             _messages: [],
             _inviteLink: '',
             _reconnectAttempts: 0,
-            _maxReconnectAttempts: 5,
+            _maxReconnectAttempts: 3,
             _myId: null,
             _heartbeatInterval: null,
+            _useFallback: false,
+            _channel: null,
+            _currentServer: null,
+
+            _servers: [
+                { name: 'PeerJS Cloud (0.peerjs.com)', host: '0.peerjs.com', port: 443, path: '/', secure: true },
+                { name: 'PeerJS Heroku (peerjs-server.herokuapp.com)', host: 'peerjs-server.herokuapp.com', port: 443,
+                    path: '/', secure: true },
+                { name: 'PeerJS Cloud (0.peerjs.com:443)', host: '0.peerjs.com', port: 443, path: '/', secure: true },
+                { name: 'PeerJS (общий сервер)', host: '0.peerjs.com', port: 9000, path: '/', secure: false },
+                { name: '🔧 Локальный (localhost:9000)', host: 'localhost', port: 9000, path: '/', secure: false }
+            ],
 
             init() {
+                this._populateServerList();
                 this._bindUI();
                 this._restoreState();
                 this._checkAutoJoin();
+            },
+
+            _populateServerList() {
+                const select = Utils.getEl('#peerjsServerSelect');
+                if (!select) return;
+                select.innerHTML = this._servers.map((s, i) =>
+                    `<option value="${i}" ${i === 0 ? 'selected' : ''}>${s.name}</option>`
+                ).join('');
+                this._currentServer = this._servers[0];
             },
 
             _bindUI() {
@@ -2670,6 +2755,15 @@
                 Utils.getEl('#collabSyncBtn')?.addEventListener('click', () => this.syncDocument());
                 Utils.getEl('#collabCopyInviteBtn')?.addEventListener('click', () => this.copyInvite());
                 Utils.getEl('#collabFallbackBtn')?.addEventListener('click', () => this.enableFallback());
+                Utils.getEl('#collabReconnectBtn')?.addEventListener('click', () => this.reconnect());
+                Utils.getEl('#peerjsServerSelect')?.addEventListener('change', (e) => {
+                    const index = parseInt(e.target.value);
+                    this._currentServer = this._servers[index];
+                    Utils.showToast(`🔄 Выбран сервер: ${this._currentServer.name}`, 'info');
+                    if (this._conn || this._peer) {
+                        this.reconnect();
+                    }
+                });
 
                 Utils.getEl('#collabChatInput')?.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') this.sendMessage();
@@ -2679,6 +2773,13 @@
                     el.addEventListener('input', () => {
                         if (this._conn && this._conn.open) {
                             this._sendUpdate(el.dataset.field, el.value);
+                        }
+                        if (this._channel) {
+                            this._channel.postMessage({
+                                type: 'update',
+                                field: el.dataset.field,
+                                value: el.value
+                            });
                         }
                     });
                 });
@@ -2697,10 +2798,12 @@
                     this._roomId = room.roomId;
                     this._isHost = room.isHost;
                     Utils.getEl('#collabRoomId').value = room.roomId;
-                    if (room.isHost) {
-                        setTimeout(() => this.createRoom(), 500);
-                    } else {
-                        setTimeout(() => this.joinRoom(), 500);
+                    if (room.serverIndex !== undefined) {
+                        const select = Utils.getEl('#peerjsServerSelect');
+                        if (select) {
+                            select.value = room.serverIndex;
+                            this._currentServer = this._servers[room.serverIndex] || this._servers[0];
+                        }
                     }
                 }
             },
@@ -2718,7 +2821,7 @@
             },
 
             _generateRoomId() {
-                const words = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Omega', 'Sigma', 'Project', 'Team', 'Work', 'Task'];
+                const words = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Omega', 'Sigma'];
                 const word = words[Math.floor(Math.random() * words.length)];
                 const num = Math.floor(1000 + Math.random() * 9000);
                 return `${word}-${num}`;
@@ -2729,7 +2832,31 @@
                 return clean.substring(0, 50) || this._generateRoomId();
             },
 
-            // ===== СОЗДАНИЕ КОМНАТЫ =====
+            _getCurrentServer() {
+                return this._currentServer || this._servers[0];
+            },
+
+            reconnect() {
+                if (this._conn) {
+                    this._sendData({ type: 'leave', userId: this._myId || 'unknown', user: 'Вы' });
+                    this._conn.close();
+                    this._conn = null;
+                }
+                if (this._peer) {
+                    this._peer.destroy();
+                    this._peer = null;
+                }
+                this._peers = [];
+                this._renderPeers();
+                this._updateStatus('🔄 Переподключение...');
+
+                if (this._isHost) {
+                    this.createRoom();
+                } else {
+                    this.joinRoom();
+                }
+            },
+
             createRoom() {
                 let roomId = Utils.getEl('#collabRoomId').value.trim();
                 roomId = this._sanitizeRoomId(roomId);
@@ -2740,11 +2867,14 @@
                 this._isHost = true;
                 this._reconnectAttempts = 0;
 
-                // Генерируем уникальный ID для хоста
-                const hostId = `host-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+                const server = this._getCurrentServer();
 
                 try {
-                    this._peer = new Peer(hostId, {
+                    this._peer = new Peer(roomId, {
+                        host: server.host,
+                        port: server.port,
+                        path: server.path,
+                        secure: server.secure,
                         config: {
                             iceServers: [
                                 { urls: 'stun:stun.l.google.com:19302' },
@@ -2756,62 +2886,89 @@
 
                     this._peer.on('open', (id) => {
                         this._myId = id;
-                        this._updateStatus(`🟢 Комната "${roomId}" создана! Ваш ID: ${id}`);
+                        this._updateStatus(`🟢 Комната "${roomId}" создана! Сервер: ${server.name}`);
                         this._updateButtons('host');
-                        Utils.showToast(`📡 Комната "${roomId}" создана!`, 'success');
+                        Utils.showToast(`📡 Комната "${roomId}" создана на ${server.name}!`, 'success');
 
                         this._peers = [{ id: id, name: 'Вы (хост)', isHost: true, online: true }];
                         this._renderPeers();
 
-                        StorageManager.save('collab_room', { roomId, isHost: true });
+                        StorageManager.save('collab_room', {
+                            roomId,
+                            isHost: true,
+                            serverIndex: this._servers.indexOf(server)
+                        });
                         Utils.getEl('#collabBadge').style.display = 'inline-block';
                         Utils.getEl('#collabBadge').className = 'badge badge-online';
                         Utils.getEl('#collabBadge').textContent = `👥 ${roomId}`;
 
-                        // Сохраняем ссылку
                         const baseUrl = window.location.origin;
                         if (!baseUrl.startsWith('file://')) {
                             this._inviteLink = `${baseUrl}${window.location.pathname}?room=${encodeURIComponent(roomId)}`;
                             navigator.clipboard.writeText(this._inviteLink);
                             Utils.showToast('📋 Ссылка для приглашения скопирована!', 'success');
-                        } else {
-                            Utils.showToast('⚠️ Загрузите на хостинг (GitHub Pages) для отправки ссылки коллегам.', 'warning');
                         }
 
-                        // Запускаем heartbeat
                         this._startHeartbeat();
                     });
 
                     this._peer.on('connection', (conn) => {
-                        // Принимаем входящее соединение
                         this._conn = conn;
                         this._setupConnection(conn);
-                        this._updateStatus(`🟢 Подключён участник!`);
+                        this._updateStatus(`🟢 Подключён участник! (${server.name})`);
                         Utils.showToast('👤 Участник подключился!', 'success');
                         setTimeout(() => this.syncDocument(), 500);
                     });
 
                     this._peer.on('error', (err) => {
-                        console.error('Peer error:', err);
+                        console.warn(`PeerJS error (${server.name}):`, err);
                         if (err.type === 'unavailable-id') {
-                            Utils.showToast(`❌ ID "${roomId}" уже занят. Попробуйте другое имя.`, 'error');
-                        } else if (err.type === 'disconnected' || err.message?.includes('Lost connection')) {
-                            this._handleDisconnect();
+                            const newId = this._generateRoomId();
+                            Utils.showToast(`⚠️ ID занят. Создаём новую комнату: ${newId}`, 'warning');
+                            Utils.getEl('#collabRoomId').value = newId;
+                            setTimeout(() => this.createRoom(), 500);
                         } else {
-                            Utils.showToast(`❌ Ошибка: ${err.message || err.type}`, 'error');
-                            if (this._reconnectAttempts < this._maxReconnectAttempts) {
-                                this._reconnectAttempts++;
-                                setTimeout(() => this.createRoom(), 2000);
-                            }
+                            this._handlePeerJsError(err);
                         }
                     });
 
                 } catch (e) {
-                    Utils.showToast(`❌ Ошибка: ${e.message}`, 'error');
+                    console.warn('PeerJS init error:', e);
+                    this._handlePeerJsError(e);
                 }
             },
 
-            // ===== ПОДКЛЮЧЕНИЕ К КОМНАТЕ =====
+            _handlePeerJsError(err) {
+                const server = this._getCurrentServer();
+                Utils.showToast(`⚠️ Сервер ${server.name} не доступен: ${err.message || err.type}`, 'warning');
+
+                const currentIndex = this._servers.indexOf(server);
+                const nextIndex = (currentIndex + 1) % this._servers.length;
+
+                if (nextIndex !== currentIndex) {
+                    const nextServer = this._servers[nextIndex];
+                    Utils.showToast(`🔄 Пробуем сервер: ${nextServer.name}`, 'info');
+                    const select = Utils.getEl('#peerjsServerSelect');
+                    if (select) {
+                        select.value = nextIndex;
+                        this._currentServer = nextServer;
+                    }
+                    setTimeout(() => {
+                        if (this._isHost) {
+                            this.createRoom();
+                        } else {
+                            this.joinRoom();
+                        }
+                    }, 1000);
+                } else {
+                    Utils.showToast('⚠️ Все PeerJS серверы недоступны. Включаю локальный режим.', 'warning');
+                    this._updateStatus('🟡 Все серверы недоступны. Переключение на локальный режим...');
+                    setTimeout(() => {
+                        this.enableFallback();
+                    }, 500);
+                }
+            },
+
             joinRoom() {
                 let roomId = Utils.getEl('#collabRoomId').value.trim();
                 if (!roomId) {
@@ -2825,10 +2982,15 @@
                 this._isHost = false;
                 this._reconnectAttempts = 0;
 
+                const server = this._getCurrentServer();
                 const myId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
 
                 try {
                     this._peer = new Peer(myId, {
+                        host: server.host,
+                        port: server.port,
+                        path: server.path,
+                        secure: server.secure,
                         config: {
                             iceServers: [
                                 { urls: 'stun:stun.l.google.com:19302' },
@@ -2840,49 +3002,79 @@
 
                     this._peer.on('open', (id) => {
                         this._myId = id;
-                        this._updateStatus(`🟡 Подключение к "${roomId}"...`);
-
-                        // Пытаемся подключиться к хосту (используем ID комнаты как ID хоста для простоты)
-                        // В новой версии хост использует ID = roomId для простоты
-                        this._tryConnectToHost(roomId);
-                    });
-
-                    this._peer.on('error', (err) => {
-                        console.error('Join error:', err);
-                        Utils.showToast(`❌ Ошибка подключения: ${err.message || err.type}`, 'error');
-                        this._updateButtons('disconnected');
-                        if (this._reconnectAttempts < this._maxReconnectAttempts) {
-                            this._reconnectAttempts++;
-                            setTimeout(() => this.joinRoom(), 2000);
+                        this._updateStatus(`🟡 Подключение к "${roomId}" через ${server.name}...`);
+                        const conn = this._peer.connect(roomId);
+                        if (conn) {
+                            this._conn = conn;
+                            this._setupConnection(conn);
+                            StorageManager.save('collab_room', {
+                                roomId,
+                                isHost: false,
+                                serverIndex: this._servers.indexOf(server)
+                            });
+                        } else {
+                            this._handlePeerJsError(new Error('Не удалось подключиться'));
                         }
                     });
 
+                    this._peer.on('error', (err) => {
+                        console.warn('Join error:', err);
+                        this._handlePeerJsError(err);
+                    });
+
                 } catch (e) {
-                    Utils.showToast(`❌ Ошибка: ${e.message}`, 'error');
+                    console.warn('Join init error:', e);
+                    this._handlePeerJsError(e);
                 }
             },
 
-            _tryConnectToHost(hostId) {
-                this._updateStatus(`🟡 Подключение к ${hostId}...`);
-                const conn = this._peer.connect(hostId);
-                if (conn) {
-                    this._conn = conn;
-                    this._setupConnection(conn);
-                    StorageManager.save('collab_room', { roomId: this._roomId, isHost: false });
-                } else {
-                    this._updateStatus(`🔴 Не удалось подключиться к ${hostId}. Проверьте ID.`);
-                    Utils.showToast(`❌ Не удалось подключиться. Проверьте ID комнаты.`, 'error');
+            enableFallback() {
+                if (this._channel) {
+                    this._channel.close();
+                    this._channel = null;
+                }
+                try {
+                    const roomId = this._sanitizeRoomId(this._roomId || Utils.getEl('#collabRoomId').value.trim() ||
+                        'default');
+                    this._channel = new BroadcastChannel('collab-' + roomId);
+                    this._channel.onmessage = (event) => {
+                        const data = event.data;
+                        if (data.type === 'update' && data.field) {
+                            const input = Utils.getEl(`[data-field="${data.field}"]`);
+                            if (input && input.value !== data.value) {
+                                input.value = data.value;
+                                input.dispatchEvent(new Event('input'));
+                            }
+                        }
+                        if (data.type === 'chat') {
+                            this._addMessage(data.user || 'Участник', data.text);
+                        }
+                        if (data.type === 'sync') {
+                            this._applySync(data.data);
+                        }
+                    };
+                    this._updateStatus(`🟢 Локальный режим (BroadcastChannel) — комната "${roomId}"`);
+                    Utils.showToast('📡 Локальный режим включён (работает на одном устройстве)', 'success');
+                    this._useFallback = true;
+                    this._peers = [{ id: 'local', name: 'Вы (локальный)', online: true, isHost: true }];
+                    this._renderPeers();
+                    this._updateButtons('host');
+                    Utils.getEl('#collabBadge').style.display = 'inline-block';
+                    Utils.getEl('#collabBadge').className = 'badge badge-online';
+                    Utils.getEl('#collabBadge').textContent = `📡 ${roomId}`;
+                    StorageManager.save('collab_room', { roomId, isHost: true });
+                } catch (e) {
+                    Utils.showToast('❌ BroadcastChannel не поддерживается', 'error');
                 }
             },
 
-            // ===== НАСТРОЙКА СОЕДИНЕНИЯ =====
             _setupConnection(conn) {
                 conn.on('open', () => {
-                    this._updateStatus(`🟢 Подключено к "${this._roomId}"!`);
+                    const server = this._getCurrentServer();
+                    this._updateStatus(`🟢 Подключено к "${this._roomId}" через ${server.name}`);
                     this._updateButtons('connected');
-                    Utils.showToast('✅ Соединение установлено!', 'success');
+                    Utils.showToast(`✅ Соединение установлено через ${server.name}!`, 'success');
 
-                    // Отправляем информацию о себе
                     this._sendData({
                         type: 'join',
                         userId: this._myId,
@@ -2890,7 +3082,6 @@
                         time: new Date().toISOString()
                     });
 
-                    // Запрашиваем синхронизацию
                     setTimeout(() => {
                         this._sendData({ type: 'sync-request' });
                     }, 300);
@@ -2902,8 +3093,6 @@
                     Utils.getEl('#collabBadge').textContent = `👥 ${this._roomId}`;
 
                     this._reconnectAttempts = 0;
-
-                    // Запускаем heartbeat
                     this._startHeartbeat();
                 });
 
@@ -2921,7 +3110,6 @@
                 }, 5000);
             },
 
-            // ===== ОБРАБОТКА ДАННЫХ =====
             _handleData(data) {
                 try {
                     const msg = typeof data === 'string' ? JSON.parse(data) : data;
@@ -2980,7 +3168,6 @@
                 }
             },
 
-            // ===== ОТПРАВКА ДАННЫХ =====
             _sendData(data) {
                 if (this._conn && this._conn.open) {
                     try {
@@ -2989,9 +3176,11 @@
                         console.warn('Ошибка отправки:', e);
                     }
                 }
+                if (this._channel) {
+                    this._channel.postMessage(data);
+                }
             },
 
-            // ===== ОБНОВЛЕНИЕ ПОЛЕЙ =====
             _sendUpdate(field, value) {
                 this._sendData({
                     type: 'update',
@@ -3016,11 +3205,12 @@
                 });
             },
 
-            // ===== СИНХРОНИЗАЦИЯ =====
             syncDocument() {
                 if (!this._conn || !this._conn.open) {
-                    Utils.showToast('⚠️ Нет активного соединения', 'error');
-                    return;
+                    if (!this._channel) {
+                        Utils.showToast('⚠️ Нет активного соединения', 'error');
+                        return;
+                    }
                 }
                 const data = RequirementsManager.getData();
                 this._sendData({
@@ -3031,15 +3221,16 @@
                 Utils.showToast('🔄 Документ синхронизирован', 'success');
             },
 
-            // ===== ЧАТ =====
             sendMessage() {
                 const input = Utils.getEl('#collabChatInput');
                 const text = input.value.trim();
                 if (!text) return;
 
                 if (!this._conn || !this._conn.open) {
-                    Utils.showToast('⚠️ Нет активного соединения', 'error');
-                    return;
+                    if (!this._channel) {
+                        Utils.showToast('⚠️ Нет активного соединения', 'error');
+                        return;
+                    }
                 }
 
                 this._sendData({
@@ -3059,7 +3250,6 @@
                 this._renderMessages();
             },
 
-            // ===== ВЫХОД =====
             leaveRoom() {
                 if (this._conn && this._conn.open) {
                     this._sendData({
@@ -3077,6 +3267,11 @@
                     this._peer = null;
                 }
 
+                if (this._channel) {
+                    this._channel.close();
+                    this._channel = null;
+                }
+
                 if (this._heartbeatInterval) {
                     clearInterval(this._heartbeatInterval);
                     this._heartbeatInterval = null;
@@ -3090,6 +3285,7 @@
                 Utils.getEl('#collabBadge').style.display = 'none';
                 Utils.showToast('⛔ Вы вышли из комнаты', 'info');
                 this._reconnectAttempts = 0;
+                this._useFallback = false;
             },
 
             _handleDisconnect() {
@@ -3111,52 +3307,16 @@
                 if (this._reconnectAttempts < this._maxReconnectAttempts) {
                     this._reconnectAttempts++;
                     setTimeout(() => {
-                        if (this._isHost) {
-                            this.createRoom();
-                        } else {
-                            this.joinRoom();
-                        }
+                        this.reconnect();
                     }, 3000);
                 } else {
-                    this._updateStatus('🔴 Не удалось переподключиться. Попробуйте вручную.');
-                    Utils.showToast('❌ Не удалось переподключиться. Нажмите "Создать" или "Подключиться" вручную.', 'error');
+                    this._updateStatus('🔴 Не удалось переподключиться.');
+                    Utils.showToast('❌ Попробуйте выбрать другой сервер в списке или нажмите "Переподключиться".',
+                        'error');
                     this._updateButtons('disconnected');
                 }
             },
 
-            // ===== FALLBACK =====
-            enableFallback() {
-                if (this._channel) {
-                    this._channel.close();
-                    this._channel = null;
-                }
-                try {
-                    const roomId = this._sanitizeRoomId(this._roomId || Utils.getEl('#collabRoomId').value.trim() ||
-                        'default');
-                    this._channel = new BroadcastChannel('collab-' + roomId);
-                    this._channel.onmessage = (event) => {
-                        const data = event.data;
-                        if (data.type === 'update' && data.field) {
-                            const input = Utils.getEl(`[data-field="${data.field}"]`);
-                            if (input && input.value !== data.value) {
-                                input.value = data.value;
-                                input.dispatchEvent(new Event('input'));
-                            }
-                        }
-                        if (data.type === 'chat') {
-                            this._addMessage(data.user || 'Участник', data.text);
-                        }
-                    };
-                    this._updateStatus('🟢 Fallback-режим (BroadcastChannel) — работает локально');
-                    Utils.showToast('📡 Fallback-режим включён (работает на одном устройстве)', 'success');
-                    this._peers = [{ id: 'local', name: 'Вы (локальный)', online: true }];
-                    this._renderPeers();
-                } catch (e) {
-                    Utils.showToast('❌ BroadcastChannel не поддерживается', 'error');
-                }
-            },
-
-            // ===== КОПИРОВАНИЕ ССЫЛКИ =====
             copyInvite() {
                 const baseUrl = window.location.origin;
 
@@ -3182,7 +3342,6 @@
                 Utils.showToast('📋 Ссылка-приглашение скопирована!', 'success');
             },
 
-            // ===== ОТОБРАЖЕНИЕ =====
             _updateStatus(text) {
                 const el = Utils.getEl('#collabStatus');
                 if (el) el.textContent = text;
@@ -3193,6 +3352,7 @@
                 const joinBtn = Utils.getEl('#collabJoinBtn');
                 const leaveBtn = Utils.getEl('#collabLeaveBtn');
                 const syncBtn = Utils.getEl('#collabSyncBtn');
+                const reconnectBtn = Utils.getEl('#collabReconnectBtn');
 
                 switch (state) {
                     case 'host':
@@ -3201,12 +3361,14 @@
                         joinBtn.style.display = 'none';
                         leaveBtn.style.display = 'inline-flex';
                         syncBtn.style.display = 'inline-flex';
+                        reconnectBtn.style.display = 'inline-flex';
                         break;
                     default:
                         createBtn.style.display = 'inline-flex';
                         joinBtn.style.display = 'inline-flex';
                         leaveBtn.style.display = 'none';
                         syncBtn.style.display = 'none';
+                        reconnectBtn.style.display = 'none';
                 }
             },
 
@@ -3241,6 +3403,7 @@
         // =================================================================
         const GenerateTzManager = {
             DEFAULT_PROMPT: APP_CONFIG.PROMPTS[3]?.text || '',
+            _generatedHtml: '',
 
             generate() {
                 const req = RequirementsManager.getData();
@@ -3254,12 +3417,818 @@
                 const tz = this._generateFullTechnicalSpecification(req);
                 const container = Utils.getEl('#generatedTzContent');
                 container.innerHTML = tz;
+                this._generatedHtml = tz;
                 Utils.getEl('#applyTzBtn').style.display = 'inline-flex';
+                Utils.getEl('#exportTzBtn').style.display = 'inline-flex';
                 Utils.showToast('✅ Полное ТЗ для разработки сгенерировано!', 'success');
             },
 
-            // Здесь полный метод _generateFullTechnicalSpecification из предыдущей версии
-            // (он очень большой, я его оставляю как есть)
+            _generateFullTechnicalSpecification(req) {
+                const projectName = req.goal?.split(' ').slice(0, 4).join(' ') || 'Система';
+                const now = new Date().toLocaleString('ru-RU');
+
+                let html = `
+        <h1>📋 Техническое задание</h1>
+        <p><strong>Проект:</strong> ${req.goal || 'Не указано'}</p>
+        <p><strong>Дата создания:</strong> ${now}</p>
+        <p><strong>Версия документа:</strong> 1.0 (полная спецификация)</p>
+        <p><strong>Статус:</strong> Черновик</p>
+        <hr>
+
+        <!-- 1. ВВЕДЕНИЕ -->
+        <h2>1. ВВЕДЕНИЕ</h2>
+
+        <h3>1.1. Цель документа</h3>
+        <p>${req.goal || 'Определить полный набор требований к разрабатываемой системе.'}</p>
+
+        <h3>1.2. Область применения</h3>
+        <p>Документ определяет функциональные, нефункциональные и технические требования к системе. ТЗ является основой для разработки, тестирования и внедрения системы.</p>
+
+        <h3>1.3. Термины и сокращения</h3>
+        <ul>
+            <li><strong>ТЗ</strong> — Техническое задание</li>
+            <li><strong>API</strong> — Application Programming Interface</li>
+            <li><strong>REST</strong> — Representational State Transfer</li>
+            <li><strong>JWT</strong> — JSON Web Token</li>
+            <li><strong>ORM</strong> — Object-Relational Mapping</li>
+            <li><strong>UI/UX</strong> — User Interface / User Experience</li>
+            <li><strong>CI/CD</strong> — Continuous Integration / Continuous Delivery</li>
+            <li><strong>SLA</strong> — Service Level Agreement</li>
+            <li><strong>RPS</strong> — Requests Per Second</li>
+            <li><strong>DTO</strong> — Data Transfer Object</li>
+            <li><strong>DAO</strong> — Data Access Object</li>
+            <li><strong>RBAC</strong> — Role-Based Access Control</li>
+        </ul>
+
+        <h3>1.4. Нормативные ссылки</h3>
+        <ul>
+            <li>ГОСТ 34.602-89 — Техническое задание на создание автоматизированной системы</li>
+            <li>ФЗ-152 — О персональных данных</li>
+            <li>ГОСТ Р ИСО/МЭК 12207-2010 — Процессы жизненного цикла</li>
+            <li>RFC 7231 — HTTP/1.1 Semantics and Content</li>
+            <li>OpenAPI 3.0.0 — Спецификация API</li>
+        </ul>
+
+        <!-- 2. БИЗНЕС-ТРЕБОВАНИЯ -->
+        <h2>2. БИЗНЕС-ТРЕБОВАНИЯ</h2>
+
+        <h3>2.1. Бизнес-контекст и цели создания</h3>
+        <p>${req.goal || 'Требуется уточнение целей создания системы.'}</p>
+
+        <h3>2.2. Ключевые показатели эффективности (KPI)</h3>
+        <p>${req.kpi || 'KPI не указаны. Требуется уточнение.'}</p>
+
+        <h3>2.3. Заинтересованные лица</h3>
+        <ul>
+            <li><strong>Заказчик:</strong> Руководство компании</li>
+            <li><strong>Пользователи:</strong> ${req.users || 'Сотрудники компании'}</li>
+            <li><strong>Разработчики:</strong> Команда разработки (фронтенд, бэкенд, DevOps)</li>
+            <li><strong>Тестировщики:</strong> QA-команда</li>
+            <li><strong>Администраторы:</strong> Системные администраторы</li>
+        </ul>
+
+        <!-- 3. ФУНКЦИОНАЛЬНЫЕ ТРЕБОВАНИЯ -->
+        <h2>3. ФУНКЦИОНАЛЬНЫЕ ТРЕБОВАНИЯ</h2>
+
+        <h3>3.1. Роли пользователей</h3>
+        <ul>
+            ${this._formatRoles(req.users)}
+        </ul>
+
+        <h3>3.2. Матрица прав доступа (RBAC)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Функция</th>
+                    <th>Администратор</th>
+                    <th>Менеджер</th>
+                    <th>Исполнитель</th>
+                    <th>Наблюдатель</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Управление пользователями (CRUD)</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Управление ролями</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Создание/редактирование проекта</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Удаление/архивация проекта</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Создание/редактирование задачи</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Выполнение задачи (изменение статуса)</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+                <tr><td>Назначение исполнителя</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Комментирование задач</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Просмотр всех проектов</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td></tr>
+                <tr><td>Просмотр своих задач</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+                <tr><td>Генерация отчётов</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td></tr>
+                <tr><td>Экспорт данных (Excel/PDF)</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Управление интеграциями</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Просмотр логов и аудита</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+            </tbody>
+        </table>
+
+        <h3>3.3. Сценарии использования (Use Case)</h3>
+        ${this._formatScenarios(req.scenarios)}
+
+        <h3>3.4. Обработка исключительных ситуаций</h3>
+        ${this._formatExceptions(req.exceptions)}
+
+        <!-- 4. АРХИТЕКТУРА СИСТЕМЫ -->
+        <h2>4. АРХИТЕКТУРА СИСТЕМЫ</h2>
+
+        <h3>4.1. Общая архитектура</h3>
+        <p>Система построена по принципу <strong>клиент-сервер</strong> с микросервисной архитектурой:</p>
+        <ul>
+            <li><strong>Фронтенд:</strong> SPA (Single Page Application) на React + TypeScript</li>
+            <li><strong>Бэкенд:</strong> RESTful API на Python (FastAPI)</li>
+            <li><strong>База данных:</strong> PostgreSQL 15+</li>
+            <li><strong>Кэширование:</strong> Redis 7+</li>
+            <li><strong>Очереди сообщений:</strong> RabbitMQ / Celery</li>
+            <li><strong>API Gateway:</strong> Nginx / Traefik</li>
+            <li><strong>Деплой:</strong> Docker + Kubernetes (k8s)</li>
+            <li><strong>Мониторинг:</strong> Prometheus + Grafana</li>
+            <li><strong>Логирование:</strong> ELK Stack (Elasticsearch, Logstash, Kibana)</li>
+        </ul>
+
+        <h3>4.2. Диаграмма компонентов</h3>
+        <pre>
+        ┌─────────────────────────────────────────────────────────────────────────────┐
+        │                            Клиент (React SPA)                              │
+        ├─────────────────────────────────────────────────────────────────────────────┤
+        │                                                                             │
+        │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                │
+        │  │   UI-компоненты│    │   Состояние   │    │   Роутинг    │                │
+        │  │  (Material UI) │    │  (Redux/Zustand)│    │(React Router)│                │
+        │  └──────────────┘    └──────────────┘    └──────────────┘                │
+        │                                                                             │
+        └───────────────────────────────┬─────────────────────────────────────────────┘
+                                    │
+                                    │ HTTPS / REST API (JSON)
+                                    ▼
+        ┌─────────────────────────────────────────────────────────────────────────────┐
+        │                         API Gateway (Nginx / Traefik)                      │
+        ├─────────────────────────────────────────────────────────────────────────────┤
+        │  - Rate Limiting (1000 RPS)                                                │
+        │  - CORS                                                                     │
+        │  - SSL Termination (TLS 1.2+)                                              │
+        └───────────────────────────────┬─────────────────────────────────────────────┘
+                                    │
+                                    ▼
+        ┌─────────────────────────────────────────────────────────────────────────────┐
+        │                         Бэкенд-сервисы (FastAPI)                           │
+        ├─────────────────────────────────────────────────────────────────────────────┤
+        │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                │
+        │  │ Auth Service │    │ Project API  │    │  Task API    │                │
+        │  │  (JWT/2FA)   │    │              │    │              │                │
+        │  └──────────────┘    └──────────────┘    └──────────────┘                │
+        │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                │
+        │  │  User API    │    │  Report API  │    │  Integration │                │
+        │  │              │    │              │    │   Service    │                │
+        │  └──────────────┘    └──────────────┘    └──────────────┘                │
+        └───────────────────────────────┬─────────────────────────────────────────────┘
+                                    │
+                                    │ SQLAlchemy ORM
+                                    ▼
+        ┌─────────────────────────────────────────────────────────────────────────────┐
+        │                      База данных (PostgreSQL 15+)                          │
+        ├─────────────────────────────────────────────────────────────────────────────┤
+        │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                │
+        │  │   Проекты    │    │   Задачи     │    │  Пользователи │                │
+        │  └──────────────┘    └──────────────┘    └──────────────┘                │
+        └───────────────────────────────┬─────────────────────────────────────────────┘
+                                    │
+                                    ▼
+        ┌─────────────────────────────────────────────────────────────────────────────┐
+        │                         Внешние системы (интеграции)                       │
+        ├─────────────────────────────────────────────────────────────────────────────┤
+        │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                │
+        │  │  Jira / Git  │    │   Slack /    │    │   Active     │                │
+        │  │  (REST API)  │    │  Telegram    │    │  Directory   │                │
+        │  └──────────────┘    └──────────────┘    └──────────────┘                │
+        └─────────────────────────────────────────────────────────────────────────────┘
+        </pre>
+
+        <!-- 5. БЭКЕНД-СПЕЦИФИКАЦИЯ -->
+        <h2>5. БЭКЕНД-СПЕЦИФИКАЦИЯ</h2>
+
+        <h3>5.1. Технологический стек</h3>
+        <ul>
+            <li><strong>Язык:</strong> Python 3.11+</li>
+            <li><strong>Фреймворк:</strong> FastAPI 0.100+</li>
+            <li><strong>ORM:</strong> SQLAlchemy 2.0+</li>
+            <li><strong>Миграции:</strong> Alembic</li>
+            <li><strong>Аутентификация:</strong> JWT (python-jose) + OAuth2</li>
+            <li><strong>Валидация:</strong> Pydantic V2</li>
+            <li><strong>Очереди:</strong> Celery + Redis (для фоновых задач)</li>
+            <li><strong>Тестирование:</strong> Pytest + pytest-cov</li>
+            <li><strong>Документация API:</strong> OpenAPI/Swagger (автоматическая)</li>
+            <li><strong>Логирование:</strong> Python logging + ELK Stack</li>
+        </ul>
+
+        <h3>5.2. API Эндпоинты</h3>
+
+        <h4>POST /api/v1/auth/login — Вход в систему</h4>
+        <p><strong>Запрос:</strong></p>
+        <pre>
+        {
+            "email": "user@example.com",
+            "password": "secure_password"
+        }
+        </pre>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "token_type": "bearer",
+            "expires_in": 900,
+            "user": {
+                "id": 1,
+                "email": "user@example.com",
+                "username": "john_doe",
+                "full_name": "John Doe",
+                "role": "manager",
+                "is_active": true
+            }
+        }
+        </pre>
+        <p><strong>Коды ошибок:</strong></p>
+        <ul>
+            <li><span class="http-code http-code-4xx">400</span> Bad Request — Неверный формат запроса</li>
+            <li><span class="http-code http-code-4xx">401</span> Unauthorized — Неверный email или пароль</li>
+            <li><span class="http-code http-code-4xx">403</span> Forbidden — Доступ запрещён (аккаунт заблокирован)</li>
+            <li><span class="http-code http-code-4xx">429</span> Too Many Requests — Превышено количество попыток входа</li>
+        </ul>
+
+        <h4>POST /api/v1/auth/refresh — Обновление токена</h4>
+        <p><strong>Запрос:</strong></p>
+        <pre>
+        {
+            "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        }
+        </pre>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "expires_in": 900
+        }
+        </pre>
+        <p><strong>Коды ошибок:</strong></p>
+        <ul>
+            <li><span class="http-code http-code-4xx">400</span> Bad Request — Неверный формат запроса</li>
+            <li><span class="http-code http-code-4xx">401</span> Unauthorized — Неверный или истёкший refresh_token</li>
+        </ul>
+
+        <h4>POST /api/v1/auth/logout — Выход из системы</h4>
+        <p><strong>Заголовки:</strong> Authorization: Bearer {access_token}</p>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "message": "Successfully logged out"
+        }
+        </pre>
+
+        <h4>POST /api/v1/auth/2fa/setup — Настройка 2FA</h4>
+        <p><strong>Заголовки:</strong> Authorization: Bearer {access_token}</p>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "secret": "JBSWY3DPEHPK3PXP",
+            "qr_code": "data:image/png;base64,iVBORw0KGgo...",
+            "backup_codes": ["ABC123", "DEF456", "GHI789"]
+        }
+        </pre>
+
+        <h4>POST /api/v1/auth/2fa/verify — Проверка 2FA</h4>
+        <p><strong>Запрос:</strong></p>
+        <pre>
+        {
+            "code": "123456"
+        }
+        </pre>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "verified": true,
+            "message": "2FA verified successfully"
+        }
+        </pre>
+
+        <h4>GET /api/v1/users — Список пользователей</h4>
+        <p><strong>Параметры запроса:</strong></p>
+        <ul>
+            <li><code>page</code> — номер страницы (по умолчанию 1)</li>
+            <li><code>size</code> — размер страницы (по умолчанию 20, максимум 100)</li>
+            <li><code>search</code> — поиск по имени или email</li>
+            <li><code>role</code> — фильтр по роли (admin, manager, executor, observer)</li>
+            <li><code>is_active</code> — фильтр по статусу (true/false)</li>
+            <li><code>sort_by</code> — поле для сортировки (id, email, full_name, created_at)</li>
+            <li><code>sort_order</code> — порядок сортировки (asc/desc)</li>
+        </ul>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "items": [
+                {
+                    "id": 1,
+                    "email": "user@example.com",
+                    "username": "john_doe",
+                    "full_name": "John Doe",
+                    "role": "manager",
+                    "department": "IT",
+                    "is_active": true,
+                    "created_at": "2026-09-01T10:00:00Z"
+                }
+            ],
+            "total": 100,
+            "page": 1,
+            "size": 20,
+            "pages": 5
+        }
+        </pre>
+
+        <h4>POST /api/v1/users — Создать пользователя</h4>
+        <p><strong>Запрос:</strong></p>
+        <pre>
+        {
+            "email": "newuser@example.com",
+            "username": "new_user",
+            "full_name": "New User",
+            "password": "secure_password",
+            "role": "executor",
+            "department": "Development"
+        }
+        </pre>
+        <p><strong>Ответ (201 Created):</strong></p>
+        <pre>
+        {
+            "id": 2,
+            "email": "newuser@example.com",
+            "username": "new_user",
+            "full_name": "New User",
+            "role": "executor",
+            "department": "Development",
+            "is_active": true,
+            "created_at": "2026-09-01T10:00:00Z"
+        }
+        </pre>
+        <p><strong>Коды ошибок:</strong></p>
+        <ul>
+            <li><span class="http-code http-code-4xx">400</span> Bad Request — Неверный формат запроса</li>
+            <li><span class="http-code http-code-4xx">409</span> Conflict — Email или username уже занят</li>
+            <li><span class="http-code http-code-4xx">403</span> Forbidden — Недостаточно прав</li>
+        </ul>
+
+        <h4>GET /api/v1/projects — Список проектов</h4>
+        <p><strong>Параметры запроса:</strong></p>
+        <ul>
+            <li><code>page</code> — номер страницы</li>
+            <li><code>size</code> — размер страницы</li>
+            <li><code>status</code> — фильтр по статусу (draft, active, review, completed, archived)</li>
+            <li><code>manager_id</code> — фильтр по менеджеру</li>
+            <li><code>search</code> — поиск по названию</li>
+            <li><code>date_from</code> — фильтр по дате начала (от)</li>
+            <li><code>date_to</code> — фильтр по дате начала (до)</li>
+        </ul>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "items": [
+                {
+                    "id": 1,
+                    "name": "Разработка PMS",
+                    "description": "Система управления проектами",
+                    "status": "active",
+                    "start_date": "2026-09-01",
+                    "end_date": "2026-12-01",
+                    "manager_id": 1,
+                    "manager_name": "John Doe",
+                    "created_at": "2026-09-01T10:00:00Z",
+                    "tasks_count": 15,
+                    "completed_tasks": 8
+                }
+            ],
+            "total": 10,
+            "page": 1,
+            "size": 20,
+            "pages": 1
+        }
+        </pre>
+
+        <h4>POST /api/v1/projects — Создать проект</h4>
+        <p><strong>Запрос:</strong></p>
+        <pre>
+        {
+            "name": "Новый проект",
+            "description": "Описание проекта",
+            "start_date": "2026-09-15",
+            "end_date": "2026-12-15",
+            "manager_id": 1
+        }
+        </pre>
+        <p><strong>Ответ (201 Created):</strong></p>
+        <pre>
+        {
+            "id": 2,
+            "name": "Новый проект",
+            "description": "Описание проекта",
+            "status": "draft",
+            "start_date": "2026-09-15",
+            "end_date": "2026-12-15",
+            "manager_id": 1,
+            "created_at": "2026-09-01T10:00:00Z"
+        }
+        </pre>
+
+        <h4>GET /api/v1/tasks — Список задач</h4>
+        <p><strong>Параметры запроса:</strong></p>
+        <ul>
+            <li><code>project_id</code> — фильтр по проекту</li>
+            <li><code>assignee_id</code> — фильтр по исполнителю</li>
+            <li><code>status</code> — фильтр по статусу</li>
+            <li><code>priority</code> — фильтр по приоритету</li>
+            <li><code>due_date_from</code> — дедлайн от</li>
+            <li><code>due_date_to</code> — дедлайн до</li>
+            <li><code>page</code> — номер страницы</li>
+            <li><code>size</code> — размер страницы</li>
+        </ul>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "items": [
+                {
+                    "id": 1,
+                    "title": "Спроектировать БД",
+                    "description": "Разработать схему PostgreSQL",
+                    "status": "done",
+                    "priority": "high",
+                    "due_date": "2026-09-10",
+                    "project_id": 1,
+                    "project_name": "Разработка PMS",
+                    "assignee_id": 2,
+                    "assignee_name": "Jane Smith",
+                    "created_by": 1,
+                    "created_at": "2026-09-01T10:00:00Z",
+                    "updated_at": "2026-09-05T15:30:00Z"
+                }
+            ],
+            "total": 50,
+            "page": 1,
+            "size": 20,
+            "pages": 3
+        }
+        </pre>
+
+        <h4>POST /api/v1/tasks — Создать задачу</h4>
+        <p><strong>Запрос:</strong></p>
+        <pre>
+        {
+            "title": "Новая задача",
+            "description": "Описание задачи",
+            "priority": "medium",
+            "due_date": "2026-09-20",
+            "project_id": 1,
+            "assignee_id": 2
+        }
+        </pre>
+        <p><strong>Ответ (201 Created):</strong></p>
+        <pre>
+        {
+            "id": 2,
+            "title": "Новая задача",
+            "description": "Описание задачи",
+            "status": "new",
+            "priority": "medium",
+            "due_date": "2026-09-20",
+            "project_id": 1,
+            "assignee_id": 2,
+            "created_by": 1,
+            "created_at": "2026-09-01T10:00:00Z"
+        }
+        </pre>
+
+        <h4>PATCH /api/v1/tasks/{id}/status — Изменить статус задачи</h4>
+        <p><strong>Запрос:</strong></p>
+        <pre>
+        {
+            "status": "in_progress",
+            "comment": "Начинаю работу над задачей"
+        }
+        </pre>
+        <p><strong>Ответ (200 OK):</strong></p>
+        <pre>
+        {
+            "id": 2,
+            "status": "in_progress",
+            "updated_at": "2026-09-01T10:00:00Z"
+        }
+        </pre>
+        <p><strong>Допустимые статусы:</strong> new, in_progress, review, done, blocked</p>
+
+        <h3>5.3. Маппинг бэкенд ↔ фронтенд (DTO)</h3>
+        <h4>Проект (Project)</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Бэкенд (Python/SQLAlchemy)</th>
+                    <th>DTO (Pydantic)</th>
+                    <th>Фронтенд (TypeScript)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>Project.id</code> (int)</td><td><code>Project.id</code> (int)</td><td><code>Project.id</code> (number)</td></tr>
+                <tr><td><code>Project.name</code> (str)</td><td><code>Project.name</code> (str)</td><td><code>Project.name</code> (string)</td></tr>
+                <tr><td><code>Project.description</code> (str, nullable)</td><td><code>Project.description</code> (str, optional)</td><td><code>Project.description</code> (string, optional)</td></tr>
+                <tr><td><code>Project.status</code> (Enum)</td><td><code>Project.status</code> (Enum)</td><td><code>Project.status</code> (enum: 'draft'|'active'|'review'|'completed'|'archived')</td></tr>
+                <tr><td><code>Project.manager_id</code> (int)</td><td><code>Project.manager_id</code> (int)</td><td><code>Project.managerId</code> (number)</td></tr>
+                <tr><td><code>Project.manager</code> (relationship)</td><td><code>Project.manager_name</code> (str)</td><td><code>Project.managerName</code> (string)</td></tr>
+                <tr><td><code>Project.created_at</code> (datetime)</td><td><code>Project.created_at</code> (datetime)</td><td><code>Project.createdAt</code> (string, ISO)</td></tr>
+            </tbody>
+        </table>
+
+        <!-- 6. ФРОНТЕНД-СПЕЦИФИКАЦИЯ -->
+        <h2>6. ФРОНТЕНД-СПЕЦИФИКАЦИЯ</h2>
+
+        <h3>6.1. Технологический стек</h3>
+        <ul>
+            <li><strong>Фреймворк:</strong> React 18+</li>
+            <li><strong>Язык:</strong> TypeScript 5+</li>
+            <li><strong>Стейт-менеджмент:</strong> Redux Toolkit / Zustand</li>
+            <li><strong>Роутинг:</strong> React Router v6</li>
+            <li><strong>UI-библиотека:</strong> Material UI 5 (MUI) / Ant Design</li>
+            <li><strong>HTTP-клиент:</strong> Axios (с интерцепторами для JWT)</li>
+            <li><strong>Формы:</strong> React Hook Form + Zod (валидация)</li>
+            <li><strong>Графики:</strong> Recharts / Chart.js</li>
+            <li><strong>Таблицы:</strong> React Table / Material Table</li>
+            <li><strong>Уведомления:</strong> React Hot Toast / Notistack</li>
+            <li><strong>Сборка:</strong> Vite (быстрая сборка и HMR)</li>
+            <li><strong>Тестирование:</strong> Jest + React Testing Library</li>
+        </ul>
+
+        <h3>6.2. Экраны</h3>
+        <ul>
+            <li><strong>Авторизация:</strong> Вход, регистрация, восстановление пароля, 2FA</li>
+            <li><strong>Дашборд:</strong> Статистика, графики, последние задачи, уведомления</li>
+            <li><strong>Проекты:</strong> Список, создание/редактирование, детальная страница</li>
+            <li><strong>Задачи:</strong> Канбан-доска, список, создание/редактирование, комментарии</li>
+            <li><strong>Отчёты:</strong> Таблицы, графики, экспорт в Excel/PDF</li>
+            <li><strong>Администрирование:</strong> Управление пользователями, ролями, настройки</li>
+        </ul>
+
+        <h3>6.3. Состояния интерфейса</h3>
+        <ul>
+            <li><strong>Загрузка:</strong> Скелетоны / спиннеры</li>
+            <li><strong>Успех:</strong> Toast-уведомления</li>
+            <li><strong>Ошибка:</strong> Сообщения об ошибках с описанием</li>
+            <li><strong>Пустое состояние:</strong> Плейсхолдеры</li>
+            <li><strong>Адаптивность:</strong> Mobile-first, поддержка планшетов и десктопов</li>
+        </ul>
+
+        <!-- 7. БАЗА ДАННЫХ -->
+        <h2>7. БАЗА ДАННЫХ</h2>
+
+        <h3>7.1. Схема базы данных</h3>
+        <pre>
+        -- Таблица пользователей
+        CREATE TABLE users (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            username VARCHAR(100) UNIQUE NOT NULL,
+            full_name VARCHAR(255) NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            role VARCHAR(50) NOT NULL DEFAULT 'executor',
+            department VARCHAR(100),
+            is_active BOOLEAN DEFAULT TRUE,
+            is_2fa_enabled BOOLEAN DEFAULT FALSE,
+            twofa_secret VARCHAR(255),
+            last_login TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- Таблица проектов
+        CREATE TABLE projects (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            description TEXT,
+            status VARCHAR(50) DEFAULT 'draft',
+            start_date DATE NOT NULL,
+            end_date DATE,
+            manager_id INTEGER REFERENCES users(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- Таблица задач
+        CREATE TABLE tasks (
+            id SERIAL PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
+            status VARCHAR(50) DEFAULT 'new',
+            priority VARCHAR(50) DEFAULT 'medium',
+            due_date DATE,
+            project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+            assignee_id INTEGER REFERENCES users(id),
+            created_by INTEGER REFERENCES users(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- Индексы
+        CREATE INDEX idx_tasks_project_id ON tasks(project_id);
+        CREATE INDEX idx_tasks_assignee_id ON tasks(assignee_id);
+        CREATE INDEX idx_tasks_status ON tasks(status);
+        CREATE INDEX idx_tasks_due_date ON tasks(due_date);
+        CREATE INDEX idx_projects_manager_id ON projects(manager_id);
+        CREATE INDEX idx_projects_status ON projects(status);
+        </pre>
+
+        <!-- 8. ИНТЕГРАЦИИ -->
+        <h2>8. ИНТЕГРАЦИИ</h2>
+
+        <h3>8.1. Внешние системы</h3>
+        <ul>
+            ${this._formatIntegrations(req.integrations)}
+        </ul>
+
+        <!-- 9. БЕЗОПАСНОСТЬ -->
+        <h2>9. БЕЗОПАСНОСТЬ</h2>
+
+        <h3>9.1. Аутентификация и авторизация</h3>
+        <ul>
+            <li><strong>JWT</strong> с ограниченным временем жизни (15 минут)</li>
+            <li><strong>Refresh Token</strong> для продления сессии (7 дней)</li>
+            <li><strong>2FA</strong> (TOTP / SMS / Email)</li>
+            <li><strong>RBAC</strong> (Role-Based Access Control)</li>
+            <li><strong>LDAP / Active Directory</strong> интеграция</li>
+        </ul>
+
+        <h3>9.2. Шифрование</h3>
+        <ul>
+            <li><strong>HTTPS</strong> (TLS 1.2+)</li>
+            <li><strong>bcrypt</strong> для хеширования паролей</li>
+            <li><strong>AES-256</strong> для шифрования данных</li>
+            <li><strong>SSL</strong> сертификаты (Let's Encrypt)</li>
+        </ul>
+
+        <!-- 10. ПРОИЗВОДИТЕЛЬНОСТЬ -->
+        <h2>10. ПРОИЗВОДИТЕЛЬНОСТЬ</h2>
+
+        <h3>10.1. Нагрузка</h3>
+        <ul>
+            <li><strong>RPS:</strong> до 1000 запросов в секунду</li>
+            <li><strong>Время отклика:</strong> не более 200 мс (95-й перцентиль)</li>
+            <li><strong>Одновременные пользователи:</strong> до 500</li>
+            <li><strong>Общее количество пользователей:</strong> до 5000</li>
+        </ul>
+
+        <h3>10.2. Масштабирование</h3>
+        <ul>
+            <li>Горизонтальное масштабирование бэкенда</li>
+            <li>База данных: репликация (master-slave)</li>
+            <li>Кэширование (Redis) для часто запрашиваемых данных</li>
+            <li>CDN для статики</li>
+        </ul>
+
+        <!-- 11. DEVOPS -->
+        <h2>11. DEVOPS И ИНФРАСТРУКТУРА</h2>
+
+        <h3>11.1. CI/CD</h3>
+        <ul>
+            <li><strong>CI:</strong> GitHub Actions</li>
+            <li>Автоматические тесты при каждом push</li>
+            <li>Сборка Docker-образов</li>
+            <li><strong>CD:</strong> Автоматический деплой на staging</li>
+        </ul>
+
+        <h3>11.2. Мониторинг</h3>
+        <ul>
+            <li><strong>Prometheus + Grafana</strong> для метрик</li>
+            <li><strong>ELK Stack</strong> для логов</li>
+            <li><strong>Sentry</strong> для ошибок</li>
+        </ul>
+
+        <h3>11.3. Деплой</h3>
+        <ul>
+            <li><strong>Контейнеризация:</strong> Docker</li>
+            <li><strong>Оркестрация:</strong> Kubernetes</li>
+            <li><strong>Хостинг:</strong> Yandex Cloud / AWS</li>
+            <li><strong>Резервное копирование:</strong> Ежедневный бэкап БД</li>
+        </ul>
+
+        <!-- 12. ТЕСТИРОВАНИЕ -->
+        <h2>12. ТЕСТИРОВАНИЕ</h2>
+
+        <h3>12.1. Стратегия тестирования</h3>
+        <ul>
+            <li><strong>Модульное тестирование:</strong> Pytest (бэкенд), Jest (фронтенд)</li>
+            <li><strong>Интеграционное тестирование:</strong> Тесты API</li>
+            <li><strong>UI-тестирование:</strong> Cypress</li>
+            <li><strong>Нагрузочное тестирование:</strong> Locust</li>
+        </ul>
+
+        <h3>12.2. Критерии приемки</h3>
+        <ul>
+            <li>Все функциональные требования реализованы</li>
+            <li>Покрытие кода тестами не менее 80%</li>
+            <li>Все тесты проходят успешно</li>
+            <li>Время отклика соответствует требованиям</li>
+            <li>UI соответствует макетам</li>
+        </ul>
+
+        <!-- 13. ЭТАПЫ ВНЕДРЕНИЯ -->
+        <h2>13. ЭТАПЫ ВНЕДРЕНИЯ</h2>
+
+        <h3>13.1. План-график работ</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Этап</th>
+                    <th>Длительность</th>
+                    <th>Результат</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1. Анализ и проектирование</td><td>2 недели</td><td>Детальный план, архитектура, макеты</td></tr>
+                <tr><td>2. Разработка бэкенда</td><td>4 недели</td><td>API, бизнес-логика, БД</td></tr>
+                <tr><td>3. Разработка фронтенда</td><td>4 недели</td><td>UI, компоненты, интеграция с API</td></tr>
+                <tr><td>4. Интеграция и тестирование</td><td>2 недели</td><td>Готовая система, прошедшая тесты</td></tr>
+                <tr><td>5. Внедрение и обучение</td><td>1 неделя</td><td>Развёрнутая система, обученные пользователи</td></tr>
+            </tbody>
+        </table>
+
+        <!-- 14. РИСКИ -->
+        <h2>14. РИСКИ И ОГРАНИЧЕНИЯ</h2>
+
+        <h3>14.1. Технические риски</h3>
+        <ul>
+            <li><strong>Интеграции:</strong> Задержки при интеграции с внешними системами</li>
+            <li><strong>Производительность:</strong> Недостаточная производительность при пиковых нагрузках</li>
+            <li><strong>Безопасность:</strong> Уязвимости в сторонних библиотеках</li>
+            <li><strong>База данных:</strong> Потеря данных при сбоях</li>
+        </ul>
+
+        <h3>14.2. Организационные риски</h3>
+        <ul>
+            <li><strong>Команда:</strong> Нехватка ресурсов, уход ключевых сотрудников</li>
+            <li><strong>Сроки:</strong> Сдвиг сроков из-за изменения требований</li>
+            <li><strong>Бюджет:</strong> Превышение бюджета</li>
+        </ul>
+
+        <!-- 15. ПРИЛОЖЕНИЯ -->
+        <h2>15. ПРИЛОЖЕНИЯ</h2>
+
+        <h3>15.1. Глоссарий</h3>
+        <ul>
+            <li><strong>Проект:</strong> Совокупность задач, направленных на достижение цели</li>
+            <li><strong>Задача:</strong> Единица работы с определённым сроком и исполнителем</li>
+            <li><strong>Канбан-доска:</strong> Инструмент визуализации задач по статусам</li>
+            <li><strong>Стейкхолдер:</strong> Заинтересованное лицо</li>
+        </ul>
+
+        <h3>15.2. API-спецификация</h3>
+        <p>Доступна по адресу: <code>/docs</code> (Swagger UI)</p>
+
+        <hr>
+        <p style="color:var(--text-muted);font-size:13px;">
+            ⚠️ Документ создан на основе введённых данных. Требуется доработка и согласование с командой разработки.
+        </p>
+        `;
+
+                return html;
+            },
+
+            _formatRoles(users) {
+                if (!users) return '<li>Роли не указаны. Требуется уточнение.</li>';
+                const roles = users.split(/[,;]\s*/).filter(r => r.trim());
+                return roles.map(r => `<li><strong>${r.trim()}</strong> — описание роли</li>`).join('');
+            },
+
+            _formatScenarios(scenarios) {
+                if (!scenarios) return '<p>Сценарии не указаны. Требуется уточнение.</p>';
+                const items = scenarios.split('\n').filter(s => s.trim());
+                let html = '<ul>';
+                items.forEach((s, i) => {
+                    html += `<li><strong>Сценарий ${i + 1}:</strong> ${s.trim()}</li>`;
+                });
+                html += '</ul>';
+                return html;
+            },
+
+            _formatExceptions(exceptions) {
+                if (!exceptions) return '<p>Исключительные ситуации не указаны. Требуется уточнение.</p>';
+                const items = exceptions.split('\n').filter(s => s.trim());
+                let html = '<ul>';
+                items.forEach((s, i) => {
+                    html += `<li><strong>Ситуация ${i + 1}:</strong> ${s.trim()}</li>`;
+                });
+                html += '</ul>';
+                return html;
+            },
+
+            _formatIntegrations(integrations) {
+                if (!integrations) return '<li>Интеграции не указаны. Требуется уточнение.</li>';
+                const items = integrations.split('\n').filter(s => s.trim());
+                return items.map(s => `<li>${s.trim()}</li>`).join('');
+            },
 
             resetPrompt() {
                 const prompt = this.DEFAULT_PROMPT || APP_CONFIG.PROMPTS[3]?.text || '';
@@ -3308,7 +4277,47 @@
                 const container = Utils.getEl('#generatedTzContent');
                 container.innerHTML = '<span style="color:var(--text-muted);">Нажмите "Сгенерировать ТЗ" для создания черновика...</span>';
                 Utils.getEl('#applyTzBtn').style.display = 'none';
+                Utils.getEl('#exportTzBtn').style.display = 'none';
                 Utils.showToast('🗑️ Очищено', 'success');
+            },
+
+            exportTz() {
+                const content = Utils.getEl('#generatedTzContent').innerHTML;
+                if (!content || content.includes('Нажмите "Сгенерировать ТЗ"')) {
+                    Utils.showToast('⚠️ Сначала сгенерируйте ТЗ', 'error');
+                    return;
+                }
+
+                const fullHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Техническое задание</title>
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 1000px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+                h1 { color: #2b6cb0; }
+                h2 { color: #1a365d; margin-top: 24px; }
+                h3 { color: #2d3748; margin-top: 16px; }
+                table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+                th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+                th { background: #f0f4f8; }
+                pre { background: #f0f4f8; padding: 12px; border-radius: 8px; overflow: auto; font-size: 12px; font-family: 'Courier New', monospace; }
+                ul { padding-left: 20px; }
+                hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+                .http-code { display: inline-block; padding: 2px 10px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+                .http-code-2xx { background: #c6f6d5; color: #22543d; }
+                .http-code-4xx { background: #fed7d7; color: #742a2a; }
+                .http-code-5xx { background: #fefcbf; color: #744210; }
+            </style>
+        </head>
+        <body>
+            ${content}
+        </body>
+        </html>`;
+
+                Utils.downloadFile(fullHtml, 'technical_specification.html', 'text/html');
+                Utils.showToast('📥 ТЗ экспортирован как HTML!', 'success');
             }
         };
 
@@ -3382,6 +4391,7 @@
             Utils.getEl('#applyTzBtn')?.addEventListener('click', () => GenerateTzManager.applyToFields());
             Utils.getEl('#clearTzBtn')?.addEventListener('click', () => GenerateTzManager.clear());
             Utils.getEl('#resetPromptBtn')?.addEventListener('click', () => GenerateTzManager.resetPrompt());
+            Utils.getEl('#exportTzBtn')?.addEventListener('click', () => GenerateTzManager.exportTz());
 
             const observer = new MutationObserver(() => {
                 if (MermaidManager.initialized) {
@@ -3395,7 +4405,8 @@
             console.log(`⚡ Analyst Toolkit Pro v${APP_CONFIG.VERSION} инициализирован`);
             console.log('📊 Mermaid диаграммы с выбором типа');
             console.log('📄 Генерация полного ТЗ для разработки (фронт + бэк)');
-            console.log('🔗 Совместная работа PeerJS — список участников отображается в блоке "Участников"');
+            console.log('🔗 Совместная работа: выбор сервера + автоматический fallback');
+            console.log('📥 Экспорт ТЗ в HTML');
         };
 
         init();
