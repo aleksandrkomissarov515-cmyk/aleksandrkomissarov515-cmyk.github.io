@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Дорожная карта ОЗП 2.0</title>
     <style>
-        /* ===== БАЗОВЫЕ СТИЛИ ===== */
+        /* ===== ВСЕ СТИЛИ (БЕЗ ИЗМЕНЕНИЙ) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -1279,7 +1279,7 @@
         const API_KEY = '5afb9a66d6f5afbb623f8b83eb3bea42';
 
         // ============================================================
-        //  🧠  ЛОГИКА РАБОТЫ
+        //  🧠  ЛОГИКА РАБОТЫ (С ИСПРАВЛЕННЫМ СОХРАНЕНИЕМ ИСТОРИИ)
         // ============================================================
 
         let tasks = [];
@@ -1463,7 +1463,37 @@
             }
 
             renderHistory();
-            scheduleSave();
+            // Сохраняем историю в облако отдельно
+            saveHistoryOnly(historyData);
+        }
+
+        // --- СОХРАНЕНИЕ ТОЛЬКО ИСТОРИИ ---
+        async function saveHistoryOnly(history) {
+            if (isSaving) return;
+            isSaving = true;
+            try {
+                const payload = {
+                    data_update: {
+                        history: history || historyData
+                    }
+                };
+
+                const resp = await fetch('https://jsonbox.ru/api.php?action=update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await resp.json();
+                console.log('📤 История сохранена:', result);
+            } catch (e) {
+                console.error('❌ Ошибка сохранения истории:', e);
+            } finally {
+                isSaving = false;
+            }
         }
 
         // --- ОТОБРАЖЕНИЕ ИСТОРИИ ---
@@ -1508,8 +1538,14 @@
                     }
                     if (data.data.history) {
                         historyData = data.data.history;
-                        renderHistory(); // <-- ОБЯЗАТЕЛЬНО ВЫЗЫВАЕМ
+                        renderHistory();
                         console.log('📜 История загружена из облака:', historyData.length, 'записей');
+                    } else {
+                        // Если истории нет в облаке — создаём пустую
+                        historyData = [];
+                        renderHistory();
+                        // Сохраняем пустую историю, чтобы поле появилось
+                        await saveHistoryOnly([]);
                     }
                     if (data.data.title) {
                         roadmapTitle = data.data.title;
@@ -1600,7 +1636,8 @@
                 const payload = {
                     data_update: {
                         title: roadmapTitle,
-                        tasks: data || tasks
+                        tasks: data || tasks,
+                        history: historyData
                     }
                 };
 
@@ -1627,7 +1664,8 @@
                         body: JSON.stringify({
                             data: {
                                 title: roadmapTitle,
-                                tasks: data || tasks
+                                tasks: data || tasks,
+                                history: historyData
                             }
                         })
                     });
@@ -1663,7 +1701,6 @@
                 if (data && data.data) {
                     let hasChanges = false;
 
-                    // Проверяем задачи
                     if (data.data.tasks) {
                         const cloudTasks = data.data.tasks;
                         if (JSON.stringify(cloudTasks) !== JSON.stringify(tasks)) {
@@ -1672,18 +1709,16 @@
                         }
                     }
 
-                    // Проверяем историю — ВСЕГДА обновляем
                     if (data.data.history) {
                         const cloudHistory = data.data.history;
                         if (JSON.stringify(cloudHistory) !== JSON.stringify(historyData)) {
                             historyData = cloudHistory;
-                            renderHistory(); // <-- ПЕРЕРИСОВЫВАЕМ ИСТОРИЮ
+                            renderHistory();
                             hasChanges = true;
                             console.log('📜 История обновлена из облака');
                         }
                     }
 
-                    // Проверяем название
                     if (data.data.title && data.data.title !== roadmapTitle) {
                         roadmapTitle = data.data.title;
                         titleDisplay.innerHTML = `<span>${roadmapTitle}</span>`;
@@ -1710,7 +1745,6 @@
             const loader = document.getElementById('loader');
             const table = document.getElementById('taskTable');
 
-            // Восстанавливаем состояние истории
             const savedState = localStorage.getItem('history_visible');
             if (savedState === 'closed') {
                 document.getElementById('historyContent').classList.add('collapsed');
@@ -1718,10 +1752,7 @@
                 historyVisible = false;
             }
 
-            // Устанавливаем имя пользователя
             document.getElementById('userNameDisplay').textContent = currentUser;
-
-            // Устанавливаем название
             titleDisplay.innerHTML = `<span>${roadmapTitle}</span>`;
             titleInput.value = roadmapTitle;
 
@@ -1743,7 +1774,6 @@
             table.classList.remove('hidden');
             renderTable();
 
-            // --- АВТООБНОВЛЕНИЕ КАЖДЫЕ 15 СЕКУНД ---
             setInterval(checkForUpdates, 15000);
             console.log('🔄 Автообновление включено (каждые 15 секунд)');
         }
@@ -1786,11 +1816,7 @@
                 { id: 17, task: 'API "Удаление архива"', owner: 'АИС ГЖИ', deadline: '', status: 'ожидание',
                     comment: '' },
                 { id: 18, task: 'Интеграционное тестирование (АИС ГЖИ ↔ ГИС ЖКХ)', owner: 'ЦРЦТ / АИС ГЖИ',
-                    deadline: '', status: 'ожидание', comment: '' },
-                { id: 19, task: 'Обучение пользователей', owner: 'АРКИ', deadline: '', status: 'ожидание',
-                    comment: '' },
-                { id: 20, task: 'Передать инструкцию (параллельно обучению или после)', owner: 'ЦРЦТ', deadline: '',
-                    status: 'ожидание', comment: '' }
+                    deadline: '', status: 'ожидание', comment: '' }
             ];
         }
 
