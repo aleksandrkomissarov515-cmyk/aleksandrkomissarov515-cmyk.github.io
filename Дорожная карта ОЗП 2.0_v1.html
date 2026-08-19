@@ -68,25 +68,85 @@
             gap: 0.8rem;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text);
+        .header-left {
             display: flex;
             align-items: center;
             gap: 8px;
+            flex: 1;
+            min-width: 200px;
         }
 
-        .header h1 span {
+        .header-left .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .header-left .title-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            padding: 2px 4px;
+            cursor: default;
+            word-break: break-word;
+            line-height: 1.3;
+            flex: 1;
+        }
+
+        .header-left .title-display span {
             background: linear-gradient(135deg, #0b2b4a, #1b4a7a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        [data-theme="dark"] .header h1 span {
+        [data-theme="dark"] .header-left .title-display span {
             background: linear-gradient(135deg, #6aafd4, #3d8ec4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .header-left .title-input {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent);
+            padding: 2px 8px;
+            min-width: 150px;
+            width: 100%;
+            font-family: var(--font);
+            outline: none;
+            display: none;
+        }
+
+        .header-left .title-input:focus {
+            outline: none;
+        }
+
+        .header-left .title-edit-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            opacity: 0.3;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 30px;
+            transition: all 0.2s;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .header-left .title-edit-btn:hover {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .header-left .title-edit-btn.active {
+            opacity: 1;
+            color: var(--accent);
         }
 
         .header-actions {
@@ -159,6 +219,25 @@
             color: var(--danger);
             border-color: rgba(201, 74, 74, 0.2);
             background: rgba(201, 74, 74, 0.06);
+        }
+
+        .user-badge {
+            font-size: 0.65rem;
+            padding: 3px 12px;
+            border-radius: 40px;
+            background: rgba(31, 107, 158, 0.08);
+            border: 1px solid rgba(31, 107, 158, 0.15);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .user-badge:hover {
+            background: rgba(31, 107, 158, 0.15);
         }
 
         /* ===== ДАШБОРД ===== */
@@ -292,7 +371,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.75rem;
-            min-width: 600px;
+            min-width: 650px;
         }
 
         th {
@@ -336,19 +415,22 @@
         }
 
         .col-task {
-            width: 32%;
+            width: 25%;
         }
         .col-owner {
-            width: 14%;
+            width: 10%;
         }
         .col-deadline {
-            width: 14%;
+            width: 11%;
         }
         .col-status {
-            width: 15%;
+            width: 13%;
+        }
+        .col-comment {
+            width: 20%;
         }
         .col-actions {
-            width: 50px;
+            width: 70px;
             text-align: center;
         }
 
@@ -377,6 +459,16 @@
             resize: vertical;
             overflow: hidden;
             line-height: 1.3;
+        }
+
+        .editable-comment {
+            font-size: 0.65rem;
+            min-height: 1.4rem;
+            resize: vertical;
+            overflow: hidden;
+            line-height: 1.2;
+            color: var(--text-secondary);
+            font-style: italic;
         }
 
         /* ===== СТАТУС ===== */
@@ -444,7 +536,7 @@
             position: absolute;
             bottom: 130%;
             left: 0;
-            width: 250px;
+            width: 280px;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 10px;
@@ -482,6 +574,136 @@
             display: flex;
             align-items: center;
             gap: 3px;
+        }
+
+        /* ===== ИСТОРИЯ ===== */
+        .history-section {
+            margin-top: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            overflow: hidden;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .history-header:hover {
+            background: rgba(31, 107, 158, 0.04);
+        }
+
+        .history-header .history-title {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-header .history-title i {
+            color: var(--accent);
+        }
+
+        .history-header .history-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            opacity: 0.3;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 30px;
+            transition: all 0.3s;
+            font-size: 0.7rem;
+        }
+
+        .history-header .history-toggle:hover {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .history-header .history-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .history-content {
+            padding: 0 1rem 1rem 1rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .history-content.collapsed {
+            display: none;
+        }
+
+        .history-content .history-empty {
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-secondary);
+            opacity: 0.4;
+            font-size: 0.75rem;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+        }
+
+        .history-item .history-time {
+            font-weight: 500;
+            color: var(--text);
+            opacity: 0.5;
+            min-width: 85px;
+            font-size: 0.6rem;
+        }
+
+        .history-item .history-user {
+            font-weight: 600;
+            color: var(--accent);
+            min-width: 70px;
+        }
+
+        .history-item .history-action {
+            flex: 1;
+            opacity: 0.8;
+        }
+
+        .history-item .history-action .from-status {
+            color: var(--danger);
+            font-weight: 500;
+        }
+
+        .history-item .history-action .to-status {
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .history-item .history-action .changed-field {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .history-item .history-task-id {
+            font-weight: 600;
+            color: var(--text);
+            opacity: 0.4;
+            font-size: 0.6rem;
+            min-width: 30px;
         }
 
         /* ===== РИСКИ ===== */
@@ -614,13 +836,119 @@
             border-top: 2px solid var(--accent);
         }
 
+        /* ===== МОДАЛКА ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 360px;
+            width: 90%;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        .modal h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 8px 14px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            font-family: var(--font);
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .modal input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(31, 107, 158, 0.06);
+        }
+
+        .modal .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .modal .modal-actions .btn {
+            padding: 6px 20px;
+            font-size: 0.75rem;
+        }
+
+        .modal .modal-actions .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .modal .modal-actions .btn-primary:hover {
+            background: #155a8a;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
         /* ===== АДАПТИВ ===== */
         @media (max-width: 768px) {
             .container {
                 padding: 0.8rem;
                 border-radius: 16px;
             }
-            .header h1 {
+            .header-left .title-display {
+                font-size: 1.2rem;
+            }
+            .header-left .title-input {
                 font-size: 1.2rem;
             }
             .risks {
@@ -645,6 +973,31 @@
             .col-task {
                 min-width: 120px;
             }
+            .col-comment {
+                min-width: 100px;
+            }
+            .history-item {
+                font-size: 0.6rem;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .history-item .history-time {
+                min-width: 70px;
+                font-size: 0.55rem;
+            }
+            .history-item .history-user {
+                min-width: 50px;
+                font-size: 0.6rem;
+            }
+            .history-content {
+                max-height: 200px;
+            }
+            .header-left .title-wrapper {
+                min-width: 120px;
+            }
+            table {
+                min-width: 550px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -655,7 +1008,10 @@
                 padding: 0.5rem;
                 border-radius: 12px;
             }
-            .header h1 {
+            .header-left .title-display {
+                font-size: 1rem;
+            }
+            .header-left .title-input {
                 font-size: 1rem;
             }
             .dashboard {
@@ -730,6 +1086,40 @@
                 font-size: 0.6rem;
                 min-width: 28px;
             }
+            .user-badge {
+                font-size: 0.5rem;
+                padding: 2px 8px;
+            }
+            .history-item {
+                font-size: 0.55rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+                padding: 6px 0;
+            }
+            .history-item .history-time {
+                min-width: auto;
+                font-size: 0.5rem;
+            }
+            .history-content {
+                max-height: 150px;
+            }
+            .modal {
+                padding: 1.2rem;
+                max-width: 300px;
+            }
+            .modal h2 {
+                font-size: 0.95rem;
+            }
+            .header-left .title-wrapper {
+                min-width: 100px;
+            }
+            .col-comment {
+                min-width: 80px;
+            }
+            .editable-comment {
+                font-size: 0.55rem;
+            }
         }
     </style>
 </head>
@@ -737,8 +1127,17 @@
     <div class="container" id="app">
         <!-- ШАПКА -->
         <div class="header">
-            <h1><span>🚀 Дорожная карта ОЗП 2.0</span></h1>
+            <div class="header-left">
+                <div class="title-wrapper">
+                    <span class="title-display" id="titleDisplay"><span>🚀 Дорожная карта ОЗП 2.0</span></span>
+                    <input type="text" class="title-input" id="titleInput" value="🚀 Дорожная карта ОЗП 2.0" />
+                    <button class="title-edit-btn" id="titleEditBtn" aria-label="Редактировать название">
+                        ✏️
+                    </button>
+                </div>
+            </div>
             <div class="header-actions">
+                <span class="user-badge" id="userBadge" onclick="showNameModal()">👤 <span id="userNameDisplay">Гость</span></span>
                 <span class="sync-status" id="syncStatus">☁️ синхронизировано</span>
                 <button class="btn btn-success" onclick="exportData()">⬇️ Скачать</button>
                 <button class="btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
@@ -791,11 +1190,23 @@
                         <th class="col-owner">Ответственный</th>
                         <th class="col-deadline">Срок</th>
                         <th class="col-status">Статус</th>
+                        <th class="col-comment">Комментарий</th>
                         <th class="col-actions"></th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
+        </div>
+
+        <!-- ===== ИСТОРИЯ ИЗМЕНЕНИЙ ===== -->
+        <div class="history-section">
+            <div class="history-header" onclick="toggleHistory()">
+                <span class="history-title">📜 История изменений</span>
+                <button class="history-toggle" id="historyToggle" aria-label="Свернуть/развернуть">▼</button>
+            </div>
+            <div class="history-content" id="historyContent">
+                <div id="historyList"></div>
+            </div>
         </div>
 
         <!-- ===== РИСКИ ===== -->
@@ -844,11 +1255,23 @@
         </div>
     </div>
 
+    <!-- ===== МОДАЛЬНОЕ ОКНО ДЛЯ ИМЕНИ ===== -->
+    <div class="modal-overlay hidden" id="nameModal">
+        <div class="modal">
+            <h2>👤 Ваше имя</h2>
+            <p>Введите ваше имя, чтобы видеть, кто менял задачи.</p>
+            <input type="text" id="userNameInput" placeholder="Ваше имя..." maxlength="30" />
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveUserName()">✅ Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================================
         //  ⚙️  НАСТРОЙТЕ ЭТИ ПАРАМЕТРЫ
         // ============================================================
-        const API_KEY = '5afb9a66d6f5afbb623f8b83eb3bea42'; // ⬅️ ВАШ КЛЮЧ
+        const API_KEY = '5afb9a66d6f5afbb623f8b83eb3bea42';
 
         // ============================================================
         //  🧠  ЛОГИКА РАБОТЫ
@@ -857,8 +1280,214 @@
         let tasks = [];
         let isSaving = false;
         let saveTimer = null;
+        let currentUser = localStorage.getItem('ozp_user') || 'Гость';
+        let historyData = [];
+        let roadmapTitle = localStorage.getItem('ozp_title') || '🚀 Дорожная карта ОЗП 2.0';
 
-        // --- ЗАГРУЗКА ИЗ ОБЛАКА ---
+        // --- УПРАВЛЕНИЕ НАЗВАНИЕМ ---
+        let isEditingTitle = false;
+
+        const titleDisplay = document.getElementById('titleDisplay');
+        const titleInput = document.getElementById('titleInput');
+        const titleEditBtn = document.getElementById('titleEditBtn');
+
+        function startTitleEdit() {
+            isEditingTitle = true;
+            titleDisplay.style.display = 'none';
+            titleInput.style.display = 'block';
+            titleInput.value = roadmapTitle;
+            titleEditBtn.classList.add('active');
+            titleInput.focus();
+            titleInput.select();
+        }
+
+        function finishTitleEdit(save = true) {
+            isEditingTitle = false;
+            titleDisplay.style.display = 'block';
+            titleInput.style.display = 'none';
+            titleEditBtn.classList.remove('active');
+
+            if (save) {
+                const newTitle = titleInput.value.trim() || '🚀 Дорожная карта';
+                if (newTitle !== roadmapTitle) {
+                    addHistoryEntry(0, '', 'title', roadmapTitle, newTitle);
+                }
+                roadmapTitle = newTitle;
+                titleDisplay.innerHTML = `<span>${newTitle}</span>`;
+                localStorage.setItem('ozp_title', newTitle);
+                scheduleSaveTasks();
+            } else {
+                titleInput.value = roadmapTitle;
+            }
+        }
+
+        titleEditBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (isEditingTitle) {
+                finishTitleEdit(true);
+            } else {
+                startTitleEdit();
+            }
+        });
+
+        titleInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                finishTitleEdit(true);
+            } else if (e.key === 'Escape') {
+                finishTitleEdit(false);
+            }
+        });
+
+        titleInput.addEventListener('blur', function() {
+            if (isEditingTitle) {
+                finishTitleEdit(true);
+            }
+        });
+
+        // --- ПОКАЗАТЬ/СКРЫТЬ ИСТОРИЮ ---
+        let historyVisible = true;
+
+        function toggleHistory() {
+            const content = document.getElementById('historyContent');
+            const toggle = document.getElementById('historyToggle');
+            historyVisible = !historyVisible;
+            if (historyVisible) {
+                content.classList.remove('collapsed');
+                toggle.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed');
+                toggle.classList.add('collapsed');
+            }
+            localStorage.setItem('history_visible', historyVisible ? 'open' : 'closed');
+        }
+
+        // --- УПРАВЛЕНИЕ ИМЕНЕМ ---
+        function showNameModal() {
+            const modal = document.getElementById('nameModal');
+            modal.classList.remove('hidden');
+            document.getElementById('userNameInput').value = currentUser === 'Гость' ? '' : currentUser;
+            document.getElementById('userNameInput').focus();
+        }
+
+        function saveUserName() {
+            const name = document.getElementById('userNameInput').value.trim();
+            if (name && name.length > 0) {
+                currentUser = name;
+                localStorage.setItem('ozp_user', name);
+                document.getElementById('userNameDisplay').textContent = name;
+                document.getElementById('nameModal').classList.add('hidden');
+            } else {
+                alert('Введите ваше имя');
+            }
+        }
+
+        document.getElementById('nameModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('userNameInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                saveUserName();
+            }
+        });
+
+        // --- ДОБАВЛЕНИЕ ЗАПИСИ В ИСТОРИЮ ---
+        function addHistoryEntry(taskId, taskName, field, oldValue, newValue) {
+            const now = new Date();
+            const timeStr = now.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            let actionText = '';
+            if (field === 'status') {
+                const statusMap = { 'план': 'План', 'в работе': 'В работе', 'критично': 'Критично', 'готово': 'Готово',
+                    'ожидание': 'Ожидание' };
+                const oldStatusText = statusMap[oldValue] || oldValue || '—';
+                const newStatusText = statusMap[newValue] || newValue || '—';
+                actionText =
+                    `изменил статус: <span class="from-status">${oldStatusText}</span> → <span class="to-status">${newStatusText}</span>`;
+            } else if (field === 'task') {
+                const oldDisplay = oldValue ? `«${oldValue.substring(0, 25)}${oldValue.length > 25 ? '…' : ''}»` : '—';
+                const newDisplay = newValue ? `«${newValue.substring(0, 25)}${newValue.length > 25 ? '…' : ''}»` : '—';
+                actionText = `изменил название: <span class="from-status">${oldDisplay}</span> → <span class="to-status">${newDisplay}</span>`;
+            } else if (field === 'owner') {
+                actionText =
+                    `изменил ответственного: <span class="from-status">${oldValue || '—'}</span> → <span class="to-status">${newValue || '—'}</span>`;
+            } else if (field === 'deadline') {
+                const oldDisplay = oldValue ? formatDate(oldValue) : 'не указан';
+                const newDisplay = newValue ? formatDate(newValue) : 'не указан';
+                actionText =
+                    `изменил срок: <span class="from-status">${oldDisplay}</span> → <span class="to-status">${newDisplay}</span>`;
+            } else if (field === 'comment') {
+                const oldDisplay = oldValue ? `«${oldValue.substring(0, 25)}${oldValue.length > 25 ? '…' : ''}»` : '—';
+                const newDisplay = newValue ? `«${newValue.substring(0, 25)}${newValue.length > 25 ? '…' : ''}»` : '—';
+                actionText =
+                    `изменил комментарий: <span class="from-status">${oldDisplay}</span> → <span class="to-status">${newDisplay}</span>`;
+            } else if (field === 'add') {
+                actionText = `➕ <strong>добавил</strong> задачу «${newValue}»`;
+            } else if (field === 'delete') {
+                actionText = `🗑️ <strong>удалил</strong> задачу «${oldValue}»`;
+            } else if (field === 'title') {
+                actionText =
+                    `✏️ <strong>изменил название</strong> дорожной карты: «${oldValue}» → «${newValue}»`;
+            } else {
+                actionText = `изменил: ${oldValue} → ${newValue}`;
+            }
+
+            const entry = {
+                time: timeStr,
+                user: currentUser,
+                taskId: taskId || 0,
+                taskName: taskName || '',
+                action: actionText,
+                field: field,
+                timestamp: now.getTime()
+            };
+
+            historyData.unshift(entry);
+            if (historyData.length > 100) {
+                historyData = historyData.slice(0, 100);
+            }
+
+            renderHistory();
+            scheduleSave();
+        }
+
+        // --- ОТОБРАЖЕНИЕ ИСТОРИИ ---
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            if (!list) return;
+
+            if (historyData.length === 0) {
+                list.innerHTML = `<div class="history-empty">📭 История изменений пока пуста</div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            historyData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <span class="history-time">${item.time}</span>
+                    <span class="history-user">${item.user}</span>
+                    <span class="history-action">
+                        ${item.taskId > 0 ? `Задача №${item.taskId} ` : ''}
+                        ${item.taskName ? `<strong>«${item.taskName.substring(0, 20)}${item.taskName.length > 20 ? '…' : ''}»</strong> ` : ''}
+                        ${item.action}
+                    </span>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // --- ЗАГРУЗКА ДАННЫХ ИЗ ОБЛАКА ---
         async function loadFromCloud() {
             try {
                 setSyncStatus('syncing', 'Загрузка...');
@@ -869,8 +1498,20 @@
                 const data = await resp.json();
                 console.log('📥 Загружено:', data);
 
-                if (data && data.data && data.data.tasks) {
-                    return data.data.tasks;
+                if (data && data.data) {
+                    if (data.data.tasks) {
+                        tasks = data.data.tasks;
+                    }
+                    if (data.data.history) {
+                        historyData = data.data.history;
+                        renderHistory();
+                    }
+                    if (data.data.title) {
+                        roadmapTitle = data.data.title;
+                        titleDisplay.innerHTML = `<span>${roadmapTitle}</span>`;
+                        localStorage.setItem('ozp_title', roadmapTitle);
+                    }
+                    return tasks;
                 }
                 return null;
             } catch (e) {
@@ -880,15 +1521,19 @@
             }
         }
 
-        // --- СОХРАНЕНИЕ В ОБЛАКО ---
-        async function saveToCloud(data) {
+        // --- СОХРАНЕНИЕ ВСЕХ ДАННЫХ В ОБЛАКО ---
+        async function saveToCloud(data, history) {
             if (isSaving) return;
             isSaving = true;
             try {
                 setSyncStatus('syncing', 'Сохранение...');
 
                 const payload = {
-                    data_update: { tasks: data }
+                    data_update: {
+                        title: roadmapTitle,
+                        tasks: data || tasks,
+                        history: history || historyData
+                    }
                 };
 
                 const resp = await fetch('https://jsonbox.ru/api.php?action=update', {
@@ -914,10 +1559,75 @@
                             'Content-Type': 'application/json',
                             'X-API-Key': API_KEY
                         },
-                        body: JSON.stringify({ data: { tasks: data } })
+                        body: JSON.stringify({
+                            data: {
+                                title: roadmapTitle,
+                                tasks: data || tasks,
+                                history: history || historyData
+                            }
+                        })
                     });
                     const storeResult = await storeResp.json();
                     console.log('📤 Store ответ:', storeResult);
+                    if (storeResult.success === true) {
+                        setSyncStatus('synced', 'Синхронизировано');
+                        return true;
+                    } else {
+                        setSyncStatus('error', 'Ошибка сохранения');
+                        return false;
+                    }
+                }
+            } catch (e) {
+                console.error('❌ Ошибка сохранения:', e);
+                setSyncStatus('error', 'Ошибка сохранения');
+                return false;
+            } finally {
+                isSaving = false;
+            }
+        }
+
+        // --- СОХРАНЕНИЕ ТОЛЬКО ЗАДАЧ ---
+        async function saveTasksOnly(data) {
+            if (isSaving) return;
+            isSaving = true;
+            try {
+                setSyncStatus('syncing', 'Сохранение...');
+
+                const payload = {
+                    data_update: {
+                        title: roadmapTitle,
+                        tasks: data || tasks
+                    }
+                };
+
+                const resp = await fetch('https://jsonbox.ru/api.php?action=update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await resp.json();
+                if (result.success === true) {
+                    setSyncStatus('synced', 'Синхронизировано');
+                    return true;
+                } else {
+                    const storeResp = await fetch('https://jsonbox.ru/api.php?action=store', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Key': API_KEY
+                        },
+                        body: JSON.stringify({
+                            data: {
+                                title: roadmapTitle,
+                                tasks: data || tasks
+                            }
+                        })
+                    });
+                    const storeResult = await storeResp.json();
                     if (storeResult.success === true) {
                         setSyncStatus('synced', 'Синхронизировано');
                         return true;
@@ -940,6 +1650,21 @@
             const loader = document.getElementById('loader');
             const table = document.getElementById('taskTable');
 
+            // Восстанавливаем состояние истории
+            const savedState = localStorage.getItem('history_visible');
+            if (savedState === 'closed') {
+                document.getElementById('historyContent').classList.add('collapsed');
+                document.getElementById('historyToggle').classList.add('collapsed');
+                historyVisible = false;
+            }
+
+            // Устанавливаем имя пользователя
+            document.getElementById('userNameDisplay').textContent = currentUser;
+
+            // Устанавливаем название
+            titleDisplay.innerHTML = `<span>${roadmapTitle}</span>`;
+            titleInput.value = roadmapTitle;
+
             try {
                 const cloudData = await loadFromCloud();
                 if (cloudData && cloudData.length > 0) {
@@ -948,7 +1673,7 @@
                 } else {
                     console.log('📁 Использую локальные данные');
                     tasks = getDefaultTasks();
-                    await saveToCloud(tasks);
+                    await saveTasksOnly(tasks);
                 }
             } catch (e) {
                 console.warn('⚠️ Ошибка инициализации:', e);
@@ -958,65 +1683,68 @@
             loader.classList.add('hidden');
             table.classList.remove('hidden');
             renderTable();
+
+            // ❌ ДЕМО-ЗАПИСЬ УДАЛЕНА — история будет пустой
         }
 
         // --- ДЕФОЛТНЫЕ ДАННЫЕ ---
         function getDefaultTasks() {
             return [
                 { id: 1, task: 'Доделать доработки после приемки от 17.08.2026 до 19.08.2026', owner: 'ЦРЦТ',
-                    deadline: '2026-08-19', status: 'в работе' },
+                    deadline: '2026-08-19', status: 'в работе', comment: '' },
                 { id: 2, task: 'Настроить права доступа для всех учетных записей (перенос)', owner: 'АРКИ',
-                    deadline: '2026-08-19', status: 'в работе' },
+                    deadline: '2026-08-19', status: 'в работе', comment: '' },
                 { id: 3, task: 'Разработка инструкции по работе с системой', owner: 'ЦРЦТ', deadline: '2026-08-19',
-                    status: 'в работе' },
+                    status: 'в работе', comment: '' },
                 { id: 4, task: 'Заблокировать загрузку документов в старой системе (вечером)', owner: 'АРКИ',
-                    deadline: '2026-08-20', status: 'критично' },
+                    deadline: '2026-08-20', status: 'критично', comment: '' },
                 { id: 5, task: 'Создать автоматически реестры по ТСО, ПТЭ', owner: 'ЦРЦТ', deadline: '2026-08-21',
-                    status: 'план' },
+                    status: 'план', comment: '' },
                 { id: 6, task: 'Создать автоматически СЦТ для ТСО и ПТЭ', owner: 'ЦРЦТ', deadline: '2026-08-21',
-                    status: 'план' },
+                    status: 'план', comment: '' },
                 { id: 7, task: 'Перенести документы из старой системы в новую', owner: 'ЦРЦТ', deadline: '2026-08-24',
-                    status: 'план' },
+                    status: 'план', comment: '' },
                 { id: 8, task: 'Заполнить периоды и сроки по ТСО, ПТЭ, ОМСУ', owner: 'АРКИ', deadline: '2026-08-25',
-                    status: 'план' },
-                { id: 9, task: 'Загрузить документы для ОМСУ', owner: 'ОМСУ', deadline: '2026-08-26', status: 'план' },
+                    status: 'план', comment: '' },
+                { id: 9, task: 'Загрузить документы для ОМСУ', owner: 'ОМСУ', deadline: '2026-08-26', status: 'план',
+                    comment: '' },
                 { id: 10, task: 'API "Список объектов" (отправка АИС ГЖИ → ГИС ЖКХ)', owner: 'АИС ГЖИ',
-                    deadline: '2026-08-06', status: 'в работе' },
+                    deadline: '2026-08-06', status: 'в работе', comment: '' },
                 { id: 11, task: 'API "Формирование архива" (отправка)', owner: 'АИС ГЖИ', deadline: '2026-08-12',
-                    status: 'в работе' },
+                    status: 'в работе', comment: '' },
                 { id: 12, task: 'Предоставление доступа сетевой связанности (АИС ГЖИ ↔ ГИС ЖКХ)', owner: 'ЦИБ',
-                    deadline: '', status: 'ожидание' },
+                    deadline: '', status: 'ожидание', comment: '' },
                 { id: 13, task: 'API "Получение списка объектов" (из ГИС ЖКХ)', owner: 'ЦРЦТ', deadline: '',
-                    status: 'ожидание' },
-                { id: 14, task: 'API "Получение архива" (из ГИС ЖКХ)', owner: 'ЦРЦТ', deadline: '', status: 'ожидание' },
+                    status: 'ожидание', comment: '' },
+                { id: 14, task: 'API "Получение архива" (из ГИС ЖКХ)', owner: 'ЦРЦТ', deadline: '', status: 'ожидание',
+                    comment: '' },
                 { id: 15, task: 'Скрипт загрузки данных по МКД (фоновая загрузка)', owner: 'ЦРЦТ', deadline: '',
-                    status: 'ожидание' },
+                    status: 'ожидание', comment: '' },
                 { id: 16, task: 'API "Дополнительная загрузка/оценка завершена"', owner: 'ЦРЦТ', deadline: '',
-                    status: 'ожидание' },
-                { id: 17, task: 'API "Удаление архива"', owner: 'АИС ГЖИ', deadline: '', status: 'ожидание' },
+                    status: 'ожидание', comment: '' },
+                { id: 17, task: 'API "Удаление архива"', owner: 'АИС ГЖИ', deadline: '', status: 'ожидание',
+                    comment: '' },
                 { id: 18, task: 'Интеграционное тестирование (АИС ГЖИ ↔ ГИС ЖКХ)', owner: 'ЦРЦТ / АИС ГЖИ',
-                    deadline: '', status: 'ожидание' },
-                { id: 19, task: 'Обучение пользователей', owner: 'АРКИ', deadline: '', status: 'ожидание' },
+                    deadline: '', status: 'ожидание', comment: '' },
+                { id: 19, task: 'Обучение пользователей', owner: 'АРКИ', deadline: '', status: 'ожидание',
+                    comment: '' },
                 { id: 20, task: 'Передать инструкцию (параллельно обучению или после)', owner: 'ЦРЦТ', deadline: '',
-                    status: 'ожидание' }
+                    status: 'ожидание', comment: '' }
             ];
         }
 
         // --- ОБНОВЛЕНИЕ НОМЕРОВ ПУНКТОВ В РИСКАХ ---
         function updateRiskPoints() {
-            // Находим индексы задач по их ID
             const findPoint = (taskId) => {
                 const index = tasks.findIndex(t => t.id === taskId);
                 return index !== -1 ? index + 1 : '?';
             };
 
-            // Находим ID задач по ключевым словам в названии
             const findTaskByKeyword = (keyword) => {
                 const found = tasks.find(t => t.task.toLowerCase().includes(keyword.toLowerCase()));
                 return found ? found.id : null;
             };
 
-            // Определяем ID ключевых задач
             const task4 = findTaskByKeyword('Заблокировать загрузку документов');
             const task1 = findTaskByKeyword('Доделать доработки после приемки');
             const task2 = findTaskByKeyword('Настроить права доступа');
@@ -1024,13 +1752,11 @@
             const task12 = findTaskByKeyword('Предоставление доступа сетевой связанности');
             const task19 = findTaskByKeyword('Обучение пользователей');
 
-            // Задачи 13-18 — это все, что после задачи 12 (интеграция)
             const task12Index = tasks.findIndex(t => t.id === task12);
             const after12 = tasks.slice(task12Index + 1);
             const task13 = after12.length > 0 ? after12[0]?.id : null;
             const task18 = after12.length > 5 ? after12[5]?.id : after12[after12.length - 1]?.id;
 
-            // Получаем номера пунктов
             const p1 = task1 ? findPoint(task1) : '?';
             const p2 = task2 ? findPoint(task2) : '?';
             const p3 = task3 ? findPoint(task3) : '?';
@@ -1040,7 +1766,6 @@
             const p18 = task18 ? findPoint(task18) : '?';
             const p19 = task19 ? findPoint(task19) : '?';
 
-            // Обновляем все элементы на странице
             const elements = {
                 'riskPoint1': p1,
                 'riskPoint1_2': p1,
@@ -1078,23 +1803,32 @@
                 tr.addEventListener('dragleave', onDragLeave);
                 tr.addEventListener('drop', onDrop);
 
+                // ID
                 const tdId = document.createElement('td');
                 tdId.className = 'col-id';
                 tdId.textContent = t.id;
 
+                // Задача
                 const tdTask = document.createElement('td');
                 tdTask.className = 'col-task task-cell';
                 const ta = document.createElement('textarea');
                 ta.className = 'editable editable-task';
                 ta.value = t.task;
                 ta.rows = 1;
+                let oldTask = t.task;
                 ta.addEventListener('input', function() {
                     t.task = this.value;
                     autoResize(this);
                     updateDashboard();
-                    scheduleSave();
                 });
-                ta.addEventListener('blur', () => { scheduleSave(); });
+                ta.addEventListener('blur', function() {
+                    const newTask = t.task;
+                    if (newTask !== oldTask && oldTask !== undefined) {
+                        addHistoryEntry(t.id, t.task, 'task', oldTask, newTask);
+                        oldTask = newTask;
+                        scheduleSaveTasks();
+                    }
+                });
                 requestAnimationFrame(() => autoResize(ta));
 
                 const tip = document.createElement('div');
@@ -1106,24 +1840,33 @@
                         <span>📅 ${formatDate(t.deadline) || 'не указан'}</span>
                         <span>🏷️ ${t.status}</span>
                         <span>#️⃣ ${t.id}</span>
+                        ${t.comment ? `<span>💬 ${t.comment.substring(0, 20)}${t.comment.length > 20 ? '…' : ''}</span>` : ''}
                     </div>
                 `;
                 tdTask.appendChild(ta);
                 tdTask.appendChild(tip);
 
+                // Ответственный
                 const tdOwner = document.createElement('td');
                 tdOwner.className = 'col-owner';
                 const inpOwner = document.createElement('input');
                 inpOwner.className = 'editable';
                 inpOwner.value = t.owner;
                 inpOwner.placeholder = '—';
+                let oldOwner = t.owner;
                 inpOwner.addEventListener('change', function() {
-                    t.owner = this.value;
-                    updateDashboard();
-                    scheduleSave();
+                    const newOwner = this.value;
+                    if (newOwner !== oldOwner) {
+                        addHistoryEntry(t.id, t.task, 'owner', oldOwner, newOwner);
+                        t.owner = newOwner;
+                        oldOwner = newOwner;
+                        updateDashboard();
+                        scheduleSaveTasks();
+                    }
                 });
                 tdOwner.appendChild(inpOwner);
 
+                // Срок
                 const tdDeadline = document.createElement('td');
                 tdDeadline.className = 'col-deadline';
                 const wrap = document.createElement('div');
@@ -1133,10 +1876,16 @@
                 dateInput.className = 'editable';
                 dateInput.value = t.deadline || '';
                 dateInput.style.cssText = 'flex:1;min-width:50px;';
+                let oldDeadline = t.deadline;
                 dateInput.addEventListener('change', function() {
-                    t.deadline = this.value;
-                    updateDashboard();
-                    scheduleSave();
+                    const newDeadline = this.value;
+                    if (newDeadline !== oldDeadline) {
+                        addHistoryEntry(t.id, t.task, 'deadline', oldDeadline, newDeadline);
+                        t.deadline = newDeadline;
+                        oldDeadline = newDeadline;
+                        updateDashboard();
+                        scheduleSaveTasks();
+                    }
                 });
                 const calBtn = document.createElement('button');
                 calBtn.textContent = '📅';
@@ -1147,6 +1896,7 @@
                 wrap.appendChild(calBtn);
                 tdDeadline.appendChild(wrap);
 
+                // Статус
                 const tdStatus = document.createElement('td');
                 tdStatus.className = 'col-status';
                 const sel = document.createElement('select');
@@ -1160,14 +1910,85 @@
                     sel.appendChild(opt);
                 });
                 sel.className += ' ' + getStatusClass(t.status);
+
+                let oldStatus = t.status;
+
                 sel.addEventListener('change', function() {
-                    t.status = this.value;
-                    this.className = 'status-select ' + getStatusClass(t.status);
-                    updateDashboard();
-                    scheduleSave();
+                    const newStatus = this.value;
+                    if (newStatus !== oldStatus) {
+                        addHistoryEntry(t.id, t.task, 'status', oldStatus, newStatus);
+                        t.status = newStatus;
+                        oldStatus = newStatus;
+                        this.className = 'status-select ' + getStatusClass(t.status);
+                        updateDashboard();
+                        scheduleSaveTasks();
+                    }
                 });
                 tdStatus.appendChild(sel);
 
+                // Комментарий
+                const tdComment = document.createElement('td');
+                tdComment.className = 'col-comment';
+                const commentArea = document.createElement('textarea');
+                commentArea.className = 'editable editable-comment';
+                commentArea.value = t.comment || '';
+                commentArea.placeholder = 'Добавить комментарий...';
+                commentArea.rows = 1;
+                let oldComment = t.comment || '';
+
+                // Функция сохранения комментария с дебаунсом
+                function saveComment(newComment) {
+                    if (newComment !== oldComment) {
+                        addHistoryEntry(t.id, t.task, 'comment', oldComment, newComment);
+                        t.comment = newComment;
+                        oldComment = newComment;
+                        // Обновляем тултип
+                        const tooltip = commentArea.closest('tr').querySelector('.task-cell .tooltip .tt-meta');
+                        if (tooltip) {
+                            const commentSpan = tooltip.querySelector('span:last-child');
+                            if (commentSpan) {
+                                if (newComment) {
+                                    commentSpan.innerHTML =
+                                        `💬 ${newComment.substring(0, 20)}${newComment.length > 20 ? '…' : ''}`;
+                                } else {
+                                    commentSpan.remove();
+                                }
+                            } else if (newComment) {
+                                const newSpan = document.createElement('span');
+                                newSpan.innerHTML =
+                                    `💬 ${newComment.substring(0, 20)}${newComment.length > 20 ? '…' : ''}`;
+                                tooltip.appendChild(newSpan);
+                            }
+                        }
+                        scheduleSaveTasks();
+                    }
+                }
+
+                // Обработчик изменения комментария с дебаунсом
+                commentArea.addEventListener('input', function() {
+                    t.comment = this.value;
+                    autoResize(this);
+                    updateDashboard();
+                });
+
+                commentArea.addEventListener('blur', function() {
+                    const newComment = this.value;
+                    if (newComment !== oldComment) {
+                        saveComment(newComment);
+                    }
+                });
+
+                commentArea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.blur();
+                    }
+                });
+
+                requestAnimationFrame(() => autoResize(commentArea));
+                tdComment.appendChild(commentArea);
+
+                // Действия
                 const tdActions = document.createElement('td');
                 tdActions.className = 'col-actions';
                 const delBtn = document.createElement('button');
@@ -1181,6 +2002,7 @@
                 tr.appendChild(tdOwner);
                 tr.appendChild(tdDeadline);
                 tr.appendChild(tdStatus);
+                tr.appendChild(tdComment);
                 tr.appendChild(tdActions);
                 tbody.appendChild(tr);
             });
@@ -1247,10 +2069,18 @@
         }
 
         // --- СОХРАНЕНИЕ С ДЕБАНСОМ ---
+        function scheduleSaveTasks() {
+            if (saveTimer) clearTimeout(saveTimer);
+            saveTimer = setTimeout(async () => {
+                await saveTasksOnly(tasks);
+                saveTimer = null;
+            }, 500);
+        }
+
         function scheduleSave() {
             if (saveTimer) clearTimeout(saveTimer);
             saveTimer = setTimeout(async () => {
-                await saveToCloud(tasks);
+                await saveToCloud(tasks, historyData);
                 saveTimer = null;
             }, 500);
         }
@@ -1263,20 +2093,28 @@
             const status = document.getElementById('newStatus').value;
             if (!task) { alert('Введите название задачи'); return; }
             const maxId = tasks.reduce((max, t) => Math.max(max, t.id), 0);
-            tasks.push({ id: maxId + 1, task, owner, deadline, status });
+            const newTask = { id: maxId + 1, task, owner, deadline, status, comment: '' };
+            tasks.push(newTask);
             document.getElementById('newTask').value = '';
             document.getElementById('newOwner').value = '';
             document.getElementById('newDeadline').value = '';
             renderTable();
-            scheduleSave();
+
+            addHistoryEntry(newTask.id, task, 'add', '', task);
+
+            scheduleSaveTasks();
         }
 
         // --- УДАЛЕНИЕ ---
         function deleteTask(id) {
             if (!confirm(`Удалить задачу №${id}?`)) return;
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                addHistoryEntry(id, task.task, 'delete', task.task, '');
+            }
             tasks = tasks.filter(t => t.id !== id);
             renderTable();
-            scheduleSave();
+            scheduleSaveTasks();
         }
 
         // --- DRAG & DROP ---
@@ -1323,7 +2161,7 @@
             tasks.splice(toIdx, 0, moved);
             tasks.forEach((t, i) => t.id = i + 1);
             renderTable();
-            scheduleSave();
+            scheduleSaveTasks();
             dragId = null;
         }
 
@@ -1342,7 +2180,13 @@
         function resetData() {
             if (!confirm('Сбросить все изменения к исходным данным?')) return;
             tasks = getDefaultTasks();
+            historyData = [];
+            roadmapTitle = '🚀 Дорожная карта ОЗП 2.0';
+            titleDisplay.innerHTML = `<span>${roadmapTitle}</span>`;
+            titleInput.value = roadmapTitle;
+            localStorage.setItem('ozp_title', roadmapTitle);
             renderTable();
+            renderHistory();
             scheduleSave();
         }
 
@@ -1361,6 +2205,15 @@
                 document.documentElement.setAttribute('data-theme', 'dark');
                 document.getElementById('themeBtn').textContent = '☀️';
             }
+
+            const savedName = localStorage.getItem('ozp_user');
+            if (savedName) {
+                currentUser = savedName;
+                document.getElementById('userNameDisplay').textContent = savedName;
+            } else {
+                setTimeout(() => showNameModal(), 500);
+            }
+
             init();
 
             document.getElementById('newTask').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
