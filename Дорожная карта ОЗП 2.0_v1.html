@@ -220,6 +220,11 @@
             border-color: rgba(201, 74, 74, 0.2);
             background: rgba(201, 74, 74, 0.06);
         }
+        .sync-status.updating {
+            color: var(--accent);
+            border-color: rgba(31, 107, 158, 0.2);
+            background: rgba(31, 107, 158, 0.06);
+        }
 
         .user-badge {
             font-size: 0.65rem;
@@ -1251,7 +1256,7 @@
                 <span><span class="dot" style="background:var(--success);"></span>готово</span>
                 <span><span class="dot" style="background:#7a7a9a;"></span>ожидание</span>
             </div>
-            <div>🔄 автосохранение в облако</div>
+            <div>🔄 автосохранение в облако · 🔄 автообновление каждые 15 сек</div>
         </div>
     </div>
 
@@ -1283,6 +1288,7 @@
         let currentUser = localStorage.getItem('ozp_user') || 'Гость';
         let historyData = [];
         let roadmapTitle = localStorage.getItem('ozp_title') || '🚀 Дорожная карта ОЗП 2.0';
+        let isUpdating = false;
 
         // --- УПРАВЛЕНИЕ НАЗВАНИЕМ ---
         let isEditingTitle = false;
@@ -1490,13 +1496,11 @@
         // --- ЗАГРУЗКА ДАННЫХ ИЗ ОБЛАКА ---
         async function loadFromCloud() {
             try {
-                setSyncStatus('syncing', 'Загрузка...');
-
                 const resp = await fetch('https://jsonbox.ru/api.php?action=get', {
                     headers: { 'X-API-Key': API_KEY }
                 });
                 const data = await resp.json();
-                console.log('📥 Загружено:', data);
+                console.log('📥 Загружено из облака:', data);
 
                 if (data && data.data) {
                     if (data.data.tasks) {
@@ -1511,13 +1515,12 @@
                         titleDisplay.innerHTML = `<span>${roadmapTitle}</span>`;
                         localStorage.setItem('ozp_title', roadmapTitle);
                     }
-                    return tasks;
+                    return true;
                 }
-                return null;
+                return false;
             } catch (e) {
                 console.error('❌ Ошибка загрузки:', e);
-                setSyncStatus('error', 'Ошибка загрузки');
-                return null;
+                return false;
             }
         }
 
@@ -1645,6 +1648,61 @@
             }
         }
 
+        // --- ПРОВЕРКА ОБНОВЛЕНИЙ ИЗ ОБЛАКА ---
+        async function checkForUpdates() {
+            if (isUpdating) return;
+            isUpdating = true;
+
+            try {
+                const resp = await fetch('https://jsonbox.ru/api.php?action=get', {
+                    headers: { 'X-API-Key': API_KEY }
+                });
+                const data = await resp.json();
+
+                if (data && data.data) {
+                    let hasChanges = false;
+
+                    // Проверяем задачи
+                    if (data.data.tasks) {
+                        const cloudTasks = data.data.tasks;
+                        if (JSON.stringify(cloudTasks) !== JSON.stringify(tasks)) {
+                            tasks = cloudTasks;
+                            hasChanges = true;
+                        }
+                    }
+
+                    // Проверяем историю
+                    if (data.data.history) {
+                        const cloudHistory = data.data.history;
+                        if (JSON.stringify(cloudHistory) !== JSON.stringify(historyData)) {
+                            historyData = cloudHistory;
+                            renderHistory();
+                            hasChanges = true;
+                        }
+                    }
+
+                    // Проверяем название
+                    if (data.data.title && data.data.title !== roadmapTitle) {
+                        roadmapTitle = data.data.title;
+                        titleDisplay.innerHTML = `<span>${roadmapTitle}</span>`;
+                        localStorage.setItem('ozp_title', roadmapTitle);
+                        hasChanges = true;
+                    }
+
+                    if (hasChanges) {
+                        renderTable();
+                        setSyncStatus('updating', '🔄 Обновлено');
+                        setTimeout(() => setSyncStatus('synced', 'Синхронизировано'), 2000);
+                        console.log('🔄 Данные обновлены из облака');
+                    }
+                }
+            } catch (e) {
+                console.warn('⚠️ Ошибка проверки обновлений:', e);
+            } finally {
+                isUpdating = false;
+            }
+        }
+
         // --- ИНИЦИАЛИЗАЦИЯ ---
         async function init() {
             const loader = document.getElementById('loader');
@@ -1666,14 +1724,13 @@
             titleInput.value = roadmapTitle;
 
             try {
-                const cloudData = await loadFromCloud();
-                if (cloudData && cloudData.length > 0) {
-                    tasks = cloudData;
-                    console.log('✅ Загружено из облака:', tasks.length, 'задач');
-                } else {
+                const loaded = await loadFromCloud();
+                if (!loaded || tasks.length === 0) {
                     console.log('📁 Использую локальные данные');
                     tasks = getDefaultTasks();
                     await saveTasksOnly(tasks);
+                } else {
+                    console.log('✅ Загружено из облака:', tasks.length, 'задач');
                 }
             } catch (e) {
                 console.warn('⚠️ Ошибка инициализации:', e);
@@ -1684,7 +1741,9 @@
             table.classList.remove('hidden');
             renderTable();
 
-            // ❌ ДЕМО-ЗАПИСЬ УДАЛЕНА — история будет пустой
+            // --- АВТООБНОВЛЕНИЕ КАЖДЫЕ 15 СЕКУНД ---
+            setInterval(checkForUpdates, 15000);
+            console.log('🔄 Автообновление включено (каждые 15 секунд)');
         }
 
         // --- ДЕФОЛТНЫЕ ДАННЫЕ ---
@@ -1964,7 +2023,6 @@
                     }
                 }
 
-                // Обработчик изменения комментария с дебаунсом
                 commentArea.addEventListener('input', function() {
                     t.comment = this.value;
                     autoResize(this);
@@ -2060,10 +2118,12 @@
             el.className = 'sync-status';
             if (type === 'syncing') el.classList.add('syncing');
             if (type === 'error') el.classList.add('error');
+            if (type === 'updating') el.classList.add('updating');
             const icons = {
                 'synced': '☁️',
                 'syncing': '⏳',
-                'error': '❌'
+                'error': '❌',
+                'updating': '🔄'
             };
             el.innerHTML = (icons[type] || icons.synced) + ' ' + msg;
         }
