@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Дорожная карта ОЗП 2.0</title>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0-beta3/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0-beta3/css/all.min.css" /></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&amp;display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --color-bg: #f0f5fb;
+            --color-surface: rgba(255, 255, 255, 0.75);
+            --color-surface-solid: #ffffff;
+            --color-text: #0b2b4a;
+            --color-text-secondary: #1f4665;
+            --color-border: rgba(60, 100, 140, 0.12);
+            --color-accent: #1f6b9e;
+            --color-danger: #c94a4a;
+            --color-success: #2f8f4b;
+            --color-warning: #e6b422;
+            --color-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.18);
+            --radius-card: 32px;
+            --radius-table: 20px;
+            --radius-inner: 16px;
+            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --font-family: 'Inter', -apple-system, system-ui, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --color-bg: #0f1a2b;
+            --color-surface: rgba(20, 35, 55, 0.88);
+            --color-surface-solid: #1a2d45;
+            --color-text: #e8edf3;
+            --color-text-secondary: #8ab0d0;
+            --color-border: rgba(100, 150, 200, 0.15);
+            --color-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--color-bg);
+            min-height: 100vh;
+            padding: 1.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--color-text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        .roadmap-wrapper {
+            max-width: 1440px;
+            width: 100%;
+            background: var(--color-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--radius-card);
+            padding: 1.5rem 1.8rem 2rem;
+            box-shadow: var(--color-shadow), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            animation: floatIn 0.6s ease-out;
+            transition: background 0.4s, box-shadow 0.4s, border-color 0.4s;
+        }
+
+        @keyframes floatIn {
+            0% { opacity: 0; transform: translateY(30px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.2rem;
+            gap: 0.8rem;
+        }
+
+        .header-left h1 {
+            font-weight: 800;
+            font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #0b2b4a, #1b4a7a, #2b7bb6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        [data-theme="dark"] .header-left h1 {
+            background: linear-gradient(135deg, #6aafd4, #3d8ec4, #6aafd4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-left h1 i {
+            background: linear-gradient(135deg, #1f5a8a, #0d3b5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+        }
+
+        .header-left .sub {
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            font-size: 0.85rem;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge-status {
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            background: rgba(30, 80, 130, 0.06);
+            border: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(4px);
+            transition: background 0.3s;
+        }
+
+        .btn-icon {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--color-border);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--color-text);
+            box-shadow: 0 4px 12px rgba(0, 20, 40, 0.04);
+            transition: var(--transition);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-icon:hover {
+            background: var(--color-surface-solid);
+            box-shadow: 0 8px 20px rgba(0, 50, 100, 0.1);
+            transform: scale(0.97);
+        }
+
+        .btn-icon:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+
+        .btn-icon.download {
+            color: var(--color-success);
+            border-color: rgba(47, 143, 75, 0.2);
+            background: rgba(47, 143, 75, 0.06);
+        }
+        .btn-icon.download:hover {
+            background: var(--color-success);
+            color: white;
+        }
+        .btn-icon.reset {
+            color: var(--color-danger);
+            border-color: rgba(201, 74, 74, 0.15);
+            background: rgba(201, 74, 74, 0.05);
+        }
+        .btn-icon.reset:hover {
+            background: var(--color-danger);
+            color: white;
+        }
+        .btn-icon.theme {
+            color: var(--color-accent);
+            border-color: rgba(31, 107, 158, 0.15);
+            background: rgba(31, 107, 158, 0.05);
+        }
+        .btn-icon.theme:hover {
+            background: var(--color-accent);
+            color: white;
+        }
+
+        .save-indicator {
+            font-size: 0.65rem;
+            color: var(--color-success);
+            background: rgba(47, 143, 75, 0.06);
+            padding: 3px 12px;
+            border-radius: 60px;
+            border: 1px solid rgba(47, 143, 75, 0.12);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .save-indicator.saving {
+            color: var(--color-warning);
+            border-color: rgba(230, 180, 34, 0.2);
+            background: rgba(230, 180, 34, 0.06);
+        }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            border-radius: var(--radius-inner);
+            padding: 0.8rem 1.2rem;
+            border: 1px solid var(--color-border);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.2rem 0.1rem;
+            transition: transform 0.2s;
+        }
+        .stat-item:hover {
+            transform: scale(1.05);
+        }
+        .stat-item .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-accent);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        .stat-item .stat-label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--color-text-secondary);
+            opacity: 0.7;
+            margin-top: 1px;
+            font-weight: 600;
+        }
+        .stat-item .stat-number.critical { color: var(--color-danger); }
+        .stat-item .stat-number.done { color: var(--color-success); }
+        .stat-item .stat-number.waiting { color: #7a7a9a; }
+        .stat-item .stat-number.progress { color: var(--color-warning); }
+        .stat-item .stat-number.total { color: var(--color-accent); }
+
+        /* ===== COLLAPSIBLE SECTIONS ===== */
+        .collapsible-section {
+            margin-bottom: 1rem;
+            border-radius: var(--radius-inner);
+            border: 1px solid var(--color-border);
+            overflow: hidden;
+            transition: border-color 0.3s, background 0.3s;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .collapsible-section:hover {
+            border-color: rgba(31, 107, 158, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+            border-radius: var(--radius-inner);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .section-header:hover {
+            background: rgba(31, 107, 158, 0.04);
+        }
+
+        .section-header .section-title {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-header .section-title i {
+            color: var(--color-accent);
+            font-size: 0.85rem;
+        }
+
+        .section-header .section-toggle {
+            font-size: 0.7rem;
+            color: var(--color-text-secondary);
+            opacity: 0.4;
+            transition: transform 0.3s, opacity 0.3s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 30px;
+        }
+
+        .section-header .section-toggle:hover {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .section-header .section-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            padding: 0 1rem 1rem 1rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .section-content.collapsed {
+            display: none;
+        }
+
+        /* ===== FILTERS ===== */
+        .filters-row {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filters-row .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .filters-row .filter-group label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            opacity: 0.6;
+            white-space: nowrap;
+        }
+
+        .filters-row .filter-group input,
+        .filters-row .filter-group select {
+            width: 100%;
+            padding: 4px 10px;
+            border-radius: 40px;
+            border: 1px solid var(--color-border);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            font-family: var(--font-family);
+            font-size: 0.7rem;
+            color: var(--color-text);
+            transition: var(--transition);
+        }
+
+        .filters-row .filter-group input:focus,
+        .filters-row .filter-group select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(31, 107, 158, 0.08);
+            background: var(--color-surface-solid);
+        }
+
+        .filters-row .filter-group input::placeholder {
+            color: var(--color-text-secondary);
+            opacity: 0.4;
+        }
+
+        .filters-row .btn-icon {
+            padding: 4px 12px;
+            font-size: 0.65rem;
+        }
+
+        /* ===== PROGRESS ===== */
+        .timeline-progress {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 60px;
+            padding: 0.4rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            border: 1px solid var(--color-border);
+            transition: background 0.3s, border-color 0.3s;
+            margin-bottom: 0;
+        }
+
+        .timeline-progress .progress-label {
+            font-weight: 600;
+            font-size: 0.7rem;
+            color: var(--color-text-secondary);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .timeline-progress .progress-track {
+            flex: 1;
+            min-width: 80px;
+            height: 5px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 60px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .timeline-progress .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--color-success), var(--color-accent));
+            border-radius: 60px;
+            transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .timeline-progress .progress-text {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--color-text);
+            min-width: 38px;
+            text-align: right;
+        }
+
+        /* ===== GANTT ===== */
+        .gantt-container {
+            position: relative;
+            min-width: 600px;
+            overflow-x: auto;
+        }
+
+        .gantt-timeline {
+            display: flex;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+        }
+
+        .gantt-timeline .gantt-day {
+            flex: 1;
+            text-align: center;
+            font-size: 0.55rem;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            opacity: 0.5;
+            padding: 2px 0;
+            min-width: 28px;
+        }
+
+        .gantt-timeline .gantt-day.today {
+            color: var(--color-accent);
+            opacity: 1;
+            font-weight: 700;
+        }
+
+        .gantt-timeline .gantt-day.weekend {
+            opacity: 0.3;
+        }
+
+        .gantt-body {
+            position: relative;
+        }
+
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            padding: 2px 0;
+            min-height: 26px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+            transition: background 0.2s;
+        }
+
+        .gantt-row:hover {
+            background: rgba(31, 107, 158, 0.03);
+        }
+
+        .gantt-row .gantt-label {
+            width: 120px;
+            min-width: 120px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--color-text);
+            padding-right: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: help;
+        }
+
+        .gantt-row .gantt-bars {
+            flex: 1;
+            position: relative;
+            height: 22px;
+        }
+
+        .gantt-bar {
+            position: absolute;
+            height: 18px;
+            border-radius: 6px;
+            top: 2px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .gantt-bar:hover {
+            transform: scaleY(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+        }
+
+        .gantt-bar.status-plan { background: linear-gradient(135deg, #8bb3d0, #6a9fc0); }
+        .gantt-bar.status-progress { background: linear-gradient(135deg, #e6b422, #d4a020); }
+        .gantt-bar.status-critical { background: linear-gradient(135deg, #c94a4a, #b03a3a); }
+        .gantt-bar.status-done { background: linear-gradient(135deg, #2f8f4b, #1f7a3a); }
+        .gantt-bar.status-waiting { background: linear-gradient(135deg, #7a7a9a, #5a5a7a); }
+        .gantt-bar.no-date { background: linear-gradient(135deg, #ccc, #aaa); opacity: 0.4; }
+
+        .gantt-today-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--color-danger);
+            z-index: 5;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .gantt-today-line::after {
+            content: '▲';
+            position: absolute;
+            top: -12px;
+            left: -5px;
+            font-size: 8px;
+            color: var(--color-danger);
+        }
+
+        /* ===== TOOLTIP ===== */
+        .task-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .task-tooltip .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            width: 320px;
+            max-width: 90vw;
+            background: var(--color-surface-solid);
+            color: var(--color-text);
+            text-align: left;
+            border-radius: 12px;
+            padding: 10px 14px;
+            position: absolute;
+            z-index: 100;
+            bottom: 130%;
+            left: 0;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--color-border);
+            font-weight: 400;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            transition: opacity 0.25s, visibility 0.25s, transform 0.2s;
+            transform: translateY(4px);
+            pointer-events: none;
+        }
+
+        .task-tooltip .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            border: 6px solid transparent;
+            border-top-color: var(--color-surface-solid);
+        }
+
+        .task-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .task-tooltip .tooltip-text .tt-task {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            color: var(--color-text);
+        }
+
+        .task-tooltip .tooltip-text .tt-meta {
+            font-size: 0.65rem;
+            color: var(--color-text-secondary);
+            opacity: 0.7;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .task-tooltip .tooltip-text .tt-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ===== ADD TASK ===== */
+        .add-task-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(4px);
+            padding: 0.5rem 0.8rem;
+            border-radius: var(--radius-inner);
+            border: 1px dashed var(--color-border);
+            transition: var(--transition);
+        }
+
+        .add-task-row:hover {
+            border-color: var(--color-accent);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .add-task-row .add-field {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .add-task-row .add-field input,
+        .add-task-row .add-field select {
+            width: 100%;
+            padding: 5px 10px;
+            border-radius: 40px;
+            border: 1px solid var(--color-border);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            font-family: var(--font-family);
+            font-size: 0.75rem;
+            color: var(--color-text);
+            transition: var(--transition);
+        }
+
+        .add-task-row .add-field input:focus,
+        .add-task-row .add-field select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(31, 107, 158, 0.08);
+            background: var(--color-surface-solid);
+        }
+
+        .add-task-row .add-field input::placeholder {
+            color: var(--color-text-secondary);
+            opacity: 0.4;
+        }
+
+        .add-task-row .add-field input[type="date"] {
+            cursor: pointer;
+            color-scheme: light;
+        }
+
+        .btn-add {
+            background: var(--color-accent);
+            border: none;
+            padding: 5px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .btn-add:hover {
+            transform: scale(0.97);
+            box-shadow: 0 8px 24px rgba(31, 107, 158, 0.25);
+        }
+
+        /* ===== TABLE ===== */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-table);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(4px);
+            padding: 0.1rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--color-border);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            border-radius: var(--radius-inner);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            min-width: 900px;
+            table-layout: fixed;
+            transition: background 0.3s;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.7rem 0.6rem 0.5rem 0.8rem;
+            font-weight: 600;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--color-text-secondary);
+            border-bottom: 1px solid var(--color-border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        td {
+            padding: 0.5rem 0.6rem 0.5rem 0.8rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+            vertical-align: middle;
+            color: var(--color-text);
+            word-wrap: break-word;
+            transition: background 0.2s;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(31, 107, 158, 0.03); }
+        tr.dragging { opacity: 0.4; background: rgba(31, 107, 158, 0.05); }
+        tr.drag-over td { border-top: 3px solid var(--color-accent); background: rgba(31, 107, 158, 0.04); }
+
+        .col-id {
+            width: 40px;
+            min-width: 40px;
+            font-weight: 700;
+            color: var(--color-text-secondary);
+            opacity: 0.5;
+            text-align: center;
+            cursor: grab;
+            user-select: none;
+            font-size: 0.7rem;
+        }
+        .col-id::after {
+            content: '⠿';
+            font-size: 1rem;
+            opacity: 0.2;
+            margin-left: 3px;
+            display: inline-block;
+            transition: opacity 0.2s;
+        }
+        .col-id:hover::after { opacity: 0.5; }
+        .col-id:active { cursor: grabbing; }
+
+        .col-task {
+            width: 30%;
+            min-width: 160px;
+            font-weight: 500;
+        }
+
+        .task-tooltip .editable-task {
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed var(--color-border);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--color-text);
+            width: 100%;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.02);
+            min-height: 1.8rem;
+            resize: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .task-tooltip .editable-task:focus {
+            outline: none;
+            border-bottom: 2px solid var(--color-accent);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 12px rgba(0, 80, 160, 0.03);
+        }
+
+        .col-owner {
+            width: 13%;
+            min-width: 80px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+        .col-deadline {
+            width: 14%;
+            min-width: 100px;
+            font-weight: 500;
+        }
+        .col-status {
+            width: 15%;
+            min-width: 110px;
+        }
+        .col-actions {
+            width: 60px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .editable {
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed var(--color-border);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: var(--font-family);
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: var(--color-text);
+            width: 100%;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .editable:focus {
+            outline: none;
+            border-bottom: 2px solid var(--color-accent);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 12px rgba(0, 80, 160, 0.03);
+        }
+
+        .deadline-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            width: 100%;
+        }
+
+        .deadline-display {
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: var(--color-text);
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: var(--transition);
+            flex: 1;
+            min-width: 60px;
+            border-bottom: 1px dashed var(--color-border);
+        }
+
+        .deadline-display:hover {
+            background: rgba(31, 107, 158, 0.04);
+            border-bottom-color: var(--color-accent);
+        }
+
+        .deadline-display.empty {
+            color: var(--color-text-secondary);
+            opacity: 0.4;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .deadline-picker-toggle {
+            background: transparent;
+            border: none;
+            color: var(--color-accent);
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 30px;
+            transition: var(--transition);
+            opacity: 0.3;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        .deadline-picker-toggle:hover {
+            opacity: 1;
+            background: rgba(31, 107, 158, 0.06);
+        }
+
+        .deadline-input-hidden {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+        .deadline-cell { position: relative; }
+
+        .status-select {
+            background: rgba(240, 248, 255, 0.2);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--color-border);
+            border-radius: 40px;
+            padding: 3px 8px 3px 12px;
+            font-family: var(--font-family);
+            font-weight: 500;
+            font-size: 0.7rem;
+            color: var(--color-text);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            max-width: 120px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236a8aaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 8px 5px;
+            padding-right: 22px;
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(31, 107, 158, 0.08);
+            background-color: var(--color-surface-solid);
+        }
+
+        .status-select option {
+            background: var(--color-surface-solid);
+            color: var(--color-text);
+            padding: 3px;
+        }
+
+        .status-select.status-plan { background-color: rgba(200, 220, 240, 0.15); border-color: #8bb3d0; }
+        .status-select.status-progress { background-color: rgba(255, 225, 140, 0.15); border-color: #e6b422; }
+        .status-select.status-critical { background-color: rgba(255, 180, 180, 0.15); border-color: var(--color-danger); }
+        .status-select.status-done { background-color: rgba(150, 210, 160, 0.15); border-color: var(--color-success); }
+        .status-select.status-waiting { background-color: rgba(190, 190, 210, 0.1); border-color: #7a7a9a; }
+
+        .btn-delete {
+            background: rgba(201, 74, 74, 0.04);
+            border: 1px solid rgba(201, 74, 74, 0.08);
+            color: var(--color-danger);
+            cursor: pointer;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 30px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-weight: 500;
+            opacity: 0.4;
+        }
+
+        .btn-delete:hover {
+            background: var(--color-danger);
+            color: white;
+            opacity: 1;
+            transform: scale(0.95);
+            box-shadow: 0 4px 12px rgba(201, 74, 74, 0.2);
+        }
+
+        .btn-delete i { font-size: 0.6rem; }
+
+        /* ===== RISKS ===== */
+        .risks-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+        }
+
+        .risk-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(4px);
+            border-radius: var(--radius-inner);
+            padding: 0.8rem 1rem 0.7rem;
+            border-left: 4px solid #b0c8dd;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.01);
+        }
+
+        .risk-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        .risk-card.critical { border-left-color: var(--color-danger); background: rgba(255, 220, 220, 0.04); }
+        .risk-card.sync { border-left-color: var(--color-warning); background: rgba(255, 240, 180, 0.03); }
+        .risk-card.training { border-left-color: var(--color-success); background: rgba(180, 235, 190, 0.03); }
+
+        .risk-card .card-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+            color: var(--color-text);
+        }
+
+        .risk-card .card-title i { font-size: 0.9rem; opacity: 0.8; }
+        .risk-card .card-body {
+            font-size: 0.75rem;
+            line-height: 1.5;
+            color: var(--color-text-secondary);
+            opacity: 0.9;
+        }
+        .risk-card .card-body strong { color: var(--color-text); font-weight: 600; }
+        .risk-card .card-body .highlight { background: rgba(200, 60, 60, 0.06); padding: 0.05rem 0.3rem; border-radius: 8px; font-weight: 600; color: var(--color-danger); }
+        .risk-card .card-body .deadline-highlight { background: rgba(220, 180, 30, 0.08); padding: 0.05rem 0.3rem; border-radius: 8px; font-weight: 600; color: #a07d1a; }
+        .risk-card .card-body .blocked-stages { background: rgba(31, 107, 158, 0.06); padding: 0.05rem 0.3rem; border-radius: 8px; font-weight: 600; color: var(--color-accent); }
+
+        .risk-card .card-footer {
+            margin-top: 6px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--color-text-secondary);
+            opacity: 0.6;
+        }
+
+        .risk-card .card-footer i { transition: transform 0.2s; }
+        .risk-card:hover .card-footer i { transform: translateX(3px); }
+
+        /* ===== FOOTER ===== */
+        .footer-note {
+            margin-top: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            color: var(--color-text-secondary);
+            font-size: 0.65rem;
+            font-weight: 500;
+            opacity: 0.5;
+        }
+
+        .legend {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .legend-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 20px;
+            background: #bbb;
+        }
+
+        .footer-hints {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .footer-hints span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .risks-section { grid-template-columns: 1fr 1fr; }
+            .dashboard { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 0.8rem 0.5rem; }
+            .roadmap-wrapper { padding: 0.8rem; border-radius: 24px; }
+            .header-left h1 { font-size: 1.2rem; }
+            .risks-section { grid-template-columns: 1fr; padding: 0; gap: 0.6rem; }
+            .dashboard { grid-template-columns: repeat(3, 1fr); padding: 0.5rem 0.8rem; gap: 0.3rem; }
+            .stat-item .stat-number { font-size: 1.1rem; }
+            .stat-item .stat-label { font-size: 0.45rem; }
+            .add-task-row { flex-direction: column; align-items: stretch; gap: 0.3rem; padding: 0.5rem; }
+            .add-task-row .add-field { min-width: auto; }
+            .btn-add { justify-content: center; }
+            .col-task { min-width: 120px; }
+            .col-status { min-width: 90px; }
+            .status-select { max-width: 90px; font-size: 0.65rem; padding: 2px 6px 2px 8px; padding-right: 18px; }
+            .table-container { border-radius: 16px; }
+            table { min-width: 650px; font-size: 0.7rem; }
+            th,
+            td { padding: 0.3rem 0.3rem 0.3rem 0.5rem; }
+            .badge-status { font-size: 0.55rem; padding: 2px 8px; }
+            .btn-icon { font-size: 0.65rem; padding: 4px 10px; }
+            .footer-note { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .timeline-progress { padding: 0.3rem 0.6rem; gap: 0.3rem; }
+            .timeline-progress .progress-label { font-size: 0.6rem; }
+            .header-actions { gap: 4px; }
+            .save-indicator { font-size: 0.5rem; padding: 2px 8px; }
+            .col-actions { width: 40px; min-width: 40px; }
+            .col-id { width: 30px; min-width: 30px; font-size: 0.6rem; }
+            .col-id::after { font-size: 0.7rem; }
+            .btn-delete { font-size: 0.55rem; padding: 1px 6px; }
+            .col-deadline { min-width: 80px; }
+            .deadline-display { font-size: 0.7rem; min-width: 40px; }
+            .deadline-picker-toggle { font-size: 0.6rem; padding: 1px 3px; }
+            .header-left .sub { font-size: 0.65rem; }
+            .filters-row { flex-direction: column; padding: 0.4rem 0; gap: 0.3rem; }
+            .filters-row .filter-group { min-width: auto; width: 100%; }
+            .gantt-row .gantt-label { width: 70px; min-width: 70px; font-size: 0.55rem; }
+            .gantt-bar { font-size: 0.4rem; height: 14px; padding: 0 4px; }
+            .gantt-timeline .gantt-day { font-size: 0.45rem; min-width: 20px; }
+            .section-content { padding: 0 0.5rem 0.5rem 0.5rem; }
+            .section-header { padding: 0.4rem 0.5rem; }
+            .collapsible-section { margin-bottom: 0.6rem; }
+            .task-tooltip .tooltip-text { width: 250px; font-size: 0.65rem; }
+        }
+
+        @media (max-width: 480px) {
+            .header { flex-direction: column; align-items: stretch; gap: 0.4rem; }
+            .header-actions { justify-content: flex-start; flex-wrap: wrap; }
+            .col-id { width: 24px; min-width: 24px; font-size: 0.55rem; }
+            .col-id::after { font-size: 0.6rem; margin-left: 2px; }
+            table { min-width: 520px; font-size: 0.65rem; }
+            .dashboard { grid-template-columns: 1fr 1fr; gap: 0.2rem; padding: 0.4rem 0.5rem; }
+            .stat-item .stat-number { font-size: 1rem; }
+            .header-left .sub { font-size: 0.55rem; }
+            .btn-icon { font-size: 0.55rem; padding: 3px 8px; }
+            .gantt-row .gantt-label { width: 50px; min-width: 50px; font-size: 0.5rem; }
+            .gantt-timeline .gantt-day { font-size: 0.4rem; min-width: 16px; }
+            .gantt-bar { font-size: 0.35rem; height: 12px; }
+            .task-tooltip .tooltip-text { width: 200px; font-size: 0.6rem; padding: 6px 10px; }
+        }
+
+        .editable:focus-visible,
+        .status-select:focus-visible,
+        .btn-icon:focus-visible,
+        .btn-add:focus-visible,
+        .btn-delete:focus-visible,
+        .deadline-picker-toggle:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+
+        @media print {
+            .btn-icon,
+            .badge-status,
+            .save-indicator,
+            .add-task-row,
+            .btn-delete,
+            .col-id::after,
+            .deadline-picker-toggle,
+            .filters-row,
+            .section-toggle {
+                display: none;
+            }
+            .roadmap-wrapper {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                backdrop-filter: none;
+                background: white;
+            }
+            body {
+                background: white;
+                padding: 0.3in;
+            }
+            .section-content.collapsed { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="roadmap-wrapper">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-rocket" aria-hidden="true"></i> Дорожная карта ОЗП 2.0</h1>
+                <div class="sub">
+                    <i class="fas fa-arrow-right" aria-hidden="true" style="font-size:0.6rem;"></i>
+                    План перехода на новую платформу
+                    <span style="background:rgba(31,107,158,0.06); padding:0.05rem 0.6rem; border-radius:40px; font-size:0.6rem; font-weight:600; color:var(--color-accent);">
+                        <i class="fas fa-calendar-alt" aria-hidden="true"></i> Август 2026
+                    </span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <span class="badge-status"><i class="fas fa-sync-alt fa-fw" aria-hidden="true"></i> live</span>
+                <span class="save-indicator" id="saveIndicator"><i class="fas fa-check-circle" aria-hidden="true"></i> сохранено</span>
+                <button class="btn-icon theme" id="themeBtn" aria-label="Переключить тему">
+                    <i class="fas fa-moon" aria-hidden="true"></i>
+                </button>
+                <button class="btn-icon download" id="downloadBtn" aria-label="Скачать страницу">
+                    <i class="fas fa-download" aria-hidden="true"></i> Скачать
+                </button>
+                <button class="btn-icon reset" id="resetTableBtn" aria-label="Сбросить изменения">
+                    <i class="fas fa-undo-alt" aria-hidden="true"></i> Сбросить
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD -->
+        <section class="dashboard" aria-label="Сводка по статусам">
+            <div class="stat-item">
+                <div class="stat-number total" id="statTotal">20</div>
+                <div class="stat-label">Всего</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number critical" id="statCritical">1</div>
+                <div class="stat-label">Критично</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number progress" id="statProgress">3</div>
+                <div class="stat-label">В работе</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number done" id="statDone">2</div>
+                <div class="stat-label">Готово</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number waiting" id="statWaiting">9</div>
+                <div class="stat-label">Ожидание</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="statPlan">5</div>
+                <div class="stat-label">План</div>
+            </div>
+        </section>
+
+        <!-- PROGRESS -->
+        <div class="timeline-progress" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+            <span class="progress-label"><i class="fas fa-chart-line" aria-hidden="true"></i> Прогресс</span>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill" style="width: 10%;"></div>
+            </div>
+            <span class="progress-text" id="progressText">10%</span>
+        </div>
+
+        <!-- GANTT SECTION (collapsible) -->
+        <div class="collapsible-section">
+            <div class="section-header" data-target="ganttContent">
+                <span class="section-title"><i class="fas fa-chart-bar" aria-hidden="true"></i> Гант-диаграмма</span>
+                <button class="section-toggle" aria-label="Свернуть/развернуть"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div class="section-content" id="ganttContent">
+                <div class="gantt-container" id="ganttContainer"><div class="gantt-timeline"><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">31</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">1</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">2</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">3</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">4</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">5</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">6</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">7</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">8</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">9</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">10</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">11</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">12</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">13</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">14</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">15</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">16</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">17</div><div class="gantt-day today" style="flex:1; min-width:24.242424242424242px;">18</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">19</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">20</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">21</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">22</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">23</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">24</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">25</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">26</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">27</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">28</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">29</div><div class="gantt-day weekend" style="flex:1; min-width:24.242424242424242px;">30</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">31</div><div class="gantt-day" style="flex:1; min-width:24.242424242424242px;">1</div></div><div class="gantt-body" style="position:relative;"><div class="gantt-today-line" style="left:54.54545454545454%;"></div><div class="gantt-row">
+                                <div class="gantt-label" title="#1 Доделать доработки после приемки от 17.08.2026 до 19.08.2026">#1 Доделать доработки п…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-progress" style="left:51.515151515151516%; width:9.090909090909092%; background:#e6b422;" title="Доделать доработки после приемки от 17.08.2026 до 19.08.2026 (19.08.2026)">
+                                        19.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#2 Настроить права доступа для всех учетных записей (перенос)">#2 Настроить права дост…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-progress" style="left:51.515151515151516%; width:9.090909090909092%; background:#e6b422;" title="Настроить права доступа для всех учетных записей (перенос) (19.08.2026)">
+                                        19.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#3 Разработка инструкции по работе с системой">#3 Разработка инструкци…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-progress" style="left:51.515151515151516%; width:9.090909090909092%; background:#e6b422;" title="Разработка инструкции по работе с системой (19.08.2026)">
+                                        19.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#4 Заблокировать загрузку документов в старой системе (вечером)">#4 Заблокировать загруз…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-critical" style="left:54.54545454545454%; width:9.090909090909092%; background:#c94a4a;" title="Заблокировать загрузку документов в старой системе (вечером) (20.08.2026)">
+                                        20.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#5 Создать автоматически реестры по ТСО, ПТЭ">#5 Создать автоматическ…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-plan" style="left:57.57575757575758%; width:9.090909090909092%; background:#8bb3d0;" title="Создать автоматически реестры по ТСО, ПТЭ (21.08.2026)">
+                                        21.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#6 Создать автоматически СЦТ для ТСО и ПТЭ">#6 Создать автоматическ…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-plan" style="left:57.57575757575758%; width:9.090909090909092%; background:#8bb3d0;" title="Создать автоматически СЦТ для ТСО и ПТЭ (21.08.2026)">
+                                        21.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#7 Перенести документы из старой системы в новую">#7 Перенести документы …</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-plan" style="left:66.66666666666666%; width:9.090909090909092%; background:#8bb3d0;" title="Перенести документы из старой системы в новую (24.08.2026)">
+                                        24.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#8 Заполнить периоды и сроки по ТСО, ПТЭ, ОМСУ">#8 Заполнить периоды и …</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-plan" style="left:69.6969696969697%; width:9.090909090909092%; background:#8bb3d0;" title="Заполнить периоды и сроки по ТСО, ПТЭ, ОМСУ (25.08.2026)">
+                                        25.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#9 Загрузить документы для ОМСУ">#9 Загрузить документы …</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-plan" style="left:72.72727272727273%; width:9.090909090909092%; background:#8bb3d0;" title="Загрузить документы для ОМСУ (26.08.2026)">
+                                        26.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#10 API " Список="" объектов"="" (отправка="" АИС="" ГЖИ="" →="" ГИС="" ЖКХ)"="">#10 API "Список объектов…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-done" style="left:12.121212121212121%; width:9.090909090909092%; background:#2f8f4b;" title="API " Список="" объектов"="" (отправка="" АИС="" ГЖИ="" →="" ГИС="" ЖКХ)="" (06.08.2026)"="">
+                                        06.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#11 API " Формирование="" архива"="" (отправка)"="">#11 API "Формирование ар…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar status-done" style="left:30.303030303030305%; width:9.090909090909092%; background:#2f8f4b;" title="API " Формирование="" архива"="" (отправка)="" (12.08.2026)"="">
+                                        12.08.2026
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#12 Предоставление доступа сетевой связанности (АИС ГЖИ ↔ ГИС ЖКХ)">#12 Предоставление досту…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#13 API " Получение="" списка="" объектов"="" (из="" ГИС="" ЖКХ)"="">#13 API "Получение списк…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#14 API " Получение="" архива"="" (из="" ГИС="" ЖКХ)"="">#14 API "Получение архив…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#15 Скрипт загрузки данных по МКД (фоновая загрузка)">#15 Скрипт загрузки данн…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#16 API " Дополнительная="" загрузка="" оценка="" завершена""="">#16 API "Дополнительная …</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#17 API " Удаление="" архива""="">#17 API "Удаление архива…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#18 Интеграционное тестирование (АИС ГЖИ ↔ ГИС ЖКХ)">#18 Интеграционное тести…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#19 Обучение пользователей">#19 Обучение пользовател…</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div><div class="gantt-row">
+                                <div class="gantt-label" title="#20 Передать инструкцию (параллельно обучению или после)">#20 Передать инструкцию …</div>
+                                <div class="gantt-bars">
+                                    
+                                    <div class="gantt-bar no-date" style="left:0%; width:100%; opacity:0.2;" title="Дата не указана">
+                                        нет даты
+                                    </div>
+                                </div>
+                            </div></div></div>
+            </div>
+        </div>
+
+        <!-- FILTERS SECTION (collapsible) -->
+        <div class="collapsible-section">
+            <div class="section-header" data-target="filtersContent">
+                <span class="section-title"><i class="fas fa-sliders-h" aria-hidden="true"></i> Фильтры и поиск</span>
+                <button class="section-toggle" aria-label="Свернуть/развернуть"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div class="section-content" id="filtersContent">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label><i class="fas fa-search" aria-hidden="true"></i></label>
+                        <input type="text" id="searchFilter" placeholder="Поиск задач...">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-user" aria-hidden="true"></i></label>
+                        <select id="ownerFilter"><option value="">Все ответственные</option><option value="АИС ГЖИ">АИС ГЖИ</option><option value="АРКИ">АРКИ</option><option value="ОМСУ">ОМСУ</option><option value="ЦИБ">ЦИБ</option><option value="ЦРЦТ">ЦРЦТ</option><option value="ЦРЦТ / АИС ГЖИ">ЦРЦТ / АИС ГЖИ</option></select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-filter" aria-hidden="true"></i></label>
+                        <select id="statusFilter">
+                            <option value="">Все статусы</option>
+                            <option value="план">План</option>
+                            <option value="в работе">В работе</option>
+                            <option value="критично">Критично</option>
+                            <option value="готово">Готово</option>
+                            <option value="ожидание">Ожидание</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="flex:0.4; min-width:70px;">
+                        <button class="btn-icon" id="clearFiltersBtn" style="font-size:0.65rem; padding:4px 12px;">
+                            <i class="fas fa-times" aria-hidden="true"></i> Сбросить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADD TASK -->
+        <div class="add-task-row" role="group" aria-label="Добавить задачу">
+            <div class="add-field">
+                <input type="text" id="newTaskInput" placeholder="Название задачи..." aria-label="Название новой задачи">
+            </div>
+            <div class="add-field">
+                <input type="text" id="newOwnerInput" placeholder="Ответственный..." aria-label="Ответственный">
+            </div>
+            <div class="add-field">
+                <input type="date" id="newDeadlineInput" aria-label="Срок выполнения">
+            </div>
+            <div class="add-field" style="min-width:100px; flex:0.5;">
+                <select id="newStatusSelect" aria-label="Статус новой задачи">
+                    <option value="план">План</option>
+                    <option value="в работе">В работе</option>
+                    <option value="критично">Критично</option>
+                    <option value="готово">Готово</option>
+                    <option value="ожидание">Ожидание</option>
+                </select>
+            </div>
+            <button class="btn-add" id="addTaskBtn">
+                <i class="fas fa-plus" aria-hidden="true"></i> Добавить
+            </button>
+        </div>
+
+        <!-- TABLE SECTION (collapsible) -->
+        <div class="collapsible-section">
+            <div class="section-header" data-target="tableContent">
+                <span class="section-title"><i class="fas fa-table" aria-hidden="true"></i> Таблица задач</span>
+                <button class="section-toggle" aria-label="Свернуть/развернуть"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div class="section-content" id="tableContent">
+                <div class="table-container" role="table" aria-label="Дорожная карта">
+                    <table id="roadmapTable">
+                        <thead>
+                            <tr>
+                                <th class="col-id" scope="col">#</th>
+                                <th class="col-task" scope="col">Задача</th>
+                                <th class="col-owner" scope="col">Ответственный</th>
+                                <th class="col-deadline" scope="col">Срок</th>
+                                <th class="col-status" scope="col">Статус</th>
+                                <th class="col-actions" scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"><tr data-id="1" draggable="true"><td class="col-id" aria-label="Задача 1, перетащите">1</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 37px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Доделать доработки после приемки от 17.08.2026 до 19.08.2026</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 19.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> В работе</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №1</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">19.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-progress" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 1"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="2" draggable="true"><td class="col-id" aria-label="Задача 2, перетащите">2</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 37px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Настроить права доступа для всех учетных записей (перенос)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> АРКИ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 19.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> В работе</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №2</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">19.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-progress" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 2"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="3" draggable="true"><td class="col-id" aria-label="Задача 3, перетащите">3</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Разработка инструкции по работе с системой</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 19.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> В работе</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №3</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">19.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-progress" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 3"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="4" draggable="true"><td class="col-id" aria-label="Задача 4, перетащите">4</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 37px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Заблокировать загрузку документов в старой системе (вечером)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> АРКИ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 20.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Критично</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №4</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">20.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-critical" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 4"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="5" draggable="true"><td class="col-id" aria-label="Задача 5, перетащите">5</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Создать автоматически реестры по ТСО, ПТЭ</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 21.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> План</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №5</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">21.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-plan" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 5"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="6" draggable="true"><td class="col-id" aria-label="Задача 6, перетащите">6</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Создать автоматически СЦТ для ТСО и ПТЭ</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 21.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> План</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №6</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">21.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-plan" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 6"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="7" draggable="true"><td class="col-id" aria-label="Задача 7, перетащите">7</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Перенести документы из старой системы в новую</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 24.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> План</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №7</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">24.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-plan" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 7"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="8" draggable="true"><td class="col-id" aria-label="Задача 8, перетащите">8</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Заполнить периоды и сроки по ТСО, ПТЭ, ОМСУ</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> АРКИ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 25.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> План</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №8</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">25.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-plan" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 8"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="9" draggable="true"><td class="col-id" aria-label="Задача 9, перетащите">9</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Загрузить документы для ОМСУ</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ОМСУ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 26.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> План</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №9</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">26.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-plan" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 9"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="10" draggable="true"><td class="col-id" aria-label="Задача 10, перетащите">10</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">API "Список объектов" (отправка АИС ГЖИ → ГИС ЖКХ)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> АИС ГЖИ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 06.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Готово</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №10</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">06.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-done" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 10"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="11" draggable="true"><td class="col-id" aria-label="Задача 11, перетащите">11</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">API "Формирование архива" (отправка)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> АИС ГЖИ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> 12.08.2026</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Готово</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №11</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display">12.08.2026</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-done" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 11"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="12" draggable="true"><td class="col-id" aria-label="Задача 12, перетащите">12</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 37px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Предоставление доступа сетевой связанности (АИС ГЖИ ↔ ГИС ЖКХ)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦИБ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №12</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 12"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="13" draggable="true"><td class="col-id" aria-label="Задача 13, перетащите">13</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">API "Получение списка объектов" (из ГИС ЖКХ)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №13</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 13"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="14" draggable="true"><td class="col-id" aria-label="Задача 14, перетащите">14</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">API "Получение архива" (из ГИС ЖКХ)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №14</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 14"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="15" draggable="true"><td class="col-id" aria-label="Задача 15, перетащите">15</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Скрипт загрузки данных по МКД (фоновая загрузка)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №15</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 15"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="16" draggable="true"><td class="col-id" aria-label="Задача 16, перетащите">16</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">API "Дополнительная загрузка/оценка завершена"</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №16</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 16"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="17" draggable="true"><td class="col-id" aria-label="Задача 17, перетащите">17</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">API "Удаление архива"</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> АИС ГЖИ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №17</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 17"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="18" draggable="true"><td class="col-id" aria-label="Задача 18, перетащите">18</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Интеграционное тестирование (АИС ГЖИ ↔ ГИС ЖКХ)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ / АИС ГЖИ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №18</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 18"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="19" draggable="true"><td class="col-id" aria-label="Задача 19, перетащите">19</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 28px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Обучение пользователей</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> АРКИ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №19</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 19"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr><tr data-id="20" draggable="true"><td class="col-id" aria-label="Задача 20, перетащите">20</td><td class="col-task"><div class="task-tooltip"><textarea class="editable-task" placeholder="Задача" rows="1" aria-label="Редактируемая задача" style="height: 37px;"></textarea><div class="tooltip-text">
+                                <div class="tt-task">Передать инструкцию (параллельно обучению или после)</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ЦРЦТ</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> не указан</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> Ожидание</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №20</span>
+                                </div>
+                            </div></div></td><td class="col-owner"><input type="text" class="editable" placeholder="Ответственный" aria-label="Ответственный"></td><td class="col-deadline deadline-cell"><div class="deadline-wrapper"><input type="date" class="deadline-input-hidden" aria-label="Срок"><span class="deadline-display empty">не указан</span><button class="deadline-picker-toggle" aria-label="Выбрать дату" type="button"><i class="fas fa-calendar-alt" aria-hidden="true"></i></button></div></td><td class="col-status"><select class="status-select status-waiting" aria-label="Статус"><option value="план">План</option><option value="в работе">В работе</option><option value="критично">Критично</option><option value="готово">Готово</option><option value="ожидание">Ожидание</option></select></td><td class="col-actions"><button class="btn-delete" aria-label="Удалить задачу 20"><i class="fas fa-trash-alt" aria-hidden="true"></i></button></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RISKS SECTION (collapsible) -->
+        <div class="collapsible-section">
+            <div class="section-header" data-target="risksContent">
+                <span class="section-title"><i class="fas fa-shield-alt" aria-hidden="true"></i> Ключевые риски и рекомендации</span>
+                <button class="section-toggle" aria-label="Свернуть/развернуть"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div class="section-content" id="risksContent">
+                <div class="risks-section" aria-label="Ключевые риски">
+                    <article class="risk-card critical">
+                        <div class="card-title">
+                            <i class="fas fa-exclamation-triangle" aria-hidden="true" style="color:var(--color-danger);"></i> Критический риск (Блокер)
+                        </div>
+                        <div class="card-body">
+                            <strong>Пункт №12</strong> (Сетевой доступ от ЦИБ) <span class="highlight">не имеет срока</span>.
+                            <br><br>
+                            <strong>➜ Рекомендация:</strong> эскалировать вопрос <strong>до 19.08.2026</strong>, иначе все работы по интеграции <span class="blocked-stages">(п.13–18)</span> сдвигаются на неопределенный срок.
+                        </div>
+                        <div class="card-footer">
+                            <i class="fas fa-flag" aria-hidden="true"></i> блокирует этапы 13–18
+                        </div>
+                    </article>
+
+                    <article class="risk-card sync">
+                        <div class="card-title">
+                            <i class="fas fa-clock" aria-hidden="true" style="color:#b38f1a;"></i> Точка синхронизации
+                        </div>
+                        <div class="card-body">
+                            <strong>Пункт №4</strong> (блокировка старой системы) — это <span class="deadline-highlight">жесткий дедлайн</span>.
+                            <br><br>
+                            <strong>➜ Рекомендация:</strong> убедиться, что <strong>п.1 и п.2</strong> выполнены <strong>до вечера 20.08</strong>. Задержка срывает весь календарь переноса.
+                        </div>
+                        <div class="card-footer">
+                            <i class="fas fa-link" aria-hidden="true"></i> зависит от п.1, п.2
+                        </div>
+                    </article>
+
+                    <article class="risk-card training">
+                        <div class="card-title">
+                            <i class="fas fa-graduation-cap" aria-hidden="true" style="color:var(--color-success);"></i> Обучение и материалы
+                        </div>
+                        <div class="card-body">
+                            <strong>➜ Рекомендация:</strong> начать подготовку учебных материалов на основе <strong>п.3</strong> сразу.
+                            <br><br>
+                            К моменту <strong>п.19</strong> провести не «технический вебинар», а <strong>полноценное обучение</strong> с кейсами и практикой.
+                        </div>
+                        <div class="card-footer">
+                            <i class="fas fa-book-open" aria-hidden="true"></i> параллельно с п.3
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer-note">
+            <div class="legend">
+                <span class="legend-item"><span class="legend-dot" style="background:#8bb3d0;"></span> план</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#e6b422;"></span> в работе</span>
+                <span class="legend-item"><span class="legend-dot" style="background:var(--color-danger);"></span> критично</span>
+                <span class="legend-item"><span class="legend-dot" style="background:var(--color-success);"></span> готово</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#7a7a9a;"></span> ожидание</span>
+            </div>
+            <div class="footer-hints">
+                <span><i class="fas fa-sync-alt" aria-hidden="true"></i> автосохранение</span>
+                <span><i class="fas fa-grip-vertical" aria-hidden="true"></i> перетащите # для сортировки</span>
+                <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> клик по дате для выбора</span>
+                <span><i class="fas fa-info-circle" aria-hidden="true"></i> наведите на задачу для подсказки</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const STORAGE_KEY = 'ozp_roadmap_data';
+            const STATUSES = ['план', 'в работе', 'критично', 'готово', 'ожидание'];
+            const STATUS_CLASS_MAP = {
+                'план': 'status-plan',
+                'в работе': 'status-progress',
+                'критично': 'status-critical',
+                'готово': 'status-done',
+                'ожидание': 'status-waiting'
+            };
+            const STATUS_COLORS = {
+                'план': '#8bb3d0',
+                'в работе': '#e6b422',
+                'критично': '#c94a4a',
+                'готово': '#2f8f4b',
+                'ожидание': '#7a7a9a'
+            };
+
+            const INIT_DATA = Object.freeze([
+                { id: 1, task: 'Доделать доработки после приемки от 17.08.2026 до 19.08.2026', owner: 'ЦРЦТ', deadline: '2026-08-19',
+                    status: 'в работе' },
+                { id: 2, task: 'Настроить права доступа для всех учетных записей (перенос)', owner: 'АРКИ', deadline: '2026-08-19',
+                    status: 'в работе' },
+                { id: 3, task: 'Разработка инструкции по работе с системой', owner: 'ЦРЦТ', deadline: '2026-08-19',
+                    status: 'в работе' },
+                { id: 4, task: 'Заблокировать загрузку документов в старой системе (вечером)', owner: 'АРКИ', deadline: '2026-08-20',
+                    status: 'критично' },
+                { id: 5, task: 'Создать автоматически реестры по ТСО, ПТЭ', owner: 'ЦРЦТ', deadline: '2026-08-21',
+                    status: 'план' },
+                { id: 6, task: 'Создать автоматически СЦТ для ТСО и ПТЭ', owner: 'ЦРЦТ', deadline: '2026-08-21',
+                    status: 'план' },
+                { id: 7, task: 'Перенести документы из старой системы в новую', owner: 'ЦРЦТ', deadline: '2026-08-24',
+                    status: 'план' },
+                { id: 8, task: 'Заполнить периоды и сроки по ТСО, ПТЭ, ОМСУ', owner: 'АРКИ', deadline: '2026-08-25',
+                    status: 'план' },
+                { id: 9, task: 'Загрузить документы для ОМСУ', owner: 'ОМСУ', deadline: '2026-08-26', status: 'план' },
+                { id: 10, task: 'API "Список объектов" (отправка АИС ГЖИ → ГИС ЖКХ)', owner: 'АИС ГЖИ', deadline: '2026-08-06',
+                    status: 'в работе' },
+                { id: 11, task: 'API "Формирование архива" (отправка)', owner: 'АИС ГЖИ', deadline: '2026-08-12',
+                    status: 'в работе' },
+                { id: 12, task: 'Предоставление доступа сетевой связанности (АИС ГЖИ ↔ ГИС ЖКХ)', owner: 'ЦИБ', deadline: '',
+                    status: 'ожидание' },
+                { id: 13, task: 'API "Получение списка объектов" (из ГИС ЖКХ)', owner: 'ЦРЦТ', deadline: '',
+                    status: 'ожидание' },
+                { id: 14, task: 'API "Получение архива" (из ГИС ЖКХ)', owner: 'ЦРЦТ', deadline: '', status: 'ожидание' },
+                { id: 15, task: 'Скрипт загрузки данных по МКД (фоновая загрузка)', owner: 'ЦРЦТ', deadline: '',
+                    status: 'ожидание' },
+                { id: 16, task: 'API "Дополнительная загрузка/оценка завершена"', owner: 'ЦРЦТ', deadline: '',
+                    status: 'ожидание' },
+                { id: 17, task: 'API "Удаление архива"', owner: 'АИС ГЖИ', deadline: '', status: 'ожидание' },
+                { id: 18, task: 'Интеграционное тестирование (АИС ГЖИ ↔ ГИС ЖКХ)', owner: 'ЦРЦТ / АИС ГЖИ', deadline: '',
+                    status: 'ожидание' },
+                { id: 19, task: 'Обучение пользователей', owner: 'АРКИ', deadline: '', status: 'ожидание' },
+                { id: 20, task: 'Передать инструкцию (параллельно обучению или после)', owner: 'ЦРЦТ', deadline: '',
+                    status: 'ожидание' }
+            ]);
+
+            let tasks = [];
+            let nextId = 21;
+            let dragData = null;
+            let isDark = false;
+
+            const tbody = document.getElementById('tableBody');
+            const statTotal = document.getElementById('statTotal');
+            const statCritical = document.getElementById('statCritical');
+            const statProgress = document.getElementById('statProgress');
+            const statDone = document.getElementById('statDone');
+            const statWaiting = document.getElementById('statWaiting');
+            const statPlan = document.getElementById('statPlan');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const saveIndicator = document.getElementById('saveIndicator');
+            const ganttContainer = document.getElementById('ganttContainer');
+
+            const newTaskInput = document.getElementById('newTaskInput');
+            const newOwnerInput = document.getElementById('newOwnerInput');
+            const newDeadlineInput = document.getElementById('newDeadlineInput');
+            const newStatusSelect = document.getElementById('newStatusSelect');
+            const addTaskBtn = document.getElementById('addTaskBtn');
+
+            const searchFilter = document.getElementById('searchFilter');
+            const ownerFilter = document.getElementById('ownerFilter');
+            const statusFilter = document.getElementById('statusFilter');
+
+            let filteredTasks = [];
+
+            // ===== COLLAPSIBLE =====
+            function initCollapsible() {
+                document.querySelectorAll('.section-header').forEach(header => {
+                    const targetId = header.dataset.target;
+                    const content = document.getElementById(targetId);
+                    const toggle = header.querySelector('.section-toggle');
+
+                    if (!content || !toggle) return;
+
+                    // Восстанавливаем состояние из localStorage
+                    const savedState = localStorage.getItem('collapsible_' + targetId);
+                    if (savedState === 'collapsed') {
+                        content.classList.add('collapsed');
+                        toggle.classList.add('collapsed');
+                    }
+
+                    header.addEventListener('click', function(e) {
+                        // Игнорируем клик по кнопке внутри (чтобы не было двойного срабатывания)
+                        if (e.target.closest('.section-toggle')) return;
+
+                        const isCollapsed = content.classList.toggle('collapsed');
+                        toggle.classList.toggle('collapsed');
+                        localStorage.setItem('collapsible_' + targetId, isCollapsed ? 'collapsed' : 'expanded');
+
+                        // Если разворачиваем гант, перерисовываем его
+                        if (targetId === 'ganttContent' && !isCollapsed) {
+                            setTimeout(renderGantt, 50);
+                        }
+                    });
+
+                    toggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const isCollapsed = content.classList.toggle('collapsed');
+                        toggle.classList.toggle('collapsed');
+                        localStorage.setItem('collapsible_' + targetId, isCollapsed ? 'collapsed' : 'expanded');
+
+                        if (targetId === 'ganttContent' && !isCollapsed) {
+                            setTimeout(renderGantt, 50);
+                        }
+                    });
+                });
+            }
+
+            // ===== STORAGE =====
+            function loadFromStorage() {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    }
+                } catch (e) { console.warn('Failed to load from localStorage:', e); }
+                return null;
+            }
+
+            function saveToStorage(data) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    showSavedIndicator(true);
+                } catch (e) {
+                    console.warn('Failed to save to localStorage:', e);
+                    showSavedIndicator(false);
+                }
+            }
+
+            let saveTimeout = null;
+
+            function scheduleSave() {
+                if (saveTimeout) clearTimeout(saveTimeout);
+                saveIndicator.classList.add('saving');
+                saveIndicator.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> сохранение...';
+                saveTimeout = setTimeout(() => {
+                    saveToStorage(tasks);
+                    saveTimeout = null;
+                }, 300);
+            }
+
+            function showSavedIndicator(success) {
+                if (saveTimeout) { clearTimeout(saveTimeout);
+                    saveTimeout = null; }
+                if (success) {
+                    saveIndicator.className = 'save-indicator';
+                    saveIndicator.innerHTML = '<i class="fas fa-check-circle" aria-hidden="true"></i> сохранено';
+                } else {
+                    saveIndicator.className = 'save-indicator';
+                    saveIndicator.style.color = 'var(--color-danger)';
+                    saveIndicator.style.borderColor = 'rgba(201,74,74,0.3)';
+                    saveIndicator.style.background = 'rgba(201,74,74,0.1)';
+                    saveIndicator.innerHTML = '<i class="fas fa-exclamation-circle" aria-hidden="true"></i> ошибка';
+                    setTimeout(() => {
+                        saveIndicator.style.color = '';
+                        saveIndicator.style.borderColor = '';
+                        saveIndicator.style.background = '';
+                        saveIndicator.innerHTML = '<i class="fas fa-check-circle" aria-hidden="true"></i> сохранено';
+                    }, 3000);
+                }
+            }
+
+            // ===== HELPERS =====
+            function autoResizeTextarea(textarea) {
+                if (!textarea) return;
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            }
+
+            function updateSelectClass(select, status) {
+                if (!select) return;
+                select.className = 'status-select';
+                const cls = STATUS_CLASS_MAP[status];
+                if (cls) select.classList.add(cls);
+            }
+
+            function formatDateDisplay(dateStr) {
+                if (!dateStr) return '';
+                try {
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`;
+                } catch (e) {}
+                return dateStr;
+            }
+
+            function reindexTasks() {
+                tasks.forEach((t, idx) => { t.id = idx + 1; });
+                nextId = tasks.length + 1;
+            }
+
+            function getOwners() {
+                const owners = new Set();
+                tasks.forEach(t => { if (t.owner) owners.add(t.owner); });
+                return Array.from(owners).sort();
+            }
+
+            // ===== UPDATE DASHBOARD =====
+            function updateDashboard() {
+                const stats = { total: tasks.length, critical: 0, progress: 0, done: 0, waiting: 0, plan: 0 };
+                tasks.forEach(t => {
+                    if (t.status === 'критично') stats.critical++;
+                    else if (t.status === 'в работе') stats.progress++;
+                    else if (t.status === 'готово') stats.done++;
+                    else if (t.status === 'ожидание') stats.waiting++;
+                    else if (t.status === 'план') stats.plan++;
+                });
+
+                if (statTotal) statTotal.textContent = stats.total;
+                if (statCritical) statCritical.textContent = stats.critical;
+                if (statProgress) statProgress.textContent = stats.progress;
+                if (statDone) statDone.textContent = stats.done;
+                if (statWaiting) statWaiting.textContent = stats.waiting;
+                if (statPlan) statPlan.textContent = stats.plan;
+
+                const doneCount = stats.done;
+                const total = stats.total || 1;
+                const percent = Math.round((doneCount / total) * 100);
+                if (progressFill) progressFill.style.width = percent + '%';
+                if (progressText) progressText.textContent = percent + '%';
+                const progressBar = document.querySelector('.timeline-progress');
+                if (progressBar) progressBar.setAttribute('aria-valuenow', percent);
+            }
+
+            // ===== FILTERS =====
+            function applyFilters() {
+                const search = searchFilter.value.toLowerCase().trim();
+                const owner = ownerFilter.value;
+                const status = statusFilter.value;
+
+                filteredTasks = tasks.filter(t => {
+                    const matchSearch = !search || t.task.toLowerCase().includes(search);
+                    const matchOwner = !owner || t.owner === owner;
+                    const matchStatus = !status || t.status === status;
+                    return matchSearch && matchOwner && matchStatus;
+                });
+
+                renderTable();
+                renderGantt();
+            }
+
+            function updateOwnerFilter() {
+                const owners = getOwners();
+                const currentVal = ownerFilter.value;
+                ownerFilter.innerHTML = '<option value="">Все ответственные</option>';
+                owners.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o;
+                    opt.textContent = o;
+                    ownerFilter.appendChild(opt);
+                });
+                ownerFilter.value = currentVal;
+            }
+
+            // ===== GANTT CHART =====
+            function renderGantt() {
+                if (!ganttContainer) return;
+
+                const data = filteredTasks.length > 0 ? filteredTasks : tasks;
+
+                let minDate = new Date('2026-08-01');
+                let maxDate = new Date('2026-08-31');
+                data.forEach(t => {
+                    if (t.deadline) {
+                        const d = new Date(t.deadline);
+                        if (d < minDate) minDate = d;
+                        if (d > maxDate) maxDate = d;
+                    }
+                });
+
+                minDate.setDate(minDate.getDate() - 1);
+                maxDate.setDate(maxDate.getDate() + 1);
+
+                const dayCount = Math.ceil((maxDate - minDate) / (1000 * 60 * 60 * 24)) + 1;
+                const days = [];
+                for (let i = 0; i < dayCount; i++) {
+                    const d = new Date(minDate);
+                    d.setDate(d.getDate() + i);
+                    days.push(d);
+                }
+
+                const today = new Date();
+                const todayStr = today.toISOString().slice(0, 10);
+
+                let html = '';
+
+                html += '<div class="gantt-timeline">';
+                days.forEach((d, idx) => {
+                    const dayStr = d.toISOString().slice(0, 10);
+                    const isToday = dayStr === todayStr;
+                    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                    const dayNum = d.getDate();
+                    let classes = 'gantt-day';
+                    if (isToday) classes += ' today';
+                    if (isWeekend) classes += ' weekend';
+                    html +=
+                        `<div class="${classes}" style="flex:1; min-width:${Math.max(20, 800/dayCount)}px;">${dayNum}</div>`;
+                });
+                html += '</div>';
+
+                html += '<div class="gantt-body" style="position:relative;">';
+
+                const todayIndex = days.findIndex(d => d.toISOString().slice(0, 10) === todayStr);
+                if (todayIndex >= 0) {
+                    const pct = (todayIndex / days.length) * 100;
+                    html += `<div class="gantt-today-line" style="left:${pct}%;"></div>`;
+                }
+
+                data.forEach((t, idx) => {
+                    const status = t.status || 'ожидание';
+                    const color = STATUS_COLORS[status] || '#7a7a9a';
+                    const statusClass = STATUS_CLASS_MAP[status] || 'status-waiting';
+
+                    let startIdx = 0;
+                    let endIdx = days.length - 1;
+
+                    if (t.deadline) {
+                        const endPos = days.findIndex(day => day.toISOString().slice(0, 10) === t.deadline);
+                        if (endPos >= 0) endIdx = endPos;
+                        startIdx = Math.max(0, endIdx - 2);
+                    }
+
+                    const leftPct = (startIdx / days.length) * 100;
+                    const widthPct = ((endIdx - startIdx + 1) / days.length) * 100;
+                    const hasDate = t.deadline && t.deadline.length > 0;
+
+                    html += `<div class="gantt-row">
+                                <div class="gantt-label" title="#${t.id} ${t.task}">#${t.id} ${t.task.substring(0, 20)}${t.task.length > 20 ? '…' : ''}</div>
+                                <div class="gantt-bars">
+                                    ${hasDate ? `
+                                    <div class="gantt-bar ${statusClass}" 
+                                         style="left:${leftPct}%; width:${Math.max(widthPct, 2)}%; background:${color};"
+                                         title="${t.task} (${formatDateDisplay(t.deadline)})">
+                                        ${formatDateDisplay(t.deadline)}
+                                    </div>` : `
+                                    <div class="gantt-bar no-date" 
+                                         style="left:0%; width:100%; opacity:0.2;"
+                                         title="Дата не указана">
+                                        нет даты
+                                    </div>`}
+                                </div>
+                            </div>`;
+                });
+
+                html += '</div>';
+                ganttContainer.innerHTML = html;
+            }
+
+            // ===== CRUD =====
+            function deleteTask(id) {
+                if (!confirm(`Удалить задачу №${id}?`)) return;
+                tasks = tasks.filter(t => t.id !== id);
+                reindexTasks();
+                applyFilters();
+                scheduleSave();
+            }
+
+            function addTask() {
+                const task = newTaskInput.value.trim();
+                const owner = newOwnerInput.value.trim() || 'Не назначен';
+                const deadline = newDeadlineInput.value || '';
+                const status = newStatusSelect.value;
+
+                if (!task) {
+                    alert('Введите название задачи');
+                    newTaskInput.focus();
+                    return;
+                }
+
+                tasks.push({ id: nextId++, task, owner, deadline, status });
+                reindexTasks();
+                updateOwnerFilter();
+                applyFilters();
+                scheduleSave();
+
+                newTaskInput.value = '';
+                newOwnerInput.value = '';
+                newDeadlineInput.value = '';
+                newStatusSelect.value = 'план';
+                newTaskInput.focus();
+            }
+
+            // ===== DRAG & DROP =====
+            function handleDragStart(e) {
+                const row = e.target.closest('tr');
+                if (!row) return;
+                const id = parseInt(row.dataset.id);
+                if (isNaN(id)) return;
+                dragData = { id, fromIndex: tasks.findIndex(t => t.id === id) };
+                row.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', id.toString());
+            }
+
+            function handleDragEnd(e) {
+                const row = e.target.closest('tr');
+                if (row) row.classList.remove('dragging');
+                document.querySelectorAll('tr.drag-over').forEach(el => el.classList.remove('drag-over'));
+                dragData = null;
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                const row = e.target.closest('tr');
+                if (!row) return;
+                document.querySelectorAll('tr.drag-over').forEach(el => el.classList.remove('drag-over'));
+                row.classList.add('drag-over');
+            }
+
+            function handleDragLeave(e) {
+                const row = e.target.closest('tr');
+                if (row) row.classList.remove('drag-over');
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                const targetRow = e.target.closest('tr');
+                if (!targetRow) return;
+                document.querySelectorAll('tr.drag-over').forEach(el => el.classList.remove('drag-over'));
+
+                const targetId = parseInt(targetRow.dataset.id);
+                if (isNaN(targetId) || !dragData) return;
+                if (dragData.id === targetId) return;
+
+                const fromIndex = dragData.fromIndex;
+                const toIndex = tasks.findIndex(t => t.id === targetId);
+                if (fromIndex === -1 || toIndex === -1) return;
+
+                const [moved] = tasks.splice(fromIndex, 1);
+                tasks.splice(toIndex, 0, moved);
+                reindexTasks();
+                applyFilters();
+                scheduleSave();
+                dragData = null;
+            }
+
+            // ===== RENDER TABLE =====
+            function renderTable() {
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                const data = filteredTasks.length > 0 ? filteredTasks : tasks;
+
+                data.forEach((item) => {
+                    const tr = document.createElement('tr');
+                    tr.dataset.id = item.id;
+                    tr.draggable = true;
+
+                    tr.addEventListener('dragstart', handleDragStart);
+                    tr.addEventListener('dragend', handleDragEnd);
+                    tr.addEventListener('dragover', handleDragOver);
+                    tr.addEventListener('dragleave', handleDragLeave);
+                    tr.addEventListener('drop', handleDrop);
+
+                    const tdId = document.createElement('td');
+                    tdId.className = 'col-id';
+                    tdId.textContent = item.id;
+                    tdId.setAttribute('aria-label', `Задача ${item.id}, перетащите`);
+
+                    // Task with tooltip
+                    const tdTask = document.createElement('td');
+                    tdTask.className = 'col-task';
+
+                    const tooltipWrapper = document.createElement('div');
+                    tooltipWrapper.className = 'task-tooltip';
+
+                    const taskArea = document.createElement('textarea');
+                    taskArea.className = 'editable-task';
+                    taskArea.value = item.task;
+                    taskArea.placeholder = 'Задача';
+                    taskArea.rows = 1;
+                    taskArea.setAttribute('aria-label', 'Редактируемая задача');
+                    taskArea.addEventListener('input', function() {
+                        item.task = this.value;
+                        autoResizeTextarea(this);
+                        // Обновляем текст в тултипе
+                        const tooltipText = this.parentElement.querySelector('.tooltip-text .tt-task');
+                        if (tooltipText) tooltipText.textContent = this.value;
+                        updateDashboard();
+                        scheduleSave();
+                        renderGantt();
+                    });
+                    taskArea.addEventListener('change', function() {
+                        updateDashboard();
+                        scheduleSave();
+                        renderGantt();
+                    });
+                    requestAnimationFrame(() => autoResizeTextarea(taskArea));
+
+                    // Tooltip content
+                    const tooltipDiv = document.createElement('div');
+                    tooltipDiv.className = 'tooltip-text';
+                    tooltipDiv.innerHTML = `
+                                <div class="tt-task">${item.task}</div>
+                                <div class="tt-meta">
+                                    <span><i class="fas fa-user" aria-hidden="true"></i> ${item.owner || 'Не назначен'}</span>
+                                    <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> ${formatDateDisplay(item.deadline) || 'не указан'}</span>
+                                    <span><i class="fas fa-tag" aria-hidden="true"></i> ${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>
+                                    <span><i class="fas fa-hashtag" aria-hidden="true"></i> №${item.id}</span>
+                                </div>
+                            `;
+
+                    tooltipWrapper.appendChild(taskArea);
+                    tooltipWrapper.appendChild(tooltipDiv);
+                    tdTask.appendChild(tooltipWrapper);
+
+                    const tdOwner = document.createElement('td');
+                    tdOwner.className = 'col-owner';
+                    const ownerInput = document.createElement('input');
+                    ownerInput.type = 'text';
+                    ownerInput.className = 'editable';
+                    ownerInput.value = item.owner;
+                    ownerInput.placeholder = 'Ответственный';
+                    ownerInput.setAttribute('aria-label', 'Ответственный');
+                    ownerInput.addEventListener('change', function() {
+                        item.owner = this.value;
+                        updateDashboard();
+                        updateOwnerFilter();
+                        scheduleSave();
+                        renderGantt();
+                        // Обновляем тултип
+                        const tooltip = this.closest('tr').querySelector('.task-tooltip .tt-meta');
+                        if (tooltip) {
+                            const userSpan = tooltip.querySelector('.tt-meta span:first-child');
+                            if (userSpan) userSpan.innerHTML =
+                                `<i class="fas fa-user" aria-hidden="true"></i> ${item.owner || 'Не назначен'}`;
+                        }
+                    });
+                    tdOwner.appendChild(ownerInput);
+
+                    const tdDeadline = document.createElement('td');
+                    tdDeadline.className = 'col-deadline deadline-cell';
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'deadline-wrapper';
+
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'date';
+                    hiddenInput.className = 'deadline-input-hidden';
+                    hiddenInput.value = item.deadline || '';
+                    hiddenInput.setAttribute('aria-label', 'Срок');
+
+                    const displaySpan = document.createElement('span');
+                    displaySpan.className = 'deadline-display';
+                    const displayText = formatDateDisplay(item.deadline);
+                    displaySpan.textContent = displayText || 'не указан';
+                    if (!displayText) displaySpan.classList.add('empty');
+
+                    const toggleBtn = document.createElement('button');
+                    toggleBtn.className = 'deadline-picker-toggle';
+                    toggleBtn.innerHTML = '<i class="fas fa-calendar-alt" aria-hidden="true"></i>';
+                    toggleBtn.setAttribute('aria-label', 'Выбрать дату');
+                    toggleBtn.type = 'button';
+
+                    function updateDeadline(newValue) {
+                        item.deadline = newValue;
+                        const formatted = formatDateDisplay(newValue);
+                        displaySpan.textContent = formatted || 'не указан';
+                        displaySpan.classList.toggle('empty', !formatted);
+                        hiddenInput.value = newValue;
+                        updateDashboard();
+                        scheduleSave();
+                        renderGantt();
+                        // Обновляем тултип
+                        const tooltip = displaySpan.closest('tr').querySelector('.task-tooltip .tt-meta');
+                        if (tooltip) {
+                            const dateSpan = tooltip.querySelector('.tt-meta span:nth-child(2)');
+                            if (dateSpan) dateSpan.innerHTML =
+                                `<i class="fas fa-calendar-alt" aria-hidden="true"></i> ${formatted || 'не указан'}`;
+                        }
+                    }
+
+                    hiddenInput.addEventListener('change', function(e) { updateDeadline(this.value); });
+                    displaySpan.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        hiddenInput.showPicker ? hiddenInput.showPicker() : hiddenInput.click();
+                    });
+                    toggleBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        hiddenInput.showPicker ? hiddenInput.showPicker() : hiddenInput.click();
+                    });
+
+                    wrapper.appendChild(hiddenInput);
+                    wrapper.appendChild(displaySpan);
+                    wrapper.appendChild(toggleBtn);
+                    tdDeadline.appendChild(wrapper);
+
+                    const tdStatus = document.createElement('td');
+                    tdStatus.className = 'col-status';
+                    const select = document.createElement('select');
+                    select.className = 'status-select';
+                    select.setAttribute('aria-label', 'Статус');
+                    STATUSES.forEach(st => {
+                        const opt = document.createElement('option');
+                        opt.value = st;
+                        opt.textContent = st.charAt(0).toUpperCase() + st.slice(1);
+                        if (st === item.status) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                    updateSelectClass(select, item.status);
+                    select.addEventListener('change', function() {
+                        item.status = this.value;
+                        updateSelectClass(this, item.status);
+                        updateDashboard();
+                        scheduleSave();
+                        renderGantt();
+                        // Обновляем тултип
+                        const tooltip = this.closest('tr').querySelector('.task-tooltip .tt-meta');
+                        if (tooltip) {
+                            const statusSpan = tooltip.querySelector('.tt-meta span:nth-child(3)');
+                            if (statusSpan) statusSpan.innerHTML =
+                                `<i class="fas fa-tag" aria-hidden="true"></i> ${item.status.charAt(0).toUpperCase() + item.status.slice(1)}`;
+                        }
+                    });
+                    tdStatus.appendChild(select);
+
+                    const tdActions = document.createElement('td');
+                    tdActions.className = 'col-actions';
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn-delete';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash-alt" aria-hidden="true"></i>';
+                    deleteBtn.setAttribute('aria-label', `Удалить задачу ${item.id}`);
+                    deleteBtn.addEventListener('click', function() { deleteTask(item.id); });
+                    tdActions.appendChild(deleteBtn);
+
+                    tr.appendChild(tdId);
+                    tr.appendChild(tdTask);
+                    tr.appendChild(tdOwner);
+                    tr.appendChild(tdDeadline);
+                    tr.appendChild(tdStatus);
+                    tr.appendChild(tdActions);
+                    tbody.appendChild(tr);
+                });
+
+                updateDashboard();
+                updateOwnerFilter();
+            }
+
+            // ===== RESET =====
+            function resetToInitial() {
+                if (!confirm('Сбросить все изменения к исходным данным?')) return;
+                tasks = INIT_DATA.map(item => ({ ...item }));
+                reindexTasks();
+                applyFilters();
+                saveToStorage(tasks);
+            }
+
+            // ===== SYNC =====
+            function syncFromStorage(e) {
+                if (e.key === STORAGE_KEY && e.newValue) {
+                    try {
+                        const newData = JSON.parse(e.newValue);
+                        if (Array.isArray(newData) && newData.length > 0) {
+                            tasks = newData;
+                            reindexTasks();
+                            applyFilters();
+                            saveIndicator.className = 'save-indicator';
+                            saveIndicator.innerHTML = '<i class="fas fa-sync-alt" aria-hidden="true"></i> синхронизировано';
+                            setTimeout(() => {
+                                saveIndicator.innerHTML = '<i class="fas fa-check-circle" aria-hidden="true"></i> сохранено';
+                            }, 1500);
+                        }
+                    } catch (err) { console.warn('Sync error:', err); }
+                }
+            }
+
+            // ===== THEME =====
+            function toggleTheme() {
+                isDark = !isDark;
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : '');
+                const icon = document.querySelector('#themeBtn i');
+                if (icon) icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                localStorage.setItem('ozp_theme', isDark ? 'dark' : 'light');
+            }
+
+            // ===== DOWNLOAD =====
+            function downloadPage() {
+                try {
+                    const blob = new Blob(['<!DOCTYPE html>\n' + document.documentElement.outerHTML],
+                        { type: 'text/html; charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `Дорожная_карта_ОЗП_2.0_${new Date().toISOString().slice(0,10)}.html`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+
+                    const originalText = saveIndicator.innerHTML;
+                    saveIndicator.className = 'save-indicator';
+                    saveIndicator.style.color = 'var(--color-success)';
+                    saveIndicator.style.borderColor = 'rgba(47,143,75,0.3)';
+                    saveIndicator.style.background = 'rgba(47,143,75,0.1)';
+                    saveIndicator.innerHTML = '<i class="fas fa-check-circle" aria-hidden="true"></i> файл скачан';
+                    setTimeout(() => {
+                        saveIndicator.className = 'save-indicator';
+                        saveIndicator.style.color = '';
+                        saveIndicator.style.borderColor = '';
+                        saveIndicator.style.background = '';
+                        saveIndicator.innerHTML = originalText;
+                    }, 3000);
+                } catch (e) {
+                    console.error('Download error:', e);
+                    alert('Ошибка при скачивании файла');
+                }
+            }
+
+            // ===== INIT =====
+            document.addEventListener('DOMContentLoaded', function() {
+                const stored = loadFromStorage();
+                tasks = stored || INIT_DATA.map(item => ({ ...item }));
+                reindexTasks();
+
+                const savedTheme = localStorage.getItem('ozp_theme');
+                if (savedTheme === 'dark') {
+                    isDark = true;
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    const icon = document.querySelector('#themeBtn i');
+                    if (icon) icon.className = 'fas fa-sun';
+                }
+
+                initCollapsible();
+                applyFilters();
+
+                addTaskBtn.addEventListener('click', addTask);
+                [newTaskInput, newOwnerInput].forEach(input => {
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') { e.preventDefault();
+                            addTask(); }
+                    });
+                });
+                newDeadlineInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') { e.preventDefault();
+                        addTask(); }
+                });
+
+                document.getElementById('resetTableBtn').addEventListener('click', resetToInitial);
+                document.getElementById('downloadBtn').addEventListener('click', downloadPage);
+                document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+
+                searchFilter.addEventListener('input', applyFilters);
+                ownerFilter.addEventListener('change', applyFilters);
+                statusFilter.addEventListener('change', applyFilters);
+                document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+                    searchFilter.value = '';
+                    ownerFilter.value = '';
+                    statusFilter.value = '';
+                    applyFilters();
+                });
+
+                window.addEventListener('storage', syncFromStorage);
+
+                let resizeTimer;
+                window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(renderGantt, 200);
+                });
+            });
+        })();
+    </script>
+
+</body></html>
