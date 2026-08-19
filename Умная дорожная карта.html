@@ -100,12 +100,6 @@
             line-height: 1.3;
         }
 
-        .header-left .title-display i {
-            margin-right: 8px;
-            color: var(--accent);
-            opacity: 0.5;
-        }
-
         .header-left .title-input {
             font-size: 1.5rem;
             font-weight: 700;
@@ -119,10 +113,6 @@
             font-family: var(--font);
             outline: none;
             display: none;
-        }
-
-        .header-left .title-input:focus {
-            outline: none;
         }
 
         .header-left .title-edit-btn {
@@ -219,6 +209,16 @@
             cursor: not-allowed;
             transform: none;
         }
+        .btn-settings {
+            color: var(--text-secondary);
+            border-color: var(--border);
+            font-size: 1rem;
+            padding: 4px 10px;
+        }
+        .btn-settings:hover {
+            background: var(--surface);
+            transform: scale(0.97) rotate(30deg);
+        }
 
         .sync-status {
             font-size: 0.6rem;
@@ -242,7 +242,218 @@
         }
 
         /* ============================================================
-           ДАШБОРД
+           МОДАЛЬНОЕ ОКНО НАСТРОЕК
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 520px;
+            width: 92%;
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            opacity: 0.7;
+        }
+
+        .modal .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
+        }
+
+        .modal .form-group .input-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: border-color 0.2s;
+            overflow: hidden;
+        }
+
+        .modal .form-group .input-wrapper:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(31, 107, 158, 0.08);
+        }
+
+        .modal .form-group .input-wrapper input {
+            flex: 1;
+            padding: 8px 14px;
+            border: none;
+            background: transparent;
+            font-family: var(--font);
+            font-size: 0.85rem;
+            color: var(--text);
+            outline: none;
+            min-width: 0;
+        }
+
+        .modal .form-group .input-wrapper input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.3;
+        }
+
+        .modal .form-group .input-wrapper .toggle-visibility {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            opacity: 0.4;
+            cursor: pointer;
+            padding: 8px 14px;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .modal .form-group .input-wrapper .toggle-visibility:hover {
+            opacity: 0.8;
+        }
+
+        .modal .form-group select {
+            width: 100%;
+            padding: 8px 14px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            font-family: var(--font);
+            font-size: 0.85rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 4 5-4' stroke='%236a8aaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 12px 8px;
+            padding-right: 36px;
+        }
+
+        .modal .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(31, 107, 158, 0.08);
+        }
+
+        .modal .form-group select option {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .modal .modal-actions {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .modal .modal-actions .btn {
+            padding: 8px 24px;
+        }
+
+        .modal .modal-actions .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .modal .modal-actions .btn-primary:hover {
+            background: #155a8a;
+        }
+
+        .modal .modal-actions .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+        }
+
+        .modal .modal-actions .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .modal .key-status {
+            font-size: 0.7rem;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal .key-status .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .modal .key-status .dot.green {
+            background: var(--success);
+        }
+        .modal .key-status .dot.gray {
+            background: #aaa;
+        }
+        .modal .key-status .dot.red {
+            background: var(--danger);
+        }
+
+        .modal .hint {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+            margin-top: 2px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* ============================================================
+           ДАШБОРД И ПРОЧЕЕ (без изменений)
            ============================================================ */
         .dashboard {
             display: grid;
@@ -282,9 +493,6 @@
             color: var(--warning);
         }
 
-        /* ============================================================
-           ПРОГРЕСС-БАР
-           ============================================================ */
         .progress-bar {
             display: flex;
             align-items: center;
@@ -326,9 +534,6 @@
             white-space: nowrap;
         }
 
-        /* ============================================================
-           КОЛЛАПСИБЛ БЛОКИ
-           ============================================================ */
         .collapsible-block {
             margin-bottom: 0.8rem;
             border-radius: var(--radius);
@@ -401,9 +606,6 @@
             display: none;
         }
 
-        /* ============================================================
-           ГАНТ-ДИАГРАММА
-           ============================================================ */
         .gantt-wrap {
             padding: 0.6rem 0.8rem;
             border-radius: var(--radius);
@@ -573,9 +775,6 @@
             color: var(--danger);
         }
 
-        /* ============================================================
-           ДОБАВЛЕНИЕ ЗАДАЧИ
-           ============================================================ */
         .add-row {
             display: flex;
             gap: 0.4rem;
@@ -610,9 +809,6 @@
             opacity: 0.4;
         }
 
-        /* ============================================================
-           ТАБЛИЦА
-           ============================================================ */
         .table-wrap {
             overflow-x: auto;
             border-radius: var(--radius);
@@ -761,9 +957,6 @@
             background: rgba(201, 74, 74, 0.08);
         }
 
-        /* ============================================================
-           ТУЛТИП
-           ============================================================ */
         .task-cell {
             position: relative;
             cursor: help;
@@ -815,9 +1008,6 @@
             gap: 3px;
         }
 
-        /* ============================================================
-           РИСКИ
-           ============================================================ */
         .risks {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -881,9 +1071,6 @@
             margin-top: 4px;
         }
 
-        /* ============================================================
-           ФУТЕР
-           ============================================================ */
         .footer {
             margin-top: 1rem;
             display: flex;
@@ -909,9 +1096,6 @@
             margin-right: 3px;
         }
 
-        /* ============================================================
-           ЗАГРУЗЧИК
-           ============================================================ */
         .loader {
             display: flex;
             justify-content: center;
@@ -949,91 +1133,6 @@
             border-top: 2px solid var(--accent);
         }
 
-        /* ============================================================
-           МОДАЛЬНОЕ ОКНО
-           ============================================================ */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s;
-        }
-
-        .modal-overlay.hidden {
-            display: none;
-        }
-
-        .modal {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal h2 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal p {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-        }
-
-        .modal .modal-actions {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: flex-end;
-        }
-
-        .modal input[type="file"] {
-            display: none;
-        }
-
-        .modal .file-label {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 40px;
-            border: 2px dashed var(--border);
-            cursor: pointer;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            transition: 0.2s;
-            width: 100%;
-            text-align: center;
-        }
-
-        .modal .file-label:hover {
-            border-color: var(--accent);
-            background: rgba(31, 107, 158, 0.04);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* ============================================================
-           АДАПТИВ
-           ============================================================ */
         @media (max-width: 768px) {
             .container {
                 padding: 0.8rem;
@@ -1068,6 +1167,9 @@
             }
             .header-left .title-wrapper {
                 min-width: 120px;
+            }
+            .modal {
+                padding: 1.5rem;
             }
         }
 
@@ -1140,6 +1242,12 @@
                 font-size: 0.55rem;
                 padding: 3px 8px;
             }
+            .modal {
+                padding: 1rem;
+            }
+            .modal h2 {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -1160,11 +1268,81 @@
             </div>
             <div class="header-actions">
                 <span class="sync-status" id="syncStatus">☁️ синхронизировано</span>
+                <button class="btn btn-settings" id="settingsBtn" aria-label="Настройки">
+                    ⚙️
+                </button>
                 <button class="btn btn-purple" id="generateRisksBtn" onclick="generateRisksWithAI()">🤖 Сгенерировать риски</button>
                 <button class="btn btn-warning" onclick="showImportModal()">📂 Импорт</button>
                 <button class="btn btn-success" onclick="exportJSON()">💾 Экспорт JSON</button>
                 <button class="btn btn-danger" onclick="newRoadmap()">✨ Новая карта</button>
                 <button class="btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        МОДАЛЬНОЕ ОКНО НАСТРОЕК
+        ============================================================ -->
+        <div class="modal-overlay hidden" id="settingsModal">
+            <div class="modal">
+                <h2>⚙️ Настройки</h2>
+                <p>Настройте API-ключи для работы ИИ и облачного хранилища.</p>
+
+                <div class="form-group">
+                    <label>🔑 API-ключ JsonBox.ru (облачное хранилище)</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="jsonboxKeyInput" placeholder="Введите ключ..." />
+                        <button class="toggle-visibility" onclick="toggleVisibility('jsonboxKeyInput', this)">👁️</button>
+                    </div>
+                    <div class="key-status" id="jsonboxStatus">
+                        <span class="dot gray"></span> <span>не настроен</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🤖 API-ключ ProxyAPI (для ИИ)</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="proxyKeyInput" placeholder="Введите ключ..." />
+                        <button class="toggle-visibility" onclick="toggleVisibility('proxyKeyInput', this)">👁️</button>
+                    </div>
+                    <div class="key-status" id="proxyStatus">
+                        <span class="dot gray"></span> <span>не настроен</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🧠 Модель ИИ</label>
+                    <select id="modelSelect">
+                        <option value="gpt-4o-mini">GPT-4o-mini</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5-turbo</option>
+                        <option value="deepseek-chat">DeepSeek Chat</option>
+                        <option value="deepseek-reasoner">DeepSeek Reasoner</option>
+                        <option value="claude-3-haiku">Claude 3 Haiku</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeSettings()">Отмена</button>
+                    <button class="btn btn-primary" onclick="saveSettings()">💾 Сохранить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        МОДАЛЬНОЕ ОКНО ДЛЯ ИМПОРТА
+        ============================================================ -->
+        <div class="modal-overlay hidden" id="importModal">
+            <div class="modal">
+                <h2>📂 Импорт дорожной карты</h2>
+                <p>Загрузите JSON-файл с дорожной картой, чтобы заменить текущую.</p>
+                <label class="file-label" for="fileInput">
+                    📁 Выберите файл .json
+                </label>
+                <input type="file" id="fileInput" accept=".json" />
+                <div class="modal-actions" style="margin-top:1rem;">
+                    <button class="btn" onclick="closeImportModal()">Отмена</button>
+                    <button class="btn btn-primary" onclick="importJSON()">📥 Импортировать</button>
+                </div>
             </div>
         </div>
 
@@ -1296,44 +1474,136 @@
                 <span><span class="dot" style="background:var(--success);"></span>готово</span>
                 <span><span class="dot" style="background:#7a7a9a;"></span>ожидание</span>
             </div>
-            <div>🔄 автосохранение · ✏️ карандаш для названия · 🤖 ИИ-генерация рисков</div>
-        </div>
-    </div>
-
-    <!-- ============================================================
-    МОДАЛЬНОЕ ОКНО ДЛЯ ИМПОРТА
-    ============================================================ -->
-    <div class="modal-overlay hidden" id="importModal">
-        <div class="modal">
-            <h2>📂 Импорт дорожной карты</h2>
-            <p>Загрузите JSON-файл с дорожной картой, чтобы заменить текущую.</p>
-            <label class="file-label" for="fileInput">
-                📁 Выберите файл .json
-            </label>
-            <input type="file" id="fileInput" accept=".json" />
-            <div class="modal-actions" style="margin-top:1rem;">
-                <button class="btn" onclick="closeImportModal()">Отмена</button>
-                <button class="btn btn-primary" onclick="importJSON()">📥 Импортировать</button>
-            </div>
+            <div>🔄 автосохранение · ✏️ карандаш для названия · 🤖 ИИ-генерация рисков · ⚙️ настройки</div>
         </div>
     </div>
 
     <script>
         // ================================================================
-        //  ⚙️  НАСТРОЙКИ (ЗАМЕНИТЕ НА ВАШИ ДАННЫЕ)
+        //  ⚙️  НАСТРОЙКИ (сохраняются в localStorage)
         // ================================================================
 
-        // ---- Ключ для облачного хранилища JsonBox.ru ----
-        const API_KEY = '5afb9a66d6f5afbb623f8b83eb3bea42';
+        // Загружаем настройки из localStorage
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem('ozp_settings');
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    return settings;
+                }
+            } catch (e) {
+                console.warn('Ошибка загрузки настроек:', e);
+            }
+            return {
+                jsonboxKey: '',
+                proxyKey: '',
+                model: 'gpt-4o-mini'
+            };
+        }
 
-        // ---- Ключ от proxyapi.ru (для ИИ) ----
-        const PROXY_API_KEY = 'sk-SP1tAL3uKKr0Yycwn7MbZhE2cNiy6BOQ';
+        function saveSettingsToStorage(settings) {
+            try {
+                localStorage.setItem('ozp_settings', JSON.stringify(settings));
+            } catch (e) {
+                console.warn('Ошибка сохранения настроек:', e);
+            }
+        }
 
-        // ---- Модель ИИ (можно оставить как есть) ----
-        const AI_MODEL = 'gpt-4o-mini';
+        // Получаем настройки
+        let appSettings = loadSettings();
 
-        // ---- URL для ProxyAPI ----
-        const PROXY_API_URL = 'https://proxyapi.ru/api/v1/chat/completions';
+        // Экспортируем для использования в других функциях
+        let API_KEY = appSettings.jsonboxKey || 'ваш_api_ключ_для_jsonbox';
+        let PROXY_API_KEY = appSettings.proxyKey || 'ваш_ключ_от_proxyapi';
+        let AI_MODEL = appSettings.model || 'gpt-4o-mini';
+
+        // ================================================================
+        //  📌  УПРАВЛЕНИЕ МОДАЛЬНЫМИ ОКНАМИ
+        // ================================================================
+
+        // Настройки
+        function openSettings() {
+            const modal = document.getElementById('settingsModal');
+            modal.classList.remove('hidden');
+
+            // Заполняем поля
+            document.getElementById('jsonboxKeyInput').value = appSettings.jsonboxKey || '';
+            document.getElementById('proxyKeyInput').value = appSettings.proxyKey || '';
+            document.getElementById('modelSelect').value = appSettings.model || 'gpt-4o-mini';
+
+            // Обновляем статусы
+            updateKeyStatus('jsonboxKeyInput', 'jsonboxStatus', appSettings.jsonboxKey);
+            updateKeyStatus('proxyKeyInput', 'proxyStatus', appSettings.proxyKey);
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            const jsonboxKey = document.getElementById('jsonboxKeyInput').value.trim();
+            const proxyKey = document.getElementById('proxyKeyInput').value.trim();
+            const model = document.getElementById('modelSelect').value;
+
+            // Сохраняем
+            appSettings.jsonboxKey = jsonboxKey;
+            appSettings.proxyKey = proxyKey;
+            appSettings.model = model;
+
+            saveSettingsToStorage(appSettings);
+
+            // Обновляем глобальные переменные
+            API_KEY = jsonboxKey || 'ваш_api_ключ_для_jsonbox';
+            PROXY_API_KEY = proxyKey || 'ваш_ключ_от_proxyapi';
+            AI_MODEL = model;
+
+            // Обновляем статусы
+            updateKeyStatus('jsonboxKeyInput', 'jsonboxStatus', jsonboxKey);
+            updateKeyStatus('proxyKeyInput', 'proxyStatus', proxyKey);
+
+            closeSettings();
+            setSyncStatus('synced', '✅ Настройки сохранены!');
+            setTimeout(() => setSyncStatus('synced', 'Синхронизировано'), 2000);
+        }
+
+        function updateKeyStatus(inputId, statusId, value) {
+            const statusEl = document.getElementById(statusId);
+            if (!statusEl) return;
+
+            const dot = statusEl.querySelector('.dot');
+            const text = statusEl.querySelector('span:last-child');
+
+            if (value && value.length > 0) {
+                dot.className = 'dot green';
+                text.textContent = '✓ настроен';
+            } else {
+                dot.className = 'dot gray';
+                text.textContent = 'не настроен';
+            }
+        }
+
+        function toggleVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        // --- Импорт ---
+        function showImportModal() {
+            document.getElementById('importModal').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.add('hidden');
+            document.getElementById('fileInput').value = '';
+        }
 
         // ================================================================
         //  🧠  ОСНОВНАЯ ЛОГИКА
@@ -1351,7 +1621,6 @@
         const titleInput = document.getElementById('titleInput');
         const titleEditBtn = document.getElementById('titleEditBtn');
         const risksContainer = document.getElementById('risksContainer');
-        const generateBtn = document.getElementById('generateRisksBtn');
 
         // ================================================================
         //  📌  УПРАВЛЕНИЕ НАЗВАНИЕМ
@@ -1498,7 +1767,7 @@
         }
 
         // ================================================================
-        //  🤖  ГЕНЕРАЦИЯ РИСКОВ ЧЕРЕЗ PROXYAPI
+        //  🤖  ГЕНЕРАЦИЯ РИСКОВ (с использованием настроек)
         // ================================================================
 
         async function generateRisksWithAI() {
@@ -1514,14 +1783,25 @@
                     return;
                 }
 
-                // Проверяем, запущен ли файл локально
-                const isLocal = window.location.protocol === 'file:';
-                let apiUrl = PROXY_API_URL;
+                // Проверяем наличие ключа
+                if (!PROXY_API_KEY || PROXY_API_KEY === 'ваш_ключ_от_proxyapi') {
+                    alert('⚠️ Сначала настройте API-ключ ProxyAPI в настройках (шестеренка ⚙️)');
+                    btn.disabled = false;
+                    btn.innerHTML = '🤖 Сгенерировать риски';
+                    openSettings();
+                    return;
+                }
 
-                // Если локально — используем CORS-прокси
-                if (isLocal) {
-                    console.log('🔧 Обнаружен локальный запуск, используем CORS-прокси');
-                    apiUrl = `https://corsproxy.io/?${encodeURIComponent(PROXY_API_URL)}`;
+                // Определяем, где запущена страница
+                const isLocal = window.location.protocol === 'file:';
+                const isGitHubPages = window.location.hostname.includes('github.io');
+
+                let apiUrl = 'https://proxyapi.ru/api/v1/chat/completions';
+
+                // Если на GitHub Pages или локально — используем CORS-прокси
+                if (isGitHubPages || isLocal) {
+                    console.log('🔧 Используем CORS-прокси для обхода CORS');
+                    apiUrl = `https://corsproxy.io/?${encodeURIComponent('https://proxyapi.ru/api/v1/chat/completions')}`;
                 }
 
                 const tasksDescription = tasks.map((t, i) =>
@@ -1552,7 +1832,7 @@
                 `;
 
                 const requestBody = {
-                    model: AI_MODEL,
+                    model: AI_MODEL || 'gpt-4o-mini',
                     messages: [
                         { role: 'system', content: 'Ты эксперт по управлению проектами, который выделяет ключевые риски.' },
                         { role: 'user', content: prompt }
@@ -1562,7 +1842,9 @@
                 };
 
                 let response;
-                if (isLocal) {
+
+                // Если используем прокси
+                if (isGitHubPages || isLocal) {
                     response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
@@ -1573,6 +1855,7 @@
                         body: JSON.stringify(requestBody)
                     });
                 } else {
+                    // Прямой запрос
                     response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
@@ -1619,15 +1902,19 @@
             } catch (error) {
                 console.error('Ошибка генерации рисков:', error);
                 let userMessage = '❌ Не удалось сгенерировать риски. ';
-                if (error.message.includes('HTTP')) {
-                    userMessage += 'Проверьте API-ключ ProxyAPI или попробуйте позже.';
+
+                if (error.message.includes('HTTP 403') || error.message.includes('HTTP 401')) {
+                    userMessage += 'Неверный API-ключ. Проверьте настройки (шестеренка ⚙️).';
+                } else if (error.message.includes('HTTP 429')) {
+                    userMessage += 'Слишком много запросов. Подождите минуту и попробуйте снова.';
                 } else if (error.message.includes('JSON')) {
                     userMessage += 'Нейросеть вернула некорректный формат. Попробуйте ещё раз.';
                 } else if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-                    userMessage += 'Проблема с CORS. Запустите страницу через локальный сервер или загрузите на GitHub Pages.';
+                    userMessage += 'Проблема с подключением. Проверьте интернет или используйте VPN.';
                 } else {
                     userMessage += error.message || 'Попробуйте позже.';
                 }
+
                 alert(userMessage);
                 setSyncStatus('error', 'Ошибка генерации');
             } finally {
@@ -1643,6 +1930,12 @@
         async function loadFromCloud() {
             try {
                 setSyncStatus('syncing', 'Загрузка...');
+
+                // Проверяем, есть ли ключ
+                if (!API_KEY || API_KEY === 'ваш_api_ключ_для_jsonbox') {
+                    console.warn('Ключ JsonBox не настроен, использую локальные данные');
+                    return false;
+                }
 
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -1685,6 +1978,12 @@
             isSaving = true;
             try {
                 setSyncStatus('syncing', 'Сохранение...');
+
+                // Если нет ключа — не сохраняем
+                if (!API_KEY || API_KEY === 'ваш_api_ключ_для_jsonbox') {
+                    console.warn('Ключ JsonBox не настроен, пропускаю сохранение');
+                    return false;
+                }
 
                 const payload = {
                     data: {
@@ -1768,6 +2067,17 @@
 
             titleDisplay.textContent = roadmapTitle;
             titleInput.value = roadmapTitle;
+
+            // Настройки
+            document.getElementById('settingsBtn').addEventListener('click', openSettings);
+
+            // Закрытие модалки по клику вне
+            document.getElementById('settingsModal').addEventListener('click', function(e) {
+                if (e.target === this) closeSettings();
+            });
+            document.getElementById('importModal').addEventListener('click', function(e) {
+                if (e.target === this) closeImportModal();
+            });
         }
 
         // ================================================================
@@ -2231,15 +2541,6 @@
             a.download = `roadmap_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
-        }
-
-        function showImportModal() {
-            document.getElementById('importModal').classList.remove('hidden');
-        }
-
-        function closeImportModal() {
-            document.getElementById('importModal').classList.add('hidden');
-            document.getElementById('fileInput').value = '';
         }
 
         function importJSON() {
