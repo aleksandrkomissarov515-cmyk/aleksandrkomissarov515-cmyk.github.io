@@ -1648,7 +1648,7 @@
             }
         }
 
-        // --- ПРОВЕРКА ОБНОВЛЕНИЙ ИЗ ОБЛАКА ---
+        // --- ПРОВЕРКА ОБНОВЛЕНИЙ ИЗ ОБЛАКА (ИСПРАВЛЕННАЯ) ---
         async function checkForUpdates() {
             if (isUpdating) return;
             isUpdating = true;
@@ -1671,13 +1671,15 @@
                         }
                     }
 
-                    // Проверяем историю
+                    // Проверяем историю — ВСЕГДА обновляем
                     if (data.data.history) {
                         const cloudHistory = data.data.history;
+                        // Сравниваем по содержимому
                         if (JSON.stringify(cloudHistory) !== JSON.stringify(historyData)) {
                             historyData = cloudHistory;
-                            renderHistory();
+                            renderHistory(); // <-- ПЕРЕРИСОВЫВАЕМ ИСТОРИЮ
                             hasChanges = true;
+                            console.log('📜 История обновлена из облака');
                         }
                     }
 
@@ -1995,13 +1997,11 @@
                 commentArea.rows = 1;
                 let oldComment = t.comment || '';
 
-                // Функция сохранения комментария с дебаунсом
                 function saveComment(newComment) {
                     if (newComment !== oldComment) {
                         addHistoryEntry(t.id, t.task, 'comment', oldComment, newComment);
                         t.comment = newComment;
                         oldComment = newComment;
-                        // Обновляем тултип
                         const tooltip = commentArea.closest('tr').querySelector('.task-cell .tooltip .tt-meta');
                         if (tooltip) {
                             const commentSpan = tooltip.querySelector('span:last-child');
