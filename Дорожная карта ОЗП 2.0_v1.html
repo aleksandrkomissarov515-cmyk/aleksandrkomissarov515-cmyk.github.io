@@ -1508,7 +1508,8 @@
                     }
                     if (data.data.history) {
                         historyData = data.data.history;
-                        renderHistory();
+                        renderHistory(); // <-- ОБЯЗАТЕЛЬНО ВЫЗЫВАЕМ
+                        console.log('📜 История загружена из облака:', historyData.length, 'записей');
                     }
                     if (data.data.title) {
                         roadmapTitle = data.data.title;
@@ -1648,7 +1649,7 @@
             }
         }
 
-        // --- ПРОВЕРКА ОБНОВЛЕНИЙ ИЗ ОБЛАКА (ИСПРАВЛЕННАЯ) ---
+        // --- ПРОВЕРКА ОБНОВЛЕНИЙ ИЗ ОБЛАКА ---
         async function checkForUpdates() {
             if (isUpdating) return;
             isUpdating = true;
@@ -1674,7 +1675,6 @@
                     // Проверяем историю — ВСЕГДА обновляем
                     if (data.data.history) {
                         const cloudHistory = data.data.history;
-                        // Сравниваем по содержимому
                         if (JSON.stringify(cloudHistory) !== JSON.stringify(historyData)) {
                             historyData = cloudHistory;
                             renderHistory(); // <-- ПЕРЕРИСОВЫВАЕМ ИСТОРИЮ
