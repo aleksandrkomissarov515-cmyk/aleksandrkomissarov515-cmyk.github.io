@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Дорожная карта ОЗП 2.0</title>
+    <style>
+        /* ===== БАЗОВЫЕ СТИЛИ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f0f5fb;
+            --surface: rgba(255, 255, 255, 0.85);
+            --text: #0b2b4a;
+            --text-secondary: #1f4665;
+            --border: rgba(60, 100, 140, 0.12);
+            --accent: #1f6b9e;
+            --danger: #c94a4a;
+            --success: #2f8f4b;
+            --warning: #e6b422;
+            --radius: 16px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f1a2b;
+            --surface: rgba(20, 35, 55, 0.92);
+            --text: #e8edf3;
+            --text-secondary: #8ab0d0;
+            --border: rgba(100, 150, 200, 0.15);
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 1.2rem 1.5rem 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: background 0.3s;
+        }
+
+        /* ===== ШАПКА ===== */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            gap: 0.8rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header h1 span {
+            background: linear-gradient(135deg, #0b2b4a, #1b4a7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="dark"] .header h1 span {
+            background: linear-gradient(135deg, #6aafd4, #3d8ec4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 5px 12px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.08);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: var(--font);
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: var(--surface);
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #155a8a;
+        }
+        .btn-danger {
+            color: var(--danger);
+            border-color: rgba(201, 74, 74, 0.2);
+        }
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-success {
+            color: var(--success);
+            border-color: rgba(47, 143, 75, 0.2);
+        }
+        .btn-success:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        .sync-status {
+            font-size: 0.6rem;
+            padding: 3px 10px;
+            border-radius: 40px;
+            background: rgba(47, 143, 75, 0.08);
+            border: 1px solid rgba(47, 143, 75, 0.15);
+            color: var(--success);
+            white-space: nowrap;
+        }
+
+        .sync-status.syncing {
+            color: var(--warning);
+            border-color: rgba(230, 180, 34, 0.2);
+            background: rgba(230, 180, 34, 0.06);
+        }
+        .sync-status.error {
+            color: var(--danger);
+            border-color: rgba(201, 74, 74, 0.2);
+            background: rgba(201, 74, 74, 0.06);
+        }
+
+        /* ===== ДАШБОРД ===== */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+            padding: 0.6rem 0.8rem;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .stat {
+            text-align: center;
+        }
+        .stat .num {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .stat .label {
+            font-size: 0.45rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+        .stat .num.critical {
+            color: var(--danger);
+        }
+        .stat .num.done {
+            color: var(--success);
+        }
+        .stat .num.waiting {
+            color: #7a7a9a;
+        }
+        .stat .num.progress {
+            color: var(--warning);
+        }
+
+        /* ===== ПРОГРЕСС ===== */
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 40px;
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar .track {
+            flex: 1;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 40px;
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--success), var(--accent));
+            border-radius: 40px;
+            transition: width 0.6s;
+        }
+
+        .progress-bar .pct {
+            font-weight: 700;
+            font-size: 0.7rem;
+            min-width: 34px;
+            text-align: right;
+        }
+
+        .progress-bar .label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+            white-space: nowrap;
+        }
+
+        /* ===== ДОБАВЛЕНИЕ ===== */
+        .add-row {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: var(--radius);
+            border: 1px dashed var(--border);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .add-row input,
+        .add-row select {
+            flex: 1;
+            min-width: 80px;
+            padding: 4px 10px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 0.7rem;
+            color: var(--text);
+            font-family: var(--font);
+        }
+
+        .add-row input:focus,
+        .add-row select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .add-row input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.4;
+        }
+
+        /* ===== ТАБЛИЦА ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.1rem;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            min-width: 600px;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.5rem 0.4rem 0.3rem 0.6rem;
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            opacity: 0.6;
+        }
+
+        td {
+            padding: 0.3rem 0.4rem 0.3rem 0.6rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: rgba(31, 107, 158, 0.03);
+        }
+
+        .col-id {
+            width: 32px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+            opacity: 0.3;
+            cursor: grab;
+            font-size: 0.7rem;
+        }
+
+        .col-id::after {
+            content: '⠿';
+            opacity: 0.2;
+            margin-left: 3px;
+        }
+
+        .col-task {
+            width: 32%;
+        }
+        .col-owner {
+            width: 14%;
+        }
+        .col-deadline {
+            width: 14%;
+        }
+        .col-status {
+            width: 15%;
+        }
+        .col-actions {
+            width: 50px;
+            text-align: center;
+        }
+
+        /* ===== РЕДАКТИРУЕМЫЕ ПОЛЯ ===== */
+        .editable {
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed var(--border);
+            padding: 2px 3px;
+            font-family: var(--font);
+            font-size: 0.75rem;
+            color: var(--text);
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .editable:focus {
+            outline: none;
+            border-bottom-color: var(--accent);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .editable-task {
+            font-weight: 500;
+            min-height: 1.6rem;
+            resize: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        /* ===== СТАТУС ===== */
+        .status-select {
+            padding: 2px 6px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 0.65rem;
+            color: var(--text);
+            cursor: pointer;
+            width: 100%;
+            max-width: 100px;
+            font-family: var(--font);
+        }
+
+        .status-select.status-plan {
+            border-color: #8bb3d0;
+            background: rgba(200, 220, 240, 0.08);
+        }
+        .status-select.status-progress {
+            border-color: #e6b422;
+            background: rgba(255, 225, 140, 0.08);
+        }
+        .status-select.status-critical {
+            border-color: var(--danger);
+            background: rgba(255, 180, 180, 0.06);
+        }
+        .status-select.status-done {
+            border-color: var(--success);
+            background: rgba(150, 210, 160, 0.06);
+        }
+        .status-select.status-waiting {
+            border-color: #7a7a9a;
+            background: rgba(190, 190, 210, 0.04);
+        }
+
+        /* ===== КНОПКА УДАЛЕНИЯ ===== */
+        .btn-del {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            opacity: 0.3;
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 30px;
+            transition: 0.2s;
+        }
+
+        .btn-del:hover {
+            opacity: 1;
+            background: rgba(201, 74, 74, 0.08);
+        }
+
+        /* ===== ТУЛТИП ===== */
+        .task-cell {
+            position: relative;
+            cursor: help;
+        }
+
+        .task-cell .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 130%;
+            left: 0;
+            width: 250px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            font-size: 0.65rem;
+            line-height: 1.4;
+            transition: 0.2s;
+            z-index: 100;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+        }
+
+        .task-cell:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .task-cell .tooltip .tt-task {
+            font-weight: 600;
+            font-size: 0.75rem;
+            margin-bottom: 3px;
+        }
+
+        .task-cell .tooltip .tt-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            color: var(--text-secondary);
+            font-size: 0.55rem;
+            opacity: 0.7;
+        }
+
+        .task-cell .tooltip .tt-meta span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* ===== РИСКИ ===== */
+        .risks {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .risk {
+            padding: 0.6rem 0.8rem;
+            border-radius: var(--radius);
+            border-left: 4px solid #b0c8dd;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .risk.critical {
+            border-left-color: var(--danger);
+            background: rgba(255, 220, 220, 0.04);
+        }
+        .risk.sync {
+            border-left-color: var(--warning);
+            background: rgba(255, 240, 180, 0.03);
+        }
+        .risk.training {
+            border-left-color: var(--success);
+            background: rgba(180, 235, 190, 0.03);
+        }
+
+        .risk .title {
+            font-weight: 700;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 3px;
+        }
+
+        .risk .desc {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .risk .desc strong {
+            color: var(--text);
+        }
+        .risk .desc .hl {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        .risk .desc .deadline-highlight {
+            background: rgba(220, 180, 30, 0.12);
+            padding: 0.05rem 0.4rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #a07d1a;
+        }
+
+        .risk .footer {
+            font-size: 0.55rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        /* ===== ФУТЕР ===== */
+        .footer {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .legend {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .legend .dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 20px;
+            margin-right: 3px;
+        }
+
+        /* ===== ЗАГРУЗЧИК ===== */
+        .loader {
+            display: flex;
+            justify-content: center;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .loader .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===== DRAG ===== */
+        tr.dragging {
+            opacity: 0.4;
+        }
+        tr.drag-over td {
+            border-top: 2px solid var(--accent);
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.8rem;
+                border-radius: 16px;
+            }
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            .risks {
+                grid-template-columns: 1fr;
+            }
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .add-row input,
+            .add-row select {
+                min-width: 60px;
+                font-size: 0.65rem;
+            }
+            .btn {
+                font-size: 0.6rem;
+                padding: 4px 10px;
+            }
+            .status-select {
+                max-width: 80px;
+                font-size: 0.6rem;
+            }
+            .col-task {
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.3rem;
+            }
+            .container {
+                padding: 0.5rem;
+                border-radius: 12px;
+            }
+            .header h1 {
+                font-size: 1rem;
+            }
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.2rem;
+                padding: 0.4rem 0.5rem;
+            }
+            .stat .num {
+                font-size: 1rem;
+            }
+            .stat .label {
+                font-size: 0.4rem;
+            }
+            .add-row {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+            .add-row input,
+            .add-row select {
+                min-width: auto;
+            }
+            table {
+                min-width: 480px;
+                font-size: 0.65rem;
+            }
+            .col-id {
+                width: 24px;
+                font-size: 0.6rem;
+            }
+            .col-actions {
+                width: 36px;
+            }
+            .btn-del {
+                font-size: 0.6rem;
+                padding: 1px 4px;
+            }
+            .task-cell .tooltip {
+                width: 200px;
+                font-size: 0.55rem;
+                padding: 6px 10px;
+            }
+            .risks {
+                gap: 0.4rem;
+            }
+            .risk {
+                padding: 0.4rem 0.6rem;
+            }
+            .risk .desc {
+                font-size: 0.6rem;
+            }
+            .footer {
+                font-size: 0.5rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.2rem;
+            }
+            .header-actions .btn {
+                font-size: 0.55rem;
+                padding: 3px 8px;
+            }
+            .sync-status {
+                font-size: 0.5rem;
+                padding: 2px 8px;
+            }
+            .progress-bar {
+                padding: 0.2rem 0.6rem;
+            }
+            .progress-bar .label {
+                font-size: 0.55rem;
+            }
+            .progress-bar .pct {
+                font-size: 0.6rem;
+                min-width: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- ШАПКА -->
+        <div class="header">
+            <h1><span>🚀 Дорожная карта ОЗП 2.0</span></h1>
+            <div class="header-actions">
+                <span class="sync-status" id="syncStatus">☁️ синхронизировано</span>
+                <button class="btn btn-success" onclick="exportData()">⬇️ Скачать</button>
+                <button class="btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+                <button class="btn btn-danger" onclick="resetData()">↺ Сброс</button>
+            </div>
+        </div>
+
+        <!-- ДАШБОРД -->
+        <div class="dashboard" id="dashboard">
+            <div class="stat"><div class="num" id="total">0</div><div class="label">Всего</div></div>
+            <div class="stat"><div class="num critical" id="critical">0</div><div class="label">Критично</div></div>
+            <div class="stat"><div class="num progress" id="progress">0</div><div class="label">В работе</div></div>
+            <div class="stat"><div class="num done" id="done">0</div><div class="label">Готово</div></div>
+            <div class="stat"><div class="num waiting" id="waiting">0</div><div class="label">Ожидание</div></div>
+            <div class="stat"><div class="num" id="plan">0</div><div class="label">План</div></div>
+        </div>
+
+        <!-- ПРОГРЕСС -->
+        <div class="progress-bar">
+            <span class="label">📊 Прогресс</span>
+            <div class="track"><div class="fill" id="progressFill"></div></div>
+            <span class="pct" id="progressText">0%</span>
+        </div>
+
+        <!-- ДОБАВЛЕНИЕ -->
+        <div class="add-row">
+            <input type="text" id="newTask" placeholder="Название задачи..." />
+            <input type="text" id="newOwner" placeholder="Ответственный..." />
+            <input type="date" id="newDeadline" />
+            <select id="newStatus">
+                <option value="план">План</option>
+                <option value="в работе">В работе</option>
+                <option value="критично">Критично</option>
+                <option value="готово">Готово</option>
+                <option value="ожидание">Ожидание</option>
+            </select>
+            <button class="btn btn-primary" onclick="addTask()">➕ Добавить</button>
+        </div>
+
+        <!-- ТАБЛИЦА -->
+        <div class="table-wrap">
+            <div id="loader" class="loader">
+                <span class="spinner"></span> Загрузка данных...
+            </div>
+            <table id="taskTable" class="hidden">
+                <thead>
+                    <tr>
+                        <th class="col-id">#</th>
+                        <th class="col-task">Задача</th>
+                        <th class="col-owner">Ответственный</th>
+                        <th class="col-deadline">Срок</th>
+                        <th class="col-status">Статус</th>
+                        <th class="col-actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- ===== РИСКИ ===== -->
+        <div class="risks">
+            <div class="risk critical">
+                <div class="title">⚠️ Критический риск (Блокер)</div>
+                <div class="desc">
+                    <strong>Пункт №<span id="riskPoint12"></span></strong> (Сетевой доступ от ЦИБ) <span class="hl">не имеет срока</span>.
+                    <br /><br />
+                    <strong>➜ Рекомендация:</strong> эскалировать вопрос <strong>до 19.08.2026</strong>, иначе все работы по интеграции <span class="hl">(п.<span id="riskPoint13"></span>–<span id="riskPoint18"></span>)</span> сдвигаются на неопределенный срок.
+                </div>
+                <div class="footer">🚩 блокирует этапы <span id="riskPoint13_2"></span>–<span id="riskPoint18_2"></span></div>
+            </div>
+
+            <div class="risk sync">
+                <div class="title">🕐 Точка синхронизации</div>
+                <div class="desc">
+                    <strong>Пункт №<span id="riskPoint4"></span></strong> (блокировка старой системы) — это <span class="deadline-highlight">жесткий дедлайн</span>.
+                    <br /><br />
+                    <strong>➜ Рекомендация:</strong> убедиться, что <strong>п.<span id="riskPoint1"></span> и п.<span id="riskPoint2"></span></strong> выполнены <strong>до вечера 20.08</strong>. Задержка срывает весь календарь переноса.
+                </div>
+                <div class="footer">🔗 зависит от п.<span id="riskPoint1_2"></span>, п.<span id="riskPoint2_2"></span></div>
+            </div>
+
+            <div class="risk training">
+                <div class="title">🎓 Обучение и материалы</div>
+                <div class="desc">
+                    <strong>➜ Рекомендация:</strong> начать подготовку учебных материалов на основе <strong>п.<span id="riskPoint3"></span></strong> сразу.
+                    <br /><br />
+                    К моменту <strong>п.<span id="riskPoint19"></span></strong> провести не «технический вебинар», а <strong>полноценное обучение</strong> с кейсами и практикой.
+                </div>
+                <div class="footer">📖 параллельно с п.<span id="riskPoint3_2"></span></div>
+            </div>
+        </div>
+
+        <!-- ФУТЕР -->
+        <div class="footer">
+            <div class="legend">
+                <span><span class="dot" style="background:#8bb3d0;"></span>план</span>
+                <span><span class="dot" style="background:#e6b422;"></span>в работе</span>
+                <span><span class="dot" style="background:var(--danger);"></span>критично</span>
+                <span><span class="dot" style="background:var(--success);"></span>готово</span>
+                <span><span class="dot" style="background:#7a7a9a;"></span>ожидание</span>
+            </div>
+            <div>🔄 автосохранение в облако</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  ⚙️  НАСТРОЙТЕ ЭТИ ПАРАМЕТРЫ
+        // ============================================================
+        const API_KEY = '5afb9a66d6f5afbb623f8b83eb3bea42'; // ⬅️ ВАШ КЛЮЧ
+
+        // ============================================================
+        //  🧠  ЛОГИКА РАБОТЫ
+        // ============================================================
+
+        let tasks = [];
+        let isSaving = false;
+        let saveTimer = null;
+
+        // --- ЗАГРУЗКА ИЗ ОБЛАКА ---
+        async function loadFromCloud() {
+            try {
+                setSyncStatus('syncing', 'Загрузка...');
+
+                const resp = await fetch('https://jsonbox.ru/api.php?action=get', {
+                    headers: { 'X-API-Key': API_KEY }
+                });
+                const data = await resp.json();
+                console.log('📥 Загружено:', data);
+
+                if (data && data.data && data.data.tasks) {
+                    return data.data.tasks;
+                }
+                return null;
+            } catch (e) {
+                console.error('❌ Ошибка загрузки:', e);
+                setSyncStatus('error', 'Ошибка загрузки');
+                return null;
+            }
+        }
+
+        // --- СОХРАНЕНИЕ В ОБЛАКО ---
+        async function saveToCloud(data) {
+            if (isSaving) return;
+            isSaving = true;
+            try {
+                setSyncStatus('syncing', 'Сохранение...');
+
+                const payload = {
+                    data_update: { tasks: data }
+                };
+
+                const resp = await fetch('https://jsonbox.ru/api.php?action=update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': API_KEY
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await resp.json();
+                console.log('📤 Сохранено:', result);
+
+                if (result.success === true) {
+                    setSyncStatus('synced', 'Синхронизировано');
+                    return true;
+                } else {
+                    console.warn('⚠️ Update не удался, пробуем store...');
+                    const storeResp = await fetch('https://jsonbox.ru/api.php?action=store', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Key': API_KEY
+                        },
+                        body: JSON.stringify({ data: { tasks: data } })
+                    });
+                    const storeResult = await storeResp.json();
+                    console.log('📤 Store ответ:', storeResult);
+                    if (storeResult.success === true) {
+                        setSyncStatus('synced', 'Синхронизировано');
+                        return true;
+                    } else {
+                        setSyncStatus('error', 'Ошибка сохранения');
+                        return false;
+                    }
+                }
+            } catch (e) {
+                console.error('❌ Ошибка сохранения:', e);
+                setSyncStatus('error', 'Ошибка сохранения');
+                return false;
+            } finally {
+                isSaving = false;
+            }
+        }
+
+        // --- ИНИЦИАЛИЗАЦИЯ ---
+        async function init() {
+            const loader = document.getElementById('loader');
+            const table = document.getElementById('taskTable');
+
+            try {
+                const cloudData = await loadFromCloud();
+                if (cloudData && cloudData.length > 0) {
+                    tasks = cloudData;
+                    console.log('✅ Загружено из облака:', tasks.length, 'задач');
+                } else {
+                    console.log('📁 Использую локальные данные');
+                    tasks = getDefaultTasks();
+                    await saveToCloud(tasks);
+                }
+            } catch (e) {
+                console.warn('⚠️ Ошибка инициализации:', e);
+                tasks = getDefaultTasks();
+            }
+
+            loader.classList.add('hidden');
+            table.classList.remove('hidden');
+            renderTable();
+        }
+
+        // --- ДЕФОЛТНЫЕ ДАННЫЕ ---
+        function getDefaultTasks() {
+            return [
+                { id: 1, task: 'Доделать доработки после приемки от 17.08.2026 до 19.08.2026', owner: 'ЦРЦТ',
+                    deadline: '2026-08-19', status: 'в работе' },
+                { id: 2, task: 'Настроить права доступа для всех учетных записей (перенос)', owner: 'АРКИ',
+                    deadline: '2026-08-19', status: 'в работе' },
+                { id: 3, task: 'Разработка инструкции по работе с системой', owner: 'ЦРЦТ', deadline: '2026-08-19',
+                    status: 'в работе' },
+                { id: 4, task: 'Заблокировать загрузку документов в старой системе (вечером)', owner: 'АРКИ',
+                    deadline: '2026-08-20', status: 'критично' },
+                { id: 5, task: 'Создать автоматически реестры по ТСО, ПТЭ', owner: 'ЦРЦТ', deadline: '2026-08-21',
+                    status: 'план' },
+                { id: 6, task: 'Создать автоматически СЦТ для ТСО и ПТЭ', owner: 'ЦРЦТ', deadline: '2026-08-21',
+                    status: 'план' },
+                { id: 7, task: 'Перенести документы из старой системы в новую', owner: 'ЦРЦТ', deadline: '2026-08-24',
+                    status: 'план' },
+                { id: 8, task: 'Заполнить периоды и сроки по ТСО, ПТЭ, ОМСУ', owner: 'АРКИ', deadline: '2026-08-25',
+                    status: 'план' },
+                { id: 9, task: 'Загрузить документы для ОМСУ', owner: 'ОМСУ', deadline: '2026-08-26', status: 'план' },
+                { id: 10, task: 'API "Список объектов" (отправка АИС ГЖИ → ГИС ЖКХ)', owner: 'АИС ГЖИ',
+                    deadline: '2026-08-06', status: 'в работе' },
+                { id: 11, task: 'API "Формирование архива" (отправка)', owner: 'АИС ГЖИ', deadline: '2026-08-12',
+                    status: 'в работе' },
+                { id: 12, task: 'Предоставление доступа сетевой связанности (АИС ГЖИ ↔ ГИС ЖКХ)', owner: 'ЦИБ',
+                    deadline: '', status: 'ожидание' },
+                { id: 13, task: 'API "Получение списка объектов" (из ГИС ЖКХ)', owner: 'ЦРЦТ', deadline: '',
+                    status: 'ожидание' },
+                { id: 14, task: 'API "Получение архива" (из ГИС ЖКХ)', owner: 'ЦРЦТ', deadline: '', status: 'ожидание' },
+                { id: 15, task: 'Скрипт загрузки данных по МКД (фоновая загрузка)', owner: 'ЦРЦТ', deadline: '',
+                    status: 'ожидание' },
+                { id: 16, task: 'API "Дополнительная загрузка/оценка завершена"', owner: 'ЦРЦТ', deadline: '',
+                    status: 'ожидание' },
+                { id: 17, task: 'API "Удаление архива"', owner: 'АИС ГЖИ', deadline: '', status: 'ожидание' },
+                { id: 18, task: 'Интеграционное тестирование (АИС ГЖИ ↔ ГИС ЖКХ)', owner: 'ЦРЦТ / АИС ГЖИ',
+                    deadline: '', status: 'ожидание' },
+                { id: 19, task: 'Обучение пользователей', owner: 'АРКИ', deadline: '', status: 'ожидание' },
+                { id: 20, task: 'Передать инструкцию (параллельно обучению или после)', owner: 'ЦРЦТ', deadline: '',
+                    status: 'ожидание' }
+            ];
+        }
+
+        // --- ОБНОВЛЕНИЕ НОМЕРОВ ПУНКТОВ В РИСКАХ ---
+        function updateRiskPoints() {
+            // Находим индексы задач по их ID
+            const findPoint = (taskId) => {
+                const index = tasks.findIndex(t => t.id === taskId);
+                return index !== -1 ? index + 1 : '?';
+            };
+
+            // Находим ID задач по ключевым словам в названии
+            const findTaskByKeyword = (keyword) => {
+                const found = tasks.find(t => t.task.toLowerCase().includes(keyword.toLowerCase()));
+                return found ? found.id : null;
+            };
+
+            // Определяем ID ключевых задач
+            const task4 = findTaskByKeyword('Заблокировать загрузку документов');
+            const task1 = findTaskByKeyword('Доделать доработки после приемки');
+            const task2 = findTaskByKeyword('Настроить права доступа');
+            const task3 = findTaskByKeyword('Разработка инструкции');
+            const task12 = findTaskByKeyword('Предоставление доступа сетевой связанности');
+            const task19 = findTaskByKeyword('Обучение пользователей');
+
+            // Задачи 13-18 — это все, что после задачи 12 (интеграция)
+            const task12Index = tasks.findIndex(t => t.id === task12);
+            const after12 = tasks.slice(task12Index + 1);
+            const task13 = after12.length > 0 ? after12[0]?.id : null;
+            const task18 = after12.length > 5 ? after12[5]?.id : after12[after12.length - 1]?.id;
+
+            // Получаем номера пунктов
+            const p1 = task1 ? findPoint(task1) : '?';
+            const p2 = task2 ? findPoint(task2) : '?';
+            const p3 = task3 ? findPoint(task3) : '?';
+            const p4 = task4 ? findPoint(task4) : '?';
+            const p12 = task12 ? findPoint(task12) : '?';
+            const p13 = task13 ? findPoint(task13) : '?';
+            const p18 = task18 ? findPoint(task18) : '?';
+            const p19 = task19 ? findPoint(task19) : '?';
+
+            // Обновляем все элементы на странице
+            const elements = {
+                'riskPoint1': p1,
+                'riskPoint1_2': p1,
+                'riskPoint2': p2,
+                'riskPoint2_2': p2,
+                'riskPoint3': p3,
+                'riskPoint3_2': p3,
+                'riskPoint4': p4,
+                'riskPoint12': p12,
+                'riskPoint13': p13,
+                'riskPoint13_2': p13,
+                'riskPoint18': p18,
+                'riskPoint18_2': p18,
+                'riskPoint19': p19
+            };
+
+            Object.keys(elements).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = elements[id];
+            });
+        }
+
+        // --- РЕНДЕР ТАБЛИЦЫ ---
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            tasks.forEach((t) => {
+                const tr = document.createElement('tr');
+                tr.draggable = true;
+                tr.dataset.id = t.id;
+
+                tr.addEventListener('dragstart', onDragStart);
+                tr.addEventListener('dragend', onDragEnd);
+                tr.addEventListener('dragover', onDragOver);
+                tr.addEventListener('dragleave', onDragLeave);
+                tr.addEventListener('drop', onDrop);
+
+                const tdId = document.createElement('td');
+                tdId.className = 'col-id';
+                tdId.textContent = t.id;
+
+                const tdTask = document.createElement('td');
+                tdTask.className = 'col-task task-cell';
+                const ta = document.createElement('textarea');
+                ta.className = 'editable editable-task';
+                ta.value = t.task;
+                ta.rows = 1;
+                ta.addEventListener('input', function() {
+                    t.task = this.value;
+                    autoResize(this);
+                    updateDashboard();
+                    scheduleSave();
+                });
+                ta.addEventListener('blur', () => { scheduleSave(); });
+                requestAnimationFrame(() => autoResize(ta));
+
+                const tip = document.createElement('div');
+                tip.className = 'tooltip';
+                tip.innerHTML = `
+                    <div class="tt-task">${t.task}</div>
+                    <div class="tt-meta">
+                        <span>👤 ${t.owner || '—'}</span>
+                        <span>📅 ${formatDate(t.deadline) || 'не указан'}</span>
+                        <span>🏷️ ${t.status}</span>
+                        <span>#️⃣ ${t.id}</span>
+                    </div>
+                `;
+                tdTask.appendChild(ta);
+                tdTask.appendChild(tip);
+
+                const tdOwner = document.createElement('td');
+                tdOwner.className = 'col-owner';
+                const inpOwner = document.createElement('input');
+                inpOwner.className = 'editable';
+                inpOwner.value = t.owner;
+                inpOwner.placeholder = '—';
+                inpOwner.addEventListener('change', function() {
+                    t.owner = this.value;
+                    updateDashboard();
+                    scheduleSave();
+                });
+                tdOwner.appendChild(inpOwner);
+
+                const tdDeadline = document.createElement('td');
+                tdDeadline.className = 'col-deadline';
+                const wrap = document.createElement('div');
+                wrap.style.cssText = 'display:flex;align-items:center;gap:3px;';
+                const dateInput = document.createElement('input');
+                dateInput.type = 'date';
+                dateInput.className = 'editable';
+                dateInput.value = t.deadline || '';
+                dateInput.style.cssText = 'flex:1;min-width:50px;';
+                dateInput.addEventListener('change', function() {
+                    t.deadline = this.value;
+                    updateDashboard();
+                    scheduleSave();
+                });
+                const calBtn = document.createElement('button');
+                calBtn.textContent = '📅';
+                calBtn.style.cssText =
+                    'background:transparent;border:none;cursor:pointer;opacity:0.4;padding:2px 3px;font-size:0.7rem;';
+                calBtn.onclick = () => dateInput.showPicker ? dateInput.showPicker() : dateInput.click();
+                wrap.appendChild(dateInput);
+                wrap.appendChild(calBtn);
+                tdDeadline.appendChild(wrap);
+
+                const tdStatus = document.createElement('td');
+                tdStatus.className = 'col-status';
+                const sel = document.createElement('select');
+                sel.className = 'status-select';
+                const statuses = ['план', 'в работе', 'критично', 'готово', 'ожидание'];
+                statuses.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+                    if (s === t.status) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+                sel.className += ' ' + getStatusClass(t.status);
+                sel.addEventListener('change', function() {
+                    t.status = this.value;
+                    this.className = 'status-select ' + getStatusClass(t.status);
+                    updateDashboard();
+                    scheduleSave();
+                });
+                tdStatus.appendChild(sel);
+
+                const tdActions = document.createElement('td');
+                tdActions.className = 'col-actions';
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-del';
+                delBtn.textContent = '🗑️';
+                delBtn.onclick = () => deleteTask(t.id);
+                tdActions.appendChild(delBtn);
+
+                tr.appendChild(tdId);
+                tr.appendChild(tdTask);
+                tr.appendChild(tdOwner);
+                tr.appendChild(tdDeadline);
+                tr.appendChild(tdStatus);
+                tr.appendChild(tdActions);
+                tbody.appendChild(tr);
+            });
+            updateDashboard();
+            updateRiskPoints();
+        }
+
+        // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
+        function getStatusClass(s) {
+            const map = {
+                'план': 'status-plan',
+                'в работе': 'status-progress',
+                'критично': 'status-critical',
+                'готово': 'status-done',
+                'ожидание': 'status-waiting'
+            };
+            return map[s] || '';
+        }
+
+        function formatDate(d) {
+            if (!d) return '';
+            const parts = d.split('-');
+            if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`;
+            return d;
+        }
+
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        }
+
+        function updateDashboard() {
+            const stats = { total: tasks.length, critical: 0, progress: 0, done: 0, waiting: 0, plan: 0 };
+            tasks.forEach(t => {
+                if (t.status === 'критично') stats.critical++;
+                else if (t.status === 'в работе') stats.progress++;
+                else if (t.status === 'готово') stats.done++;
+                else if (t.status === 'ожидание') stats.waiting++;
+                else if (t.status === 'план') stats.plan++;
+            });
+            document.getElementById('total').textContent = stats.total;
+            document.getElementById('critical').textContent = stats.critical;
+            document.getElementById('progress').textContent = stats.progress;
+            document.getElementById('done').textContent = stats.done;
+            document.getElementById('waiting').textContent = stats.waiting;
+            document.getElementById('plan').textContent = stats.plan;
+
+            const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '%';
+        }
+
+        function setSyncStatus(type, msg) {
+            const el = document.getElementById('syncStatus');
+            el.className = 'sync-status';
+            if (type === 'syncing') el.classList.add('syncing');
+            if (type === 'error') el.classList.add('error');
+            const icons = {
+                'synced': '☁️',
+                'syncing': '⏳',
+                'error': '❌'
+            };
+            el.innerHTML = (icons[type] || icons.synced) + ' ' + msg;
+        }
+
+        // --- СОХРАНЕНИЕ С ДЕБАНСОМ ---
+        function scheduleSave() {
+            if (saveTimer) clearTimeout(saveTimer);
+            saveTimer = setTimeout(async () => {
+                await saveToCloud(tasks);
+                saveTimer = null;
+            }, 500);
+        }
+
+        // --- ДОБАВЛЕНИЕ ---
+        function addTask() {
+            const task = document.getElementById('newTask').value.trim();
+            const owner = document.getElementById('newOwner').value.trim() || 'Не назначен';
+            const deadline = document.getElementById('newDeadline').value || '';
+            const status = document.getElementById('newStatus').value;
+            if (!task) { alert('Введите название задачи'); return; }
+            const maxId = tasks.reduce((max, t) => Math.max(max, t.id), 0);
+            tasks.push({ id: maxId + 1, task, owner, deadline, status });
+            document.getElementById('newTask').value = '';
+            document.getElementById('newOwner').value = '';
+            document.getElementById('newDeadline').value = '';
+            renderTable();
+            scheduleSave();
+        }
+
+        // --- УДАЛЕНИЕ ---
+        function deleteTask(id) {
+            if (!confirm(`Удалить задачу №${id}?`)) return;
+            tasks = tasks.filter(t => t.id !== id);
+            renderTable();
+            scheduleSave();
+        }
+
+        // --- DRAG & DROP ---
+        let dragId = null;
+
+        function onDragStart(e) {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            dragId = parseInt(row.dataset.id);
+            row.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function onDragEnd(e) {
+            document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function onDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const row = e.target.closest('tr');
+            if (!row) return;
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            row.classList.add('drag-over');
+        }
+
+        function onDragLeave(e) {
+            const row = e.target.closest('tr');
+            if (row) row.classList.remove('drag-over');
+        }
+
+        function onDrop(e) {
+            e.preventDefault();
+            const targetRow = e.target.closest('tr');
+            if (!targetRow) return;
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            const targetId = parseInt(targetRow.dataset.id);
+            if (dragId === null || dragId === targetId) return;
+            const fromIdx = tasks.findIndex(t => t.id === dragId);
+            const toIdx = tasks.findIndex(t => t.id === targetId);
+            if (fromIdx === -1 || toIdx === -1) return;
+            const [moved] = tasks.splice(fromIdx, 1);
+            tasks.splice(toIdx, 0, moved);
+            tasks.forEach((t, i) => t.id = i + 1);
+            renderTable();
+            scheduleSave();
+            dragId = null;
+        }
+
+        // --- ЭКСПОРТ ---
+        function exportData() {
+            const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Дорожная_карта_ОЗП_2.0_${new Date().toISOString().slice(0, 10)}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // --- СБРОС ---
+        function resetData() {
+            if (!confirm('Сбросить все изменения к исходным данным?')) return;
+            tasks = getDefaultTasks();
+            renderTable();
+            scheduleSave();
+        }
+
+        // --- ТЕМА ---
+        function toggleTheme() {
+            const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', dark ? '' : 'dark');
+            document.getElementById('themeBtn').textContent = dark ? '🌙' : '☀️';
+            localStorage.setItem('theme', dark ? 'light' : 'dark');
+        }
+
+        // --- ЗАПУСК ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeBtn').textContent = '☀️';
+            }
+            init();
+
+            document.getElementById('newTask').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+            document.getElementById('newOwner').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+            document.getElementById('newDeadline').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+        });
+    </script>
+</body>
+</html>
