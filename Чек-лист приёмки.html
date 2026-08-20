@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чек-лист приёмки · ТСО, ПТЭ, ОМСУ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f0f2f5;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            padding: 40px 40px 50px;
+        }
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0b2b4a;
+            border-bottom: 3px solid #1f4e7a;
+            padding-bottom: 16px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #4a6f8f;
+        }
+        .badge-version {
+            background: #1f4e7a;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 16px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 28px;
+            border-bottom: 2px solid #dce5f0;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 28px;
+            border: none;
+            background: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #4a6f8f;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+            border-radius: 8px 8px 0 0;
+        }
+        .tab-btn:hover {
+            color: #1f4e7a;
+            background: #f0f5fa;
+        }
+        .tab-btn.active {
+            color: #1f4e7a;
+            border-bottom-color: #1f4e7a;
+            background: #f8faff;
+        }
+        .tab-btn .tab-count {
+            font-size: 12px;
+            font-weight: 400;
+            color: #6a8aaa;
+            margin-left: 6px;
+        }
+        .tab-btn.active .tab-count {
+            color: #1f4e7a;
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .progress-bar {
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #1f4a6b;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid #e2eaf2;
+        }
+        .progress-bar .bar-wrap {
+            flex: 1;
+            min-width: 150px;
+            height: 10px;
+            background: #e2eaf2;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar .bar-wrap .fill {
+            height: 100%;
+            background: #1f7a5a;
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.4s ease;
+            display: block;
+        }
+        .btn-reset {
+            background: #e2eaf2;
+            color: #1f3f5a;
+            border: none;
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-reset:hover {
+            background: #c8d5e3;
+        }
+
+        .section {
+            margin-bottom: 32px;
+            border: 1px solid #dce5f0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+        }
+        .section-header {
+            background: #eef4fa;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 2px solid #d8e2ee;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-header .num {
+            background: #1f4e7a;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #103a5a;
+        }
+        .section-header .sub {
+            font-size: 13px;
+            color: #4a6f8f;
+            font-weight: 400;
+        }
+        .section-header .toggle-icon {
+            margin-left: auto;
+            color: #4a7a9e;
+            font-size: 18px;
+        }
+        .section-header .parent-badge {
+            font-size: 11px;
+            background: #dce6f2;
+            color: #1a4b6d;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .section-header .parent-badge.done {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .table-wrap {
+            padding: 0;
+            overflow-x: auto;
+        }
+        .check-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .check-table th {
+            background: #f5f8fc;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: #1f4a6b;
+            border-bottom: 2px solid #dce5f0;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .check-table td {
+            padding: 8px 14px;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle;
+        }
+        .check-table tr:last-child td {
+            border-bottom: none;
+        }
+        .check-table .parent-row {
+            background: #f8faff;
+            font-weight: 600;
+            color: #0b2b4a;
+        }
+        .check-table .parent-row td {
+            padding: 10px 14px;
+            border-bottom: 2px solid #dce5f0;
+        }
+        .check-table .parent-row .parent-label {
+            font-weight: 400;
+            color: #6a8aaa;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .check-table .child-row td {
+            padding: 6px 14px 6px 44px;
+        }
+        .check-table .child-row .task-num {
+            display: inline-block;
+            width: 22px;
+            color: #6a8aaa;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .check-table .comment-field {
+            width: 180px;
+        }
+        .check-table .comment-field input {
+            width: 100%;
+            padding: 4px 10px;
+            border: 1px solid #d5e0eb;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #fafcfe;
+            outline: none;
+            transition: 0.2s;
+        }
+        .check-table .comment-field input:focus {
+            border-color: #1f4e7a;
+            box-shadow: 0 0 0 3px rgba(31, 78, 122, 0.08);
+        }
+        .check-table .child-indent {
+            padding-left: 60px !important;
+        }
+        .check-table .child-indent .task-num {
+            width: 30px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            min-width: 90px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        .status-badge.pending {
+            background: #eef2f7;
+            color: #4f6f8a;
+            border-color: #d5e0eb;
+        }
+        .status-badge.pending:hover {
+            background: #dce5f0;
+        }
+        .status-badge.approved {
+            background: #d4edda;
+            color: #155724;
+            border-color: #b7d9c4;
+        }
+        .status-badge.approved:hover {
+            background: #c3e6cb;
+        }
+        .status-badge.rework {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        .status-badge.rework:hover {
+            background: #f1c0c5;
+        }
+
+        .section-comment {
+            padding: 8px 20px 14px;
+            border-top: 1px solid #e2eaf2;
+            background: #f8fafc;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .section-comment label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1f4a6b;
+        }
+        .section-comment input {
+            flex: 1;
+            min-width: 200px;
+            padding: 5px 14px;
+            border: 1px solid #cbdae7;
+            border-radius: 30px;
+            font-size: 13px;
+            outline: none;
+        }
+        .section-comment input:focus {
+            border-color: #1f4e7a;
+            box-shadow: 0 0 0 3px rgba(31, 78, 122, 0.1);
+        }
+        .section-comment .status-badge {
+            font-size: 12px;
+        }
+
+        .btn-group-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .btn {
+            border: none;
+            border-radius: 30px;
+            padding: 10px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(0, 40, 70, 0.06);
+        }
+        .btn-save {
+            background: #1f7a5a;
+            color: white;
+        }
+        .btn-save:hover {
+            background: #14634a;
+            transform: translateY(-1px);
+        }
+        .btn-print {
+            background: #1f4e7a;
+            color: white;
+        }
+        .btn-print:hover {
+            background: #123a5a;
+            transform: translateY(-1px);
+        }
+        .btn-pdf {
+            background: #a13d3d;
+            color: white;
+        }
+        .btn-pdf:hover {
+            background: #7a2e2e;
+            transform: translateY(-1px);
+        }
+
+        .approval-block {
+            border: 2px solid #1f4e7a;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 24px;
+            background: #f8faff;
+        }
+        .approval-block .approval-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #0b2b4a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .approval-block .approval-status {
+            font-size: 14px;
+            padding: 6px 16px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .approval-block .approval-status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        .approval-block .approval-status.rework {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .approval-block .approval-status.pending {
+            background: #eef2f7;
+            color: #4f6f8a;
+        }
+        .approval-block .approval-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .btn-approved-action {
+            background: #1f7a5a;
+            color: white;
+        }
+        .btn-approved-action:hover {
+            background: #14634a;
+        }
+        .btn-approved-action.active {
+            background: #0b4a34;
+            box-shadow: 0 0 0 3px #a3d4b5;
+        }
+        .btn-rework-action {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-rework-action:hover {
+            background: #b02a37;
+        }
+        .btn-rework-action.active {
+            background: #8b1a26;
+            box-shadow: 0 0 0 3px #f5c6cb;
+        }
+        .btn-reset-action {
+            background: #e2eaf2;
+            color: #1f3f5a;
+        }
+        .btn-reset-action:hover {
+            background: #c8d5e3;
+        }
+
+        .approval-block .remarks-area {
+            margin-top: 12px;
+        }
+        .approval-block .remarks-area label {
+            font-weight: 500;
+            font-size: 14px;
+            color: #1d3449;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .approval-block .remarks-area textarea {
+            width: 100%;
+            min-height: 70px;
+            padding: 10px 14px;
+            border: 1px solid #b6ccdf;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+            transition: 0.2s;
+            background: white;
+        }
+        .approval-block .remarks-area textarea:focus {
+            border-color: #1f4e7a;
+            box-shadow: 0 0 0 3px rgba(31, 78, 122, 0.1);
+        }
+        .approval-block .remarks-area textarea:disabled {
+            background: #f0f5fa;
+            cursor: not-allowed;
+        }
+
+        .approval-block .signature-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2px 20px;
+            font-size: 14px;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2eaf2;
+        }
+        .approval-block .signature-info strong {
+            color: #0b2b4a;
+        }
+
+        .suggestions-block {
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 16px;
+            background: #fffcf0;
+        }
+        .suggestions-block .suggestions-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #856404;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .suggestions-block .suggestions-title .badge-suggestion {
+            background: #ffc107;
+            color: #212529;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
+        .suggestions-block textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px 14px;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+            transition: 0.2s;
+            background: white;
+        }
+        .suggestions-block textarea:focus {
+            border-color: #e0a800;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.15);
+        }
+        .suggestions-block .suggestion-info {
+            font-size: 13px;
+            color: #6a8aaa;
+            margin-top: 6px;
+        }
+
+        .signature-block {
+            margin-top: 32px;
+            border-top: 2px solid #dce5f0;
+            padding-top: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px 60px;
+            justify-content: flex-start;
+            align-items: flex-end;
+        }
+        .signature-col .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #3b5e7a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .signature-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+        .signature-row .field {
+            background: #f0f5fa;
+            border-radius: 30px;
+            padding: 5px 16px;
+            min-width: 180px;
+            font-size: 14px;
+            border: 1px solid #b6ccdf;
+            outline: none;
+            transition: 0.2s;
+            flex: 1;
+        }
+        .signature-row .field:focus {
+            border-color: #1f4e7a;
+            box-shadow: 0 0 0 3px rgba(31, 78, 122, 0.1);
+        }
+        .signature-row .field-date {
+            min-width: 160px;
+            max-width: 200px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f3f5a;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+            z-index: 999;
+            max-width: 90%;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast.error {
+            background: #a13d3d;
+        }
+        .toast.success {
+            background: #1f7a5a;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #6a8aaa;
+            border-top: 1px solid #e2eaf2;
+            padding-top: 16px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 12px;
+            }
+            .tab-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            .check-table .child-row td {
+                padding: 6px 10px 6px 20px;
+            }
+            .check-table .comment-field {
+                width: 120px;
+            }
+            .signature-block {
+                flex-direction: column;
+                gap: 16px;
+            }
+            .btn-group-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            .btn-group-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .approval-block .signature-info {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+            .section-header {
+                flex-wrap: wrap;
+            }
+            .check-table {
+                font-size: 13px;
+            }
+            .check-table th,
+            .check-table td {
+                padding: 6px 10px;
+            }
+            .status-badge {
+                min-width: 70px;
+                font-size: 11px;
+                padding: 2px 10px;
+            }
+            .check-table .child-indent {
+                padding-left: 30px !important;
+            }
+        }
+        @media print {
+            .btn,
+            .btn-reset,
+            .progress-bar,
+            .toast,
+            .approval-block .approval-buttons,
+            .tabs .tab-btn {
+                display: none !important;
+            }
+            .tab-content {
+                display: block !important;
+            }
+            body {
+                background: white;
+                padding: 0.2in;
+            }
+            .container {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                border-radius: 0;
+                padding: 20px;
+            }
+            .section {
+                border: 1px solid #ccc;
+                border-radius: 0;
+            }
+            .section-header {
+                background: #eef4fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .parent-row {
+                background: #f8faff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .status-badge {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .approval-block {
+                border: 2px solid #000;
+                background: #f8faff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .approval-block .approval-status {
+                border: 1px solid #000;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .approval-status.approved {
+                background: #d4edda !important;
+            }
+            .approval-status.rework {
+                background: #f8d7da !important;
+            }
+            .approval-status.pending {
+                background: #eef2f7 !important;
+            }
+            .suggestions-block {
+                border: 2px solid #000 !important;
+                background: #f8f8f0 !important;
+            }
+            .parent-badge {
+                display: none !important;
+            }
+            .btn-group-actions {
+                display: none !important;
+            }
+            .footer-note {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="checklistContainer">
+
+        <h1>
+            <span>ЧЕК-ЛИСТ ПРИЁМКИ</span>
+            <small>Система оценки готовности (ТСО, ПТЭ, ОМСУ, бесхоз)</small>
+            <span class="badge-version">v.4.0</span>
+        </h1>
+
+        <div class="tabs" id="tabHeaders">
+            <button class="tab-btn active" data-tab="tab-tso">ТСО <span class="tab-count">(7 разделов)</span></button>
+            <button class="tab-btn" data-tab="tab-pte">ПТЭ <span class="tab-count">(7 разделов)</span></button>
+            <button class="tab-btn" data-tab="tab-omsu">ОМСУ <span class="tab-count">(8 разделов)</span></button>
+            <button class="tab-btn" data-tab="tab-approval">📋 Согласование</button>
+        </div>
+
+        <!-- ===== ВКЛАДКА: ТСО ===== -->
+        <div class="tab-content active" id="tab-tso">
+            <div class="progress-bar">
+                <span>Прогресс (ТСО):</span>
+                <span class="bar-wrap"><span class="fill" id="progressFill-tso" style="width:0%;"></span></span>
+                <span id="progressText-tso">0 / 0</span>
+                <button class="btn-reset" onclick="resetTab('tso')">Сбросить</button>
+            </div>
+
+            <!-- Секция 1: Конструктор реестров -->
+            <div class="section" data-tab="tso" data-section="1">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">1</span>
+                    <h2>Конструктор реестров объектов оценки <span class="sub">(ТСО)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 1.1 Доступны все конструкторы реестров</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.1.1</span> Доступен список конструкторов реестров (ТСО)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 1.2 Для каждого типа реализованы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.1</span> Создание / редактирование / просмотр блока «Основные параметры»</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.2</span> Управление сроками этапов подготовки к ОЗП</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.3</span> Управление составом комиссии</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.4</span> Создание / редактирование / просмотр блока «Организация»</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.5</span> Создание / редактирование / просмотр объектов СЦТ</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.3</span> Реализована фильтрация по: отопительному периоду, типу объекта, муниципалитету, статусу</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.4</span> Данные корректно сохраняются, редактируются и отображаются</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.5</span> <strong>Создание конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.6</span> <strong>Редактирование конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.7</span> <strong>Удаление конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 2: Реестр -->
+            <div class="section" data-tab="tso" data-section="2">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">2</span>
+                    <h2>Реестр объектов оценки <span class="sub">(ТСО)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Реестр объектов оценки</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.1</span> Работает единый реестр объектов оценки (ТСО)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.2</span> Отображается список объектов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.3</span> Фильтрация по типу конструктора</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.4</span> Фильтрация по статусам оценочных листов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.5</span> Доступно скачивание оценочного листа, создание акта и паспорта</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.6</span> Реализованы: переход в оценочный лист, поиск</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.7</span> Отображаются: % согласованных документов и Индекс готовности</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.8</span> <strong>Добавлена иконка Минобороны на оценочный лист</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.9</span> <strong>Реализована загрузка актов для организации, оцениваемой МинОбороны</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 3: Оценочные листы -->
+            <div class="section" data-tab="tso" data-section="3">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">3</span>
+                    <h2>Оценочные листы <span class="sub">(ТСО)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Оценочные листы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.1</span> Формируются оценочные листы для ТСО</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.2</span> Реализована загрузка/удаление/восстановление документов к показателям</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.3</span> Доступно добавление/просмотр/редактирование комментариев и замечаний</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.4</span> Отображаются: Текущий этап, Срок, Статус, Индекс готовности</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.5</span> Реализована отправка на согласование / возврат на доработку</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 4: Печатные формы -->
+            <div class="section" data-tab="tso" data-section="4">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">4</span>
+                    <h2>Печатные формы оценочных листов <span class="sub">(ТСО)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Печатные формы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.1</span> Готовы печатные формы для ТСО</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.2</span> Содержание и макет соответствуют утверждённым образцам</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 5: Акт -->
+            <div class="section" data-tab="tso" data-section="5">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">5</span>
+                    <h2>Акт оценки обеспечения готовности <span class="sub">(ТСО)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Акт оценки обеспечения готовности</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.1</span> Генерируются акты для ТСО</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.2</span> Акты содержат все обязательные разделы, даты, подписи</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.3</span> Реализована выгрузка акта в архив</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.4</span> <strong>Удаление акта</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.5</span> Реализовано создание «Особого мнения» для акта</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.6</span> <strong>Реализовано подписание особого мнения</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.7</span> <strong>Реализована выгрузка в архив особого мнения</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.8</span> <strong>Реализовано удаление «Особого мнения»</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 6: Паспорт -->
+            <div class="section" data-tab="tso" data-section="6">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">6</span>
+                    <h2>Паспорт обеспечения готовности <span class="sub">(ТСО)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Паспорт обеспечения готовности</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.1</span> Генерируются паспорта для ТСО</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.2</span> Паспорта заполняются актуальными данными, содержат подписи</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.3</span> Реализована выгрузка паспорта в архив</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.4</span> <strong>Удаление паспорта</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 7: Сквозная проверка -->
+            <div class="section" data-tab="tso" data-section="7" style="border-color:#b6cfdd;">
+                <div class="section-header" onclick="toggleSection(this)" style="background:#e2edf7;">
+                    <span class="num" style="background:#1f6d4a;">📌</span>
+                    <h2>Сквозная проверка <span class="sub">(ТСО)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="child-row"><td><span class="task-num">7.1</span> Работает цепочка: Конструктор → Реестр → Оценочный лист → Печать → Акт → Паспорт → Подписание (ТСО)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">7.2</span> Данные не теряются и корректно переносятся между этапами (ТСО)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">7.3</span> Права доступа и бизнес-ограничения соблюдены для всех ролей (ТСО)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <div class="suggestions-block">
+                <div class="suggestions-title">💡 Предложения по улучшению <span class="badge-suggestion">ТСО</span></div>
+                <textarea id="suggestionsText-tso" placeholder="Впишите ваши предложения по доработке функционала для ТСО..."></textarea>
+                <div class="suggestion-info">📌 Ваши предложения будут учтены при планировании следующих версий.</div>
+            </div>
+        </div>
+
+        <!-- ===== ВКЛАДКА: ПТЭ ===== -->
+        <div class="tab-content" id="tab-pte">
+            <div class="progress-bar">
+                <span>Прогресс (ПТЭ):</span>
+                <span class="bar-wrap"><span class="fill" id="progressFill-pte" style="width:0%;"></span></span>
+                <span id="progressText-pte">0 / 0</span>
+                <button class="btn-reset" onclick="resetTab('pte')">Сбросить</button>
+            </div>
+
+            <!-- Секция 1: Конструктор реестров (без СЦТ) -->
+            <div class="section" data-tab="pte" data-section="1">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">1</span>
+                    <h2>Конструктор реестров объектов оценки <span class="sub">(ПТЭ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 1.1 Доступны все конструкторы реестров</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.1.1</span> Доступен список конструкторов реестров (ПТЭ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 1.2 Для каждого типа реализованы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.1</span> Создание / редактирование / просмотр блока «Основные параметры»</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.2</span> Управление сроками этапов подготовки к ОЗП</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.3</span> Управление составом комиссии</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.4</span> Создание / редактирование / просмотр блока «Организация»</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.5</span> Создание / редактирование / просмотр объектов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.3</span> Реализована фильтрация по: отопительному периоду, типу объекта, муниципалитету, статусу</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.4</span> Данные корректно сохраняются, редактируются и отображаются</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.5</span> <strong>Создание конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.6</span> <strong>Редактирование конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.7</span> <strong>Удаление конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 2: Реестр (без 2.8, 2.9) -->
+            <div class="section" data-tab="pte" data-section="2">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">2</span>
+                    <h2>Реестр объектов оценки <span class="sub">(ПТЭ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Реестр объектов оценки</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.1</span> Работает единый реестр объектов оценки (ПТЭ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.2</span> Отображается список объектов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.3</span> Фильтрация по типу конструктора</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.4</span> Фильтрация по статусам оценочных листов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.5</span> Доступно скачивание оценочного листа, создание акта и паспорта</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.6</span> Реализованы: переход в оценочный лист, поиск</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.7</span> Отображаются: % согласованных документов и Индекс готовности</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 3: Оценочные листы -->
+            <div class="section" data-tab="pte" data-section="3">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">3</span>
+                    <h2>Оценочные листы <span class="sub">(ПТЭ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Оценочные листы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.1</span> Формируются оценочные листы для ПТЭ</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.2</span> Реализована загрузка/удаление/восстановление документов к показателям</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.3</span> Доступно добавление/просмотр/редактирование комментариев и замечаний</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.4</span> Отображаются: Текущий этап, Срок, Статус, Индекс готовности</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.5</span> Реализована отправка на согласование / возврат на доработку</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 4: Печатные формы -->
+            <div class="section" data-tab="pte" data-section="4">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">4</span>
+                    <h2>Печатные формы оценочных листов <span class="sub">(ПТЭ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Печатные формы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.1</span> Готовы печатные формы для ПТЭ</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.2</span> Содержание и макет соответствуют утверждённым образцам</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 5: Акт -->
+            <div class="section" data-tab="pte" data-section="5">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">5</span>
+                    <h2>Акт оценки обеспечения готовности <span class="sub">(ПТЭ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Акт оценки обеспечения готовности</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.1</span> Генерируются акты для ПТЭ</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.2</span> Акты содержат все обязательные разделы, даты, подписи</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.3</span> Реализована выгрузка акта в архив</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.4</span> <strong>Удаление акта</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.5</span> Реализовано создание «Особого мнения» для акта</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.6</span> <strong>Реализовано подписание особого мнения</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.7</span> <strong>Реализована выгрузка в архив особого мнения</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.8</span> <strong>Реализовано удаление «Особого мнения»</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 6: Паспорт -->
+            <div class="section" data-tab="pte" data-section="6">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">6</span>
+                    <h2>Паспорт обеспечения готовности <span class="sub">(ПТЭ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Паспорт обеспечения готовности</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.1</span> Генерируются паспорта для ПТЭ</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.2</span> Паспорта заполняются актуальными данными, содержат подписи</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.3</span> Реализована выгрузка паспорта в архив</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.4</span> <strong>Удаление паспорта</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 7: Сквозная проверка -->
+            <div class="section" data-tab="pte" data-section="7" style="border-color:#b6cfdd;">
+                <div class="section-header" onclick="toggleSection(this)" style="background:#e2edf7;">
+                    <span class="num" style="background:#1f6d4a;">📌</span>
+                    <h2>Сквозная проверка <span class="sub">(ПТЭ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="child-row"><td><span class="task-num">7.1</span> Работает цепочка: Конструктор → Реестр → Оценочный лист → Печать → Акт → Паспорт → Подписание (ПТЭ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">7.2</span> Данные не теряются и корректно переносятся между этапами (ПТЭ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">7.3</span> Права доступа и бизнес-ограничения соблюдены для всех ролей (ПТЭ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <div class="suggestions-block">
+                <div class="suggestions-title">💡 Предложения по улучшению <span class="badge-suggestion">ПТЭ</span></div>
+                <textarea id="suggestionsText-pte" placeholder="Впишите ваши предложения по доработке функционала для ПТЭ..."></textarea>
+                <div class="suggestion-info">📌 Ваши предложения будут учтены при планировании следующих версий.</div>
+            </div>
+        </div>
+
+        <!-- ===== ВКЛАДКА: ОМСУ ===== -->
+        <div class="tab-content" id="tab-omsu">
+            <div class="progress-bar">
+                <span>Прогресс (ОМСУ):</span>
+                <span class="bar-wrap"><span class="fill" id="progressFill-omsu" style="width:0%;"></span></span>
+                <span id="progressText-omsu">0 / 0</span>
+                <button class="btn-reset" onclick="resetTab('omsu')">Сбросить</button>
+            </div>
+
+            <!-- Секция 1: Конструктор реестров (без слова "муниципалитету") -->
+            <div class="section" data-tab="omsu" data-section="1">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">1</span>
+                    <h2>Конструктор реестров объектов оценки <span class="sub">(ОМСУ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 1.1 Доступны все конструкторы реестров</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.1.1</span> Доступен список конструкторов реестров (ОМСУ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 1.2 Для каждого типа реализованы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.1</span> Создание / редактирование / просмотр блока «Основные параметры»</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.2</span> Управление сроками этапов подготовки к ОЗП</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.3</span> Управление составом комиссии</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.4</span> Создание / редактирование / просмотр блока «Организация»</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row child-indent"><td><span class="task-num">1.2.5</span> Создание / редактирование / просмотр объектов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.3</span> Реализована фильтрация по: отопительному периоду, типу объекта, статусу</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.4</span> Данные корректно сохраняются, редактируются и отображаются</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.5</span> <strong>Создание конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.6</span> <strong>Редактирование конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">1.7</span> <strong>Удаление конструктора</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 2: Конструктор для РТН/Минэнерго (только для ОМСУ) -->
+            <div class="section" data-tab="omsu" data-section="2">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">2</span>
+                    <h2>Конструктор для РТН / Минэнерго <span class="sub">(ОМСУ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Реализованы роли для МинЭнерго + карточка ЦИО</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.1</span> Реализованы роли с правами доступа для участия МинЭнерго</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.2</span> Роль «Минэнерго. Администратор» работает корректно</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.3</span> Роль «Минэнерго. Сотрудник» работает корректно</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">2.4</span> <strong>Реализация карточки организации с типом ЦИО</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 3: Реестр (без 2.8, 2.9) -->
+            <div class="section" data-tab="omsu" data-section="3">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">3</span>
+                    <h2>Реестр объектов оценки <span class="sub">(ОМСУ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Реестр объектов оценки</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.1</span> Работает единый реестр объектов оценки (ОМСУ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.2</span> Отображается список объектов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.3</span> Фильтрация по типу конструктора</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.4</span> Фильтрация по статусам оценочных листов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.5</span> Доступно скачивание оценочного листа, создание акта и паспорта</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.6</span> Реализованы: переход в оценочный лист, поиск</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">3.7</span> Отображаются: % согласованных документов и Индекс готовности</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 4: Оценочные листы (с бесхозяйными) -->
+            <div class="section" data-tab="omsu" data-section="4">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">4</span>
+                    <h2>Оценочные листы <span class="sub">(ОМСУ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Оценочные листы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.1</span> Формируются оценочные листы для ОМСУ и бесхозяйных объектов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.2</span> Реализована загрузка/удаление/восстановление документов к показателям</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.3</span> Доступно добавление/просмотр/редактирование комментариев и замечаний</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.4</span> Отображаются: Текущий этап, Срок, Статус, Индекс готовности</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">4.5</span> Реализована отправка на согласование / возврат на доработку</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 5: Печатные формы (с бесхозяйными) -->
+            <div class="section" data-tab="omsu" data-section="5">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">5</span>
+                    <h2>Печатные формы оценочных листов <span class="sub">(ОМСУ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Печатные формы</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.1</span> Готовы печатные формы для ОМСУ и бесхозяйных объектов</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">5.2</span> Содержание и макет соответствуют утверждённым образцам</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 6: Акт -->
+            <div class="section" data-tab="omsu" data-section="6">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">6</span>
+                    <h2>Акт оценки обеспечения готовности <span class="sub">(ОМСУ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Акт оценки обеспечения готовности</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.1</span> Генерируются акты для ОМСУ</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.2</span> Акты содержат все обязательные разделы, даты, подписи</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.3</span> Реализована выгрузка акта в архив</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.4</span> <strong>Удаление акта</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.5</span> Реализовано создание «Особого мнения» для акта</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.6</span> <strong>Реализовано подписание особого мнения</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.7</span> <strong>Реализована выгрузка в архив особого мнения</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">6.8</span> <strong>Реализовано удаление «Особого мнения»</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 7: Паспорт -->
+            <div class="section" data-tab="omsu" data-section="7">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span class="num">7</span>
+                    <h2>Паспорт обеспечения готовности <span class="sub">(ОМСУ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="parent-row"><td colspan="3"><strong>🔹 Паспорт обеспечения готовности</strong> <span class="parent-label">(родительская)</span></td></tr>
+                            <tr class="child-row"><td><span class="task-num">7.1</span> Генерируются паспорта для ОМСУ</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">7.2</span> Паспорта заполняются актуальными данными, содержат подписи</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">7.3</span> Реализована выгрузка паспорта в архив</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">7.4</span> <strong>Удаление паспорта</strong></td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <!-- Секция 8: Сквозная проверка -->
+            <div class="section" data-tab="omsu" data-section="8" style="border-color:#b6cfdd;">
+                <div class="section-header" onclick="toggleSection(this)" style="background:#e2edf7;">
+                    <span class="num" style="background:#1f6d4a;">📌</span>
+                    <h2>Сквозная проверка <span class="sub">(ОМСУ)</span></h2>
+                    <span class="toggle-icon">▶</span>
+                </div>
+                <div class="table-wrap" style="display:none;">
+                    <table class="check-table">
+                        <thead><tr><th style="width:45%;">Задача</th><th style="width:18%;">Статус</th><th style="width:22%;">Комментарий</th></tr></thead>
+                        <tbody>
+                            <tr class="child-row"><td><span class="task-num">8.1</span> Работает цепочка: Конструктор → Реестр → Оценочный лист → Печать → Акт → Паспорт → Подписание (ОМСУ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">8.2</span> Данные не теряются и корректно переносятся между этапами (ОМСУ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                            <tr class="child-row"><td><span class="task-num">8.3</span> Права доступа и бизнес-ограничения соблюдены для всех ролей (ОМСУ)</td><td><span class="status-badge pending" onclick="cycleStatus(this)">Не проверено</span></td><td class="comment-field"><input type="text" placeholder="Комментарий" oninput="onCommentChange(this)"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-comment" style="display:none;">
+                    <label>Итоговое заключение по разделу:</label>
+                    <input type="text" placeholder="Общий вывод по разделу...">
+                    <span class="status-badge pending" style="font-size:12px;">Не проверено</span>
+                </div>
+            </div>
+
+            <div class="suggestions-block">
+                <div class="suggestions-title">💡 Предложения по улучшению <span class="badge-suggestion">ОМСУ</span></div>
+                <textarea id="suggestionsText-omsu" placeholder="Впишите ваши предложения по доработке функционала для ОМСУ..."></textarea>
+                <div class="suggestion-info">📌 Ваши предложения будут учтены при планировании следующих версий.</div>
+            </div>
+        </div>
+
+        <!-- ===== ВКЛАДКА: СОГЛАСОВАНИЕ ===== -->
+        <div class="tab-content" id="tab-approval">
+            <div class="signature-block" style="border-top: none; padding-top: 0;">
+                <div class="signature-col">
+                    <div class="label">Заказчик</div>
+                    <div class="signature-row"><span style="font-weight:500; font-size:14px;">ФИО</span><input class="field" type="text" placeholder="Введите ФИО заказчика" id="customerName"></div>
+                    <div class="signature-row"><span style="font-weight:500; font-size:14px;">Дата</span><input class="field field-date" type="date" id="customerDate"></div>
+                </div>
+                <div class="signature-col" style="flex:0 1 auto;">
+                    <div class="label" style="opacity:0;">.</div>
+                    <div class="btn-group-actions">
+                        <button class="btn btn-save" onclick="saveHTML()">💾 Сохранить в HTML</button>
+                        <button class="btn btn-print" onclick="window.print()">🖨️ Распечатать</button>
+                        <button class="btn btn-pdf" onclick="downloadPDF()">📄 PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="approval-block" id="approvalBlock">
+                <div class="approval-title">📋 Решение по результатам приёмки <span id="approvalStatus" class="approval-status pending">⏳ ожидает решения</span></div>
+                <div class="approval-buttons">
+                    <button class="btn btn-approved-action" id="btnApproved" onclick="setApproval('approved')">✅ Согласовано</button>
+                    <button class="btn btn-rework-action" id="btnRework" onclick="setApproval('rework')">🔄 Требуется доработка</button>
+                    <button class="btn btn-reset-action" onclick="resetApproval()">Сбросить решение</button>
+                </div>
+                <div class="remarks-area">
+                    <label for="remarksText">📝 Перечень замечаний (при необходимости):</label>
+                    <textarea id="remarksText" placeholder="Опишите замечания, если требуется доработка..."></textarea>
+                </div>
+                <div class="signature-info" id="signatureInfo">
+                    <strong>Согласовал:</strong><span id="approvalSignerName">—</span>
+                    <strong>Дата согласования:</strong><span id="approvalDate">—</span>
+                    <strong>Статус:</strong><span id="approvalResult">—</span>
+                    <strong>Замечания:</strong><span id="approvalRemarks">—</span>
+                </div>
+            </div>
+
+            <div class="suggestions-block" style="margin-top:16px;">
+                <div class="suggestions-title">💡 Общие предложения по улучшению <span class="badge-suggestion">ИТОГ</span></div>
+                <textarea id="suggestionsText-common" placeholder="Впишите общие предложения по доработке системы..."></textarea>
+                <div class="suggestion-info">📌 Будут учтены при планировании следующих версий.</div>
+            </div>
+        </div>
+
+        <div class="footer-note"></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var tabId = this.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+                document.getElementById(tabId).classList.add('active');
+                updateProgress(tabId);
+            });
+        });
+
+        function updateProgress(tabId) {
+            var container = document.getElementById(tabId);
+            if (!container) return;
+            var statuses = container.querySelectorAll('.child-row .status-badge');
+            var total = statuses.length;
+            var done = 0;
+            statuses.forEach(function(el) {
+                if (el.textContent.trim() === 'Согласовано') {
+                    done++;
+                }
+            });
+
+            var fill = document.getElementById('progressFill-' + tabId.replace('tab-', ''));
+            var text = document.getElementById('progressText-' + tabId.replace('tab-', ''));
+            if (fill && text) {
+                if (total > 0) {
+                    fill.style.width = (done / total * 100) + '%';
+                    text.textContent = done + ' / ' + total;
+                } else {
+                    fill.style.width = '0%';
+                    text.textContent = '0 / 0';
+                }
+            }
+
+            container.querySelectorAll('.parent-row').forEach(function(parentRow) {
+                var section = parentRow.closest('.section');
+                var childStatuses = section.querySelectorAll('.child-row .status-badge');
+                var childDone = 0;
+                childStatuses.forEach(function(el) {
+                    if (el.textContent.trim() === 'Согласовано') {
+                        childDone++;
+                    }
+                });
+                var badge = section.querySelector('.parent-badge');
+                if (badge && childStatuses.length > 0) {
+                    if (childDone === childStatuses.length) {
+                        badge.textContent = '✅ выполнено';
+                        badge.className = 'parent-badge done';
+                    } else {
+                        badge.textContent = '⏳ ' + childDone + '/' + childStatuses.length;
+                        badge.className = 'parent-badge';
+                    }
+                }
+            });
+
+            container.querySelectorAll('.section').forEach(function(section) {
+                var childStatuses = section.querySelectorAll('.child-row .status-badge');
+                var childDone = 0;
+                childStatuses.forEach(function(el) {
+                    if (el.textContent.trim() === 'Согласовано') {
+                        childDone++;
+                    }
+                });
+                var badge = section.querySelector('.section-comment .status-badge');
+                if (badge && childStatuses.length > 0) {
+                    if (childDone === 0) badge.textContent = 'Не проверено';
+                    else if (childDone === childStatuses.length) badge.textContent = '✅ Все проверены';
+                    else badge.textContent = '🔄 ' + childDone + '/' + childStatuses.length;
+                }
+            });
+        }
+
+        function onCommentChange(input) {
+            var row = input.closest('tr');
+            var statusEl = row.querySelector('.status-badge');
+            if (!statusEl) return;
+            var currentStatus = statusEl.textContent.trim();
+            var hasComment = input.value.trim().length > 0;
+            if (currentStatus === 'Не проверено' && hasComment) {
+                statusEl.textContent = 'Требует доработки';
+                statusEl.className = 'status-badge rework';
+            } else if (currentStatus === 'Согласовано' && hasComment) {
+                statusEl.textContent = 'Требует доработки';
+                statusEl.className = 'status-badge rework';
+            } else if (!hasComment && currentStatus === 'Требует доработки') {
+                statusEl.textContent = 'Не проверено';
+                statusEl.className = 'status-badge pending';
+            }
+            var activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                updateProgress(activeTab.id);
+            }
+        }
+
+        function cycleStatus(el) {
+            var statuses = ['Не проверено', 'Согласовано', 'Требует доработки'];
+            var current = el.textContent.trim();
+            var idx = statuses.indexOf(current);
+            var next = (idx + 1) % statuses.length;
+            el.textContent = statuses[next];
+            el.className = 'status-badge';
+            if (statuses[next] === 'Не проверено') el.classList.add('pending');
+            else if (statuses[next] === 'Согласовано') el.classList.add('approved');
+            else if (statuses[next] === 'Требует доработки') el.classList.add('rework');
+
+            var row = el.closest('tr');
+            var commentInput = row ? row.querySelector('.comment-field input') : null;
+            if (commentInput && commentInput.value.trim().length > 0 && statuses[next] === 'Не проверено') {
+                el.textContent = 'Требует доработки';
+                el.className = 'status-badge rework';
+            }
+            var activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                updateProgress(activeTab.id);
+            }
+        }
+
+        function toggleSection(headerEl) {
+            var tableWrap = headerEl.nextElementSibling;
+            var comment = tableWrap ? tableWrap.nextElementSibling : null;
+            var icon = headerEl.querySelector('.toggle-icon');
+            var isOpen = tableWrap && tableWrap.style.display !== 'none';
+            if (isOpen) {
+                if (tableWrap) tableWrap.style.display = 'none';
+                if (comment) comment.style.display = 'none';
+                if (icon) icon.textContent = '▶';
+            } else {
+                if (tableWrap) tableWrap.style.display = 'block';
+                if (comment) comment.style.display = 'flex';
+                if (icon) icon.textContent = '▼';
+            }
+        }
+
+        function resetTab(tab) {
+            var container = document.getElementById('tab-' + tab);
+            if (!container) return;
+            container.querySelectorAll('.status-badge').forEach(function(el) {
+                el.textContent = 'Не проверено';
+                el.className = 'status-badge pending';
+            });
+            container.querySelectorAll('.comment-field input').forEach(function(inp) { inp.value = ''; });
+            container.querySelectorAll('.section-comment input[type="text"]').forEach(function(inp) { inp.value = ''; });
+            container.querySelectorAll('.section-comment .status-badge').forEach(function(el) {
+                el.textContent = 'Не проверено';
+                el.className = 'status-badge pending';
+            });
+            updateProgress('tab-' + tab);
+            showToast('✅ Данные вкладки сброшены', 'success');
+        }
+
+        var approvalState = {
+            status: 'pending',
+            signer: '',
+            date: '',
+            remarks: ''
+        };
+
+        function setApproval(status) {
+            var customerName = document.getElementById('customerName').value || '—';
+            var now = new Date();
+            var dateStr = now.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            approvalState.status = status;
+            approvalState.signer = customerName;
+            approvalState.date = dateStr;
+            approvalState.remarks = document.getElementById('remarksText').value || '—';
+            updateApprovalUI();
+            showToast(status === 'approved' ? '✅ Документ согласован' : '🔄 Требуется доработка', status === 'approved' ?
+                'success' : 'error');
+        }
+
+        function resetApproval() {
+            approvalState.status = 'pending';
+            approvalState.signer = '';
+            approvalState.date = '';
+            approvalState.remarks = '';
+            document.getElementById('remarksText').value = '';
+            updateApprovalUI();
+            showToast('🔄 Решение сброшено', 'warning');
+        }
+
+        function updateApprovalUI() {
+            var statusEl = document.getElementById('approvalStatus');
+            var signerEl = document.getElementById('approvalSignerName');
+            var dateEl = document.getElementById('approvalDate');
+            var resultEl = document.getElementById('approvalResult');
+            var remarksEl = document.getElementById('approvalRemarks');
+            var btnApproved = document.getElementById('btnApproved');
+            var btnRework = document.getElementById('btnRework');
+            var remarksTextarea = document.getElementById('remarksText');
+
+            statusEl.className = 'approval-status';
+            if (approvalState.status === 'approved') {
+                statusEl.className += ' approved';
+                statusEl.textContent = '✅ Согласовано';
+                btnApproved.className = 'btn btn-approved-action active';
+                btnRework.className = 'btn btn-rework-action';
+                remarksTextarea.disabled = true;
+            } else if (approvalState.status === 'rework') {
+                statusEl.className += ' rework';
+                statusEl.textContent = '🔄 Требуется доработка';
+                btnApproved.className = 'btn btn-approved-action';
+                btnRework.className = 'btn btn-rework-action active';
+                remarksTextarea.disabled = false;
+            } else {
+                statusEl.className += ' pending';
+                statusEl.textContent = '⏳ ожидает решения';
+                btnApproved.className = 'btn btn-approved-action';
+                btnRework.className = 'btn btn-rework-action';
+                remarksTextarea.disabled = false;
+            }
+            signerEl.textContent = approvalState.signer || '—';
+            dateEl.textContent = approvalState.date || '—';
+            resultEl.textContent = approvalState.status === 'approved' ? '✅ Согласовано' :
+                approvalState.status === 'rework' ? '🔄 Требуется доработка' : '⏳ Ожидает решения';
+            remarksEl.textContent = approvalState.remarks || '—';
+        }
+
+        function showToast(msg, type) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast';
+            if (type) t.classList.add(type);
+            t.classList.add('show');
+            clearTimeout(t._hide);
+            t._hide = setTimeout(function() { t.classList.remove('show'); }, 3500);
+        }
+
+        function downloadPDF() {
+            try {
+                var content = document.getElementById('checklistContainer').cloneNode(true);
+
+                // ===== ФУНКЦИЯ ДЛЯ СБОРА СТАТИСТИКИ ПО ВКЛАДКЕ =====
+                function getTabStats(tabId) {
+                    // Находим вкладку по ID внутри клонированного документа
+                    var tabEl = content.querySelector('#' + tabId);
+                    if (!tabEl) return { total: 0, approved: 0, rework: 0, pending: 0 };
+                    var statuses = tabEl.querySelectorAll('.child-row .status-badge');
+                    var total = statuses.length;
+                    var approved = 0,
+                        rework = 0,
+                        pending = 0;
+                    statuses.forEach(function(el) {
+                        var txt = el.textContent.trim();
+                        if (txt === 'Согласовано') approved++;
+                        else if (txt === 'Требует доработки') rework++;
+                        else pending++;
+                    });
+                    return { total: total, approved: approved, rework: rework, pending: pending };
+                }
+
+                var statsTso = getTabStats('tab-tso');
+                var statsPte = getTabStats('tab-pte');
+                var statsOmsu = getTabStats('tab-omsu');
+
+                var overallTotal = statsTso.total + statsPte.total + statsOmsu.total;
+                var overallApproved = statsTso.approved + statsPte.approved + statsOmsu.approved;
+                var overallRework = statsTso.rework + statsPte.rework + statsOmsu.rework;
+                var overallPending = statsTso.pending + statsPte.pending + statsOmsu.pending;
+
+                // ===== ВСТАВЛЯЕМ СТАТИСТИКУ В НАЧАЛО ДОКУМЕНТА =====
+                var h1 = content.querySelector('h1');
+                var statsHtml = `
+                    <div style="background: #f8fafc; border: 1px solid #dce5f0; border-radius: 10px; padding: 16px 20px; margin: 16px 0 24px 0;">
+                        <div style="font-weight: 700; font-size: 16px; margin-bottom: 10px; color: #0b2b4a;">📊 СТАТИСТИКА ВЫПОЛНЕНИЯ</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+                            <div style="background: white; border-radius: 8px; padding: 10px 14px; border: 1px solid #e2eaf2;">
+                                <div style="font-weight: 600; font-size: 14px; color: #1f4e7a;">ТСО</div>
+                                <div style="display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; margin-top: 4px;">
+                                    <span>✅ ${statsTso.approved}</span>
+                                    <span>🔄 ${statsTso.rework}</span>
+                                    <span>⏳ ${statsTso.pending}</span>
+                                    <span style="font-weight: 600;">📌 ${statsTso.total}</span>
+                                </div>
+                                <div style="margin-top: 4px; height: 4px; background: #e2eaf2; border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${statsTso.total > 0 ? Math.round(statsTso.approved / statsTso.total * 100) : 0}%; background: #1f7a5a; border-radius: 4px;"></div>
+                                </div>
+                                <div style="font-size: 12px; color: #4a6f8f; margin-top: 2px;">${statsTso.total > 0 ? Math.round(statsTso.approved / statsTso.total * 100) : 0}% выполнено</div>
+                            </div>
+                            <div style="background: white; border-radius: 8px; padding: 10px 14px; border: 1px solid #e2eaf2;">
+                                <div style="font-weight: 600; font-size: 14px; color: #1f4e7a;">ПТЭ</div>
+                                <div style="display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; margin-top: 4px;">
+                                    <span>✅ ${statsPte.approved}</span>
+                                    <span>🔄 ${statsPte.rework}</span>
+                                    <span>⏳ ${statsPte.pending}</span>
+                                    <span style="font-weight: 600;">📌 ${statsPte.total}</span>
+                                </div>
+                                <div style="margin-top: 4px; height: 4px; background: #e2eaf2; border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${statsPte.total > 0 ? Math.round(statsPte.approved / statsPte.total * 100) : 0}%; background: #1f7a5a; border-radius: 4px;"></div>
+                                </div>
+                                <div style="font-size: 12px; color: #4a6f8f; margin-top: 2px;">${statsPte.total > 0 ? Math.round(statsPte.approved / statsPte.total * 100) : 0}% выполнено</div>
+                            </div>
+                            <div style="background: white; border-radius: 8px; padding: 10px 14px; border: 1px solid #e2eaf2;">
+                                <div style="font-weight: 600; font-size: 14px; color: #1f4e7a;">ОМСУ</div>
+                                <div style="display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; margin-top: 4px;">
+                                    <span>✅ ${statsOmsu.approved}</span>
+                                    <span>🔄 ${statsOmsu.rework}</span>
+                                    <span>⏳ ${statsOmsu.pending}</span>
+                                    <span style="font-weight: 600;">📌 ${statsOmsu.total}</span>
+                                </div>
+                                <div style="margin-top: 4px; height: 4px; background: #e2eaf2; border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${statsOmsu.total > 0 ? Math.round(statsOmsu.approved / statsOmsu.total * 100) : 0}%; background: #1f7a5a; border-radius: 4px;"></div>
+                                </div>
+                                <div style="font-size: 12px; color: #4a6f8f; margin-top: 2px;">${statsOmsu.total > 0 ? Math.round(statsOmsu.approved / statsOmsu.total * 100) : 0}% выполнено</div>
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid #dce5f0; padding-top: 10px; display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px;">
+                            <span><strong>📌 ИТОГО:</strong> ${overallTotal} задач</span>
+                            <span style="color: #155724;">✅ Согласовано: ${overallApproved}</span>
+                            <span style="color: #721c24;">🔄 Требует доработки: ${overallRework}</span>
+                            <span style="color: #4f6f8a;">⏳ Не проверено: ${overallPending}</span>
+                            <span style="font-weight: 600;">Прогресс: ${overallTotal > 0 ? Math.round(overallApproved / overallTotal * 100) : 0}%</span>
+                        </div>
+                        <div style="margin-top: 8px; height: 6px; background: #e2eaf2; border-radius: 6px; overflow: hidden;">
+                            <div style="height: 100%; width: ${overallTotal > 0 ? Math.round(overallApproved / overallTotal * 100) : 0}%; background: #1f7a5a; border-radius: 6px;"></div>
+                        </div>
+                    </div>
+                `;
+                if (h1) {
+                    h1.insertAdjacentHTML('afterend', statsHtml);
+                }
+
+                // Раскрываем все секции для печати
+                content.querySelectorAll('.table-wrap').forEach(function(el) { el.style.display = 'block'; });
+                content.querySelectorAll('.section-comment').forEach(function(el) { el.style.display = 'flex'; });
+
+                // Удаляем кнопки и интерактивные элементы
+                content.querySelectorAll('.btn, .btn-reset, .progress-bar, .toast, .approval-block .approval-buttons, .btn-group-actions, .toggle-icon, .tab-btn')
+                    .forEach(function(el) { if (el) el.remove(); });
+
+                // Превращаем статусы в текст
+                content.querySelectorAll('.status-badge').forEach(function(el) {
+                    var txt = el.textContent.trim();
+                    el.className = 'status-badge';
+                    if (txt === 'Согласовано') el.classList.add('approved');
+                    else if (txt === 'Требует доработки') el.classList.add('rework');
+                    else el.classList.add('pending');
+                });
+
+                // Превращаем input в текст
+                content.querySelectorAll(
+                    '.comment-field input, .section-comment input, .field, .field-date, .suggestions-block textarea, .approval-block textarea'
+                    ).forEach(function(input) {
+                    var span = document.createElement('span');
+                    span.textContent = input.value || '________';
+                    span.style.padding = '2px 10px';
+                    span.style.borderBottom = '1px solid #999';
+                    input.parentNode.replaceChild(span, input);
+                });
+
+                var footer = content.querySelector('.footer-note');
+                if (footer) footer.remove();
+
+                var printWindow = window.open('', '_blank', 'width=1000,height=800');
+                if (!printWindow) {
+                    showToast('❌ Разрешите всплывающие окна', 'error');
+                    return;
+                }
+
+                printWindow.document.write('<!DOCTYPE html><html><head><title>Чек-лист приёмки</title>');
+                printWindow.document.write('<style>');
+                printWindow.document.write(
+                    'body { font-family: "Times New Roman", "Segoe UI", Arial, serif; padding:40px; background:white; font-size:14px; }'
+                    );
+                printWindow.document.write('.container { max-width:1200px; margin:0 auto; }');
+                printWindow.document.write('.section { margin-bottom:20px; border:1px solid #dce5f0; border-radius:0; overflow:hidden; }');
+                printWindow.document.write('.section-header { background:#eef4fa; padding:10px 16px; border-bottom:2px solid #d8e2ee; }');
+                printWindow.document.write('.check-table { width:100%; border-collapse:collapse; font-size:13px; }');
+                printWindow.document.write('.check-table th { background:#f5f8fc; padding:8px 12px; text-align:left; font-weight:600; border-bottom:2px solid #dce5f0; }');
+                printWindow.document.write('.check-table td { padding:6px 12px; border-bottom:1px solid #edf2f7; vertical-align:middle; }');
+                printWindow.document.write('.check-table .parent-row { background:#f8faff; font-weight:600; }');
+                printWindow.document.write('.status-badge { display:inline-block; padding:1px 12px; border-radius:20px; font-size:11px; font-weight:500; min-width:80px; text-align:center; }');
+                printWindow.document.write('.status-badge.pending { background:#eef2f7; color:#4f6f8a; border:1px solid #d5e0eb; }');
+                printWindow.document.write('.status-badge.approved { background:#d4edda; color:#155724; border:1px solid #b7d9c4; }');
+                printWindow.document.write('.status-badge.rework { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }');
+                printWindow.document.write('.suggestions-block { border:2px solid #ffc107; padding:16px 20px; margin-top:16px; background:#fffcf0; }');
+                printWindow.document.write('.approval-block { border:2px solid #1f4e7a; padding:16px 20px; margin-top:20px; background:#f8faff; }');
+                printWindow.document.write('.signature-info { display:grid; grid-template-columns:auto 1fr; gap:2px 20px; font-size:13px; margin-top:10px; padding:10px 14px; background:white; border:1px solid #e2eaf2; }');
+                printWindow.document.write('.signature-block { margin-top:24px; border-top:2px solid #dce5f0; padding-top:20px; display:flex; gap:20px 50px; }');
+                printWindow.document.write('.btn, .btn-reset, .progress-bar, .toast, .approval-buttons, .btn-group-actions, .toggle-icon, .tab-btn { display:none !important; }');
+                printWindow.document.write('</style></head><body>');
+                printWindow.document.write(content.innerHTML);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+
+                setTimeout(function() {
+                    printWindow.print();
+                }, 600);
+
+                showToast('✅ PDF сформирован', 'success');
+            } catch (e) {
+                console.error(e);
+                showToast('❌ Ошибка: ' + e.message, 'error');
+            }
+        }
+
+        function saveHTML() {
+            var date = new Date().toISOString().slice(0, 10);
+            var a = document.createElement('a');
+            var url = URL.createObjectURL(new Blob(['<!DOCTYPE html>\n' + document.documentElement.outerHTML], { type: 'text/html;charset=utf-8' }));
+            a.href = url;
+            a.download = 'checklist_priemki_' + date + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+            showToast('✅ Файл сохранён', 'success');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById('customerDate').value = today;
+            updateApprovalUI();
+            var activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                updateProgress(activeTab.id);
+            }
+            document.querySelectorAll('.table-wrap').forEach(function(el) {
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.section-comment').forEach(function(el) {
+                el.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
