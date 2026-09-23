@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>План задач 2026 – 2027 — согласование</title>
+<style>
+  :root{
+    --bg:#eef2f9; --card:#fff; --text:#0f172a; --muted:#64748b;
+    --border:#e2e8f0; --primary:#3b5bdb; --primary-light:#eef2ff;
+    --high:#ef4444; --high-bg:#fef2f2;
+    --medium:#f59e0b; --medium-bg:#fffbeb;
+    --low:#10b981; --low-bg:#ecfdf5;
+    --approved:#10b981; --approved-bg:#ecfdf5;
+    --rejected:#ef4444; --rejected-bg:#fef2f2;
+    --pending:#64748b; --pending-bg:#f1f5f9;
+    --y2026:#3b5bdb; --y2026-bg:linear-gradient(135deg,#3b5bdb 0%,#4c6ef5 100%);
+    --y2027:#7048e8; --y2027-bg:linear-gradient(135deg,#7048e8 0%,#9775fa 100%);
+    --radius:14px;
+    --shadow:0 1px 2px rgba(15,23,42,.04),0 4px 16px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,'Inter',Roboto,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== HEADER ===== */
+  .header{
+    background:linear-gradient(135deg,#3b5bdb 0%,#5f3dc4 100%);
+    color:#fff; padding:28px 24px 22px;
+    transition:background .5s ease;
+  }
+  .header.all-approved{ background:linear-gradient(135deg,#059669 0%,#10b981 100%); }
+  .header-inner{max-width:1080px;margin:0 auto}
+  .header h1{
+    margin:0 0 6px;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:normal;
+    line-height:1.3;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    transition:.3s;
+  }
+  .header h1 .check{
+    display:none;width:28px;height:28px;border-radius:50%;background:#fff;
+    color:#059669;align-items:center;justify-content:center;font-size:18px;
+    animation:popCheck .5s cubic-bezier(.2,.9,.3,1.6);flex-shrink:0;
+  }
+  .header h1.approved .check{display:inline-flex}
+  @keyframes popCheck{
+    0%{transform:scale(0) rotate(-180deg);opacity:0}
+    60%{transform:scale(1.2) rotate(15deg);opacity:1}
+    100%{transform:scale(1) rotate(0);opacity:1}
+  }
+  .header p{margin:0;opacity:.85;font-size:14px}
+  .header-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;margin-top:18px}
+  .author-box{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:rgba(255,255,255,.15);
+    padding:8px 14px;border-radius:10px;backdrop-filter:blur(6px)}
+  .author-box .field{display:flex;align-items:center;gap:6px}
+  .author-box label{font-size:12.5px;opacity:.9;white-space:nowrap}
+  .author-box input{
+    background:rgba(255,255,255,.95);border:none;border-radius:7px;
+    padding:6px 10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;
+  }
+  .author-box input#author{width:150px}
+  .author-box input#position{width:180px}
+  .progress-wrap{display:flex;align-items:center;gap:12px;min-width:260px;flex:1;max-width:420px}
+  .progress-bar{flex:1;height:8px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden}
+  .progress-fill{height:100%;background:#4ade80;border-radius:99px;transition:width .35s ease;width:0%}
+  .progress-text{font-size:13px;font-weight:600;white-space:nowrap}
+
+  /* ===== TOOLBAR ===== */
+  .toolbar{
+    position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+    padding:12px 24px;
+  }
+  .toolbar-inner{max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .search{position:relative;flex:1;min-width:200px}
+  .search input{
+    width:100%;padding:9px 12px 9px 34px;border:1px solid var(--border);
+    border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#fff;
+  }
+  .search input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+  .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.45}
+  select{
+    padding:9px 12px;border:1px solid var(--border);border-radius:10px;
+    font-size:13px;font-family:inherit;background:#fff;outline:none;cursor:pointer;color:var(--text);
+  }
+  select:focus{border-color:var(--primary)}
+  .btn{
+    padding:9px 14px;border:1px solid var(--border);background:#fff;border-radius:10px;
+    font-size:13px;font-family:inherit;cursor:pointer;color:var(--text);
+    transition:.15s;white-space:nowrap;font-weight:500;
+  }
+  .btn:hover{background:#f8fafc;border-color:#cbd5e1}
+  .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn-primary:hover{background:#2f4bc0}
+  .btn-danger{background:var(--rejected);border-color:var(--rejected);color:#fff}
+  .btn-danger:hover{background:#dc2626}
+  .btn-danger:disabled{opacity:.4;cursor:not-allowed}
+  .btn-ghost-danger{color:var(--rejected)}
+  .btn-ghost-danger:hover{background:var(--high-bg);border-color:#fecaca}
+
+  /* ===== CONTAINER ===== */
+  .container{max-width:1080px;margin:0 auto;padding:22px 24px 80px}
+  .hint{
+    font-size:13px;color:var(--muted);margin:0 0 18px;
+    display:flex;align-items:center;gap:7px;
+  }
+
+  /* ===== YEAR SECTION ===== */
+  .year{
+    margin-bottom:34px; border-radius:18px; background:#fff;
+    border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden;
+  }
+  .year-head{
+    display:flex;align-items:center;gap:16px;padding:16px 20px;
+    color:#fff;position:relative;
+  }
+  .year-2026 .year-head{background:var(--y2026-bg)}
+  .year-2027 .year-head{background:var(--y2027-bg)}
+  .year-badge{
+    font-size:22px;font-weight:800;letter-spacing:-.02em;
+    background:rgba(255,255,255,.18);padding:6px 14px;border-radius:10px;
+    backdrop-filter:blur(4px);
+  }
+  .year-info{flex:1;min-width:0}
+  .year-title{font-size:15px;font-weight:650;margin:0}
+  .year-sub{font-size:12.5px;opacity:.85;margin-top:2px}
+  .year-progress{display:flex;align-items:center;gap:10px;min-width:180px}
+  .year-progress-bar{
+    flex:1;height:7px;background:rgba(255,255,255,.28);border-radius:99px;overflow:hidden;
+  }
+  .year-progress-fill{height:100%;background:#4ade80;border-radius:99px;transition:width .35s ease;width:0%}
+  .year-progress-text{font-size:12.5px;font-weight:650;white-space:nowrap}
+
+  .tasks{
+    display:flex;flex-direction:column;gap:10px;
+    padding:16px;background:#fafbff;
+  }
+  .year-2027 .tasks{background:#fbf9ff}
+  .tasks.dragover-year{
+    background:var(--primary-light);
+    outline:2px dashed var(--primary);outline-offset:-8px;border-radius:10px;
+  }
+
+  /* ===== TASK ===== */
+  .task{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:0 1px 2px rgba(15,23,42,.03);
+    transition:box-shadow .2s,transform .2s,border-color .2s;
+    overflow:hidden;
+  }
+  .task:hover{box-shadow:0 4px 20px rgba(15,23,42,.09)}
+  .task.dragging{opacity:.4;border-style:dashed;border-color:var(--primary)}
+
+  .task[data-priority="high"]{border-left:4px solid var(--high)}
+  .task[data-priority="medium"]{border-left:4px solid var(--medium)}
+  .task[data-priority="low"]{border-left:4px solid var(--low)}
+  .task[data-priority="none"]{border-left:4px solid var(--border)}
+
+  .task-head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px}
+  .handle{
+    cursor:grab;color:#cbd5e1;flex-shrink:0;padding-top:2px;user-select:none;
+    font-size:16px;letter-spacing:-1px;line-height:1;
+  }
+  .handle:active{cursor:grabbing}
+  .handle:hover{color:var(--muted)}
+  .num{
+    flex-shrink:0;min-width:28px;height:28px;padding:0 6px;border-radius:8px;
+    background:var(--primary-light);
+    color:var(--primary);font-size:13px;font-weight:700;display:flex;align-items:center;
+    justify-content:center;margin-top:1px;transition:.2s;
+  }
+  .year-2027 .num{background:#f3f0ff;color:var(--y2027)}
+  .task-title-wrap{flex:1;min-width:0}
+  .task-title{font-size:15.5px;font-weight:650;margin:0;cursor:pointer;letter-spacing:-.01em}
+  .task-sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+  .badge{
+    font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:99px;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .b-high{color:var(--high);background:var(--high-bg)}
+  .b-medium{color:var(--medium);background:var(--medium-bg)}
+  .b-low{color:var(--low);background:var(--low-bg)}
+  .b-none{color:var(--muted);background:var(--pending-bg)}
+  .s-approved{color:var(--approved);background:var(--approved-bg)}
+  .s-rejected{color:var(--rejected);background:var(--rejected-bg)}
+  .s-pending{color:var(--pending);background:var(--pending-bg)}
+  .comment-count{color:var(--primary);background:var(--primary-light)}
+
+  .chev{
+    flex-shrink:0;background:none;border:none;cursor:pointer;padding:4px;border-radius:8px;
+    color:var(--muted);transition:transform .2s,background .15s;display:flex;margin-top:1px;
+  }
+  .chev:hover{background:#f1f5f9}
+  .task.open .chev{transform:rotate(180deg)}
+
+  .task-body{display:none;padding:0 16px 16px 56px;border-top:1px solid var(--border);margin-top:0}
+  .task.open .task-body{display:block;padding-top:14px}
+  .desc{font-size:14px;color:#334155;margin:0 0 16px;white-space:pre-line}
+
+  .ctrl-label{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--muted);margin:0 0 7px}
+  .ctrl-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .pill{
+    padding:6px 12px;border-radius:99px;border:1.5px solid var(--border);background:#fff;
+    font-size:12.5px;font-family:inherit;cursor:pointer;font-weight:550;color:var(--muted);
+    transition:.15s;display:inline-flex;align-items:center;gap:6px;
+  }
+  .pill:hover{border-color:#cbd5e1;color:var(--text)}
+  .pill.active{color:#fff}
+  .pill.active.p-high{background:var(--high);border-color:var(--high)}
+  .pill.active.p-medium{background:var(--medium);border-color:var(--medium)}
+  .pill.active.p-low{background:var(--low);border-color:var(--low)}
+  .pill.active.p-none{background:var(--pending);border-color:var(--pending)}
+  .pill.active.s-approved{background:var(--approved);border-color:var(--approved)}
+  .pill.active.s-rejected{background:var(--rejected);border-color:var(--rejected)}
+  .pill.active.s-pending{background:var(--pending);border-color:var(--pending)}
+
+  .comments{margin-top:4px}
+  .comment{
+    background:#f8fafc;border:1px solid var(--border);border-radius:10px;
+    padding:9px 12px;margin-bottom:7px;font-size:13.5px;position:relative;
+  }
+  .comment.auto{background:#f0f7ff;border-color:#dbeafe}
+  .comment.auto-reject{background:#fef2f2;border-color:#fecaca}
+  .comment.auto-pending{background:#f1f5f9;border-color:#cbd5e1}
+  .comment-meta{font-size:11.5px;color:var(--muted);margin-bottom:3px;display:flex;
+    justify-content:space-between;gap:10px;align-items:center}
+  .comment-author{font-weight:650;color:#475569}
+  .comment-position{font-style:italic;color:#94a3b8}
+  .comment-tag{
+    display:inline-block;font-size:10px;font-weight:700;letter-spacing:.03em;
+    padding:1px 6px;border-radius:4px;margin-left:6px;text-transform:uppercase;
+  }
+  .comment-tag.ok{background:#d1fae5;color:#047857}
+  .comment-tag.no{background:#fee2e2;color:#b91c1c}
+  .comment-tag.pend{background:#e2e8f0;color:#475569}
+  .comment-del{
+    background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:15px;
+    line-height:1;padding:0 2px;border-radius:4px;
+  }
+  .comment-del:hover{color:var(--rejected)}
+  .comment-text{white-space:pre-line;color:#334155}
+
+  .comment-form{display:flex;gap:8px;margin-top:9px}
+  .comment-form textarea{
+    flex:1;resize:vertical;min-height:38px;padding:8px 11px;border:1px solid var(--border);
+    border-radius:10px;font-size:13.5px;font-family:inherit;outline:none;color:var(--text);
+  }
+  .comment-form textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+
+  /* ===== FOOTER ===== */
+  .footer-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px;margin-top:24px;
+    display:flex;gap:24px;align-items:stretch;transition:.3s;
+  }
+  .footer-card.with-stamp{
+    border-color:#fecaca;
+    box-shadow:0 1px 2px rgba(15,23,42,.04),0 4px 24px rgba(179,53,44,.12);
+  }
+  .footer-main{flex:1;min-width:0}
+  .footer-stamp{
+    flex-shrink:0;display:none;align-items:center;justify-content:center;
+    padding:4px;
+  }
+  .footer-stamp .stamp{width:210px;height:210px}
+  .footer-stamp .stamp-title{font-size:17px;letter-spacing:2px}
+  .footer-stamp .stamp-name{font-size:13px}
+  .footer-stamp .stamp-position{font-size:10.5px}
+  .footer-stamp .stamp-date{font-size:11px}
+  .footer-stamp .stamp-inner{padding:18px 14px}
+  .footer-stamp .stamp-check{width:26px;height:26px;font-size:15px;margin-bottom:5px}
+  .footer-card h3{margin:0 0 4px;font-size:16px}
+  .footer-card p.sub{margin:0 0 14px;font-size:13px;color:var(--muted)}
+  .footer-card textarea{
+    width:100%;min-height:90px;padding:11px 13px;border:1px solid var(--border);
+    border-radius:10px;font-size:14px;font-family:inherit;outline:none;resize:vertical;color:var(--text);
+  }
+  .footer-card textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+  .footer-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+
+  .empty{ text-align:center;padding:40px 20px;color:var(--muted);font-size:14px; }
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:#0f172a;color:#fff;padding:11px 20px;border-radius:10px;font-size:13.5px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;transition:.3s;z-index:500;pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ===== STAMP ===== */
+  .stamp{
+    width:320px;height:320px;border-radius:50%;
+    background:radial-gradient(circle at 50% 40%, #fffaf7 0%, #fdf2ee 100%);
+    border:6px double #b3352c;color:#b3352c;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+    box-shadow:
+      inset 0 0 0 4px rgba(179,53,44,.15),
+      inset 0 0 40px rgba(179,53,44,.08),
+      0 0 0 2px rgba(179,53,44,.4);
+  }
+  .stamp::before{
+    content:'';position:absolute;inset:14px;border-radius:50%;
+    border:2px dashed rgba(179,53,44,.45);
+  }
+  .stamp::after{
+    content:'';position:absolute;inset:28px;border-radius:50%;
+    border:1px solid rgba(179,53,44,.35);
+  }
+  .stamp-inner{text-align:center;padding:30px 24px;z-index:1;width:100%}
+  .stamp-check{
+    width:34px;height:34px;margin:0 auto 8px;border-radius:50%;background:#b3352c;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;
+    box-shadow:0 4px 12px rgba(179,53,44,.35);
+  }
+  .stamp-title{
+    font-size:24px;font-weight:900;letter-spacing:3px;margin:0 0 8px;
+    text-transform:uppercase;font-family:Georgia,'Times New Roman',serif;
+  }
+  .stamp-divider{height:2px;background:#b3352c;width:55%;margin:0 auto 10px;opacity:.6}
+  .stamp-name{font-size:16px;font-weight:700;margin-bottom:4px;font-family:Georgia,'Times New Roman',serif}
+  .stamp-position{font-size:12.5px;font-style:italic;margin-bottom:8px;opacity:.9}
+  .stamp-date{
+    font-size:13px;letter-spacing:.5px;
+    font-weight:700;color:#8a2a22;
+    font-family:'Courier New',monospace;
+  }
+
+  .stamp-overlay{
+    position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;
+  }
+  .stamp-overlay.show{display:flex}
+  .stamp-backdrop{
+    position:absolute;inset:0;background:rgba(15,23,42,.55);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    animation:fadeIn .35s ease;
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .stamp-wrap{position:relative;animation:stampIn .9s cubic-bezier(.2,.9,.3,1.5) forwards;
+    filter:drop-shadow(0 30px 60px rgba(192,57,43,.35))}
+  @keyframes stampIn{
+    0%   { opacity:0; transform:scale(2.6) rotate(-38deg); }
+    45%  { opacity:1; transform:scale(.88) rotate(-6deg); }
+    60%  { transform:scale(1.08) rotate(-13deg); }
+    75%  { transform:scale(.97) rotate(-9deg); }
+    88%  { transform:scale(1.02) rotate(-11deg); }
+    100% { opacity:1; transform:scale(1) rotate(-10deg); }
+  }
+  .stamp-close{
+    position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;
+    background:#fff;border:1px solid var(--border);color:#334155;font-size:20px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 20px rgba(15,23,42,.15);transition:.15s;font-family:inherit;line-height:1;
+  }
+  .stamp-close:hover{background:#f1f5f9;transform:rotate(90deg)}
+  .stamp-hint{
+    position:absolute;bottom:-44px;left:50%;transform:translateX(-50%);
+    color:#fff;font-size:13px;opacity:.85;white-space:nowrap;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:450;display:none;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.show{display:flex}
+  .modal-backdrop{
+    position:absolute;inset:0;background:rgba(15,23,42,.55);
+    backdrop-filter:blur(6px);animation:fadeIn .25s ease;
+  }
+  .modal{
+    position:relative;background:#fff;border-radius:16px;padding:24px;
+    width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.35);
+    animation:modalIn .3s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .modal h3{margin:0 0 6px;font-size:17px}
+  .modal .modal-task{font-size:13.5px;color:var(--muted);margin:0 0 16px;padding:8px 12px;
+    background:#f8fafc;border-radius:8px;border-left:3px solid var(--rejected)}
+  .modal label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+  .modal label .req{color:var(--rejected)}
+  .modal textarea{
+    width:100%;min-height:100px;padding:11px 13px;border:1.5px solid var(--border);
+    border-radius:10px;font-size:14px;font-family:inherit;outline:none;resize:vertical;color:var(--text);
+  }
+  .modal textarea:focus{border-color:var(--rejected);box-shadow:0 0 0 3px var(--high-bg)}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+
+  /* ===== PRINT VIEW (hidden on screen) ===== */
+  .print-view{display:none}
+
+  /* ===== PRINT MEDIA ===== */
+  @media print{
+    @page{
+      size: A4 portrait;
+      margin: 10mm 10mm;
+    }
+    html, body{
+      margin:0 !important;
+      padding:0 !important;
+      background:#fff !important;
+      font-size:11pt;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+    .header, .toolbar, .container, .stamp-overlay, .modal-overlay, .toast{
+      display:none !important;
+      margin:0 !important;
+      padding:0 !important;
+      height:0 !important;
+      overflow:hidden !important;
+    }
+    .print-view{
+      display:block !important;
+      padding:0 !important;
+      margin:0 !important;
+      color:#000;
+      max-width:100%;
+    }
+    .print-view > *:first-child{
+      margin-top:0 !important;
+      padding-top:0 !important;
+      break-before:avoid !important;
+      page-break-before:avoid !important;
+    }
+    .print-header{
+      border-bottom:2.5px double #000;
+      padding-bottom:8px;
+      margin-bottom:14px;
+      margin-top:0 !important;
+      padding-top:0 !important;
+      break-before:avoid !important;
+      page-break-before:avoid !important;
+      break-inside:avoid;
+    }
+    .print-header h1{font-size:16pt;margin:0 0 6px;font-weight:800;letter-spacing:normal}
+    .print-header .print-status{
+      display:inline-block;padding:2px 10px;border-radius:6px;font-size:10pt;font-weight:700;
+      margin-bottom:6px;border:1.5px solid #000;
+    }
+    .print-header .print-status.approved{background:#d1fae5;border-color:#059669;color:#065f46}
+    .print-header .print-status.pending{background:#f1f5f9;border-color:#64748b;color:#334155}
+    .print-meta{font-size:9.5pt;line-height:1.5}
+    .print-meta b{font-weight:700}
+
+    .print-year{margin-bottom:18px}
+    .print-year h2{
+      font-size:13pt;margin:0 0 5px;padding-bottom:4px;
+      border-bottom:2px solid #000;font-weight:800;
+      break-after:avoid;
+    }
+    .print-year-progress{font-size:9.5pt;color:#333;margin-bottom:8px;font-style:italic}
+    .print-year-progress b{font-style:normal}
+
+    .print-table{width:100%;border-collapse:collapse;font-size:9.5pt;margin-top:4px}
+    .print-table th,.print-table td{
+      border:1px solid #666;padding:5px 7px;vertical-align:top;text-align:left;
+    }
+    .print-table th{
+      background:#eee;font-weight:800;font-size:9pt;
+      text-transform:uppercase;letter-spacing:.03em;
+    }
+    .print-table tr{page-break-inside:avoid;break-inside:avoid}
+    .print-table thead{display:table-header-group}
+    .print-table .c-num{width:34px;text-align:center;font-weight:800;font-size:10.5pt}
+    .print-table .c-prio{width:76px;white-space:nowrap}
+    .print-table .c-stat{width:104px;white-space:nowrap}
+    .print-table .c-desc{min-width:180px}
+    .print-table .c-com{width:160px}
+    .p-desc{font-size:8.5pt;color:#333;margin-top:3px;line-height:1.35}
+    .pc{
+      font-size:8pt;margin-bottom:4px;padding:3px 5px;
+      border-left:2px solid #999;background:#f7f7f7;line-height:1.35;
+    }
+    .pc:last-child{margin-bottom:0}
+    .pc b{font-weight:700}
+    .pc .pc-meta{color:#555;font-style:italic}
+    .pc.rej{border-left-color:#b91c1c;background:#fef2f2}
+    .pc.ok{border-left-color:#047857;background:#f0fdf4}
+    .pc.pend{border-left-color:#64748b;background:#f1f5f9}
+    .no-com{color:#999;font-style:italic;font-size:8.5pt}
+
+    .stat-ok{color:#047857;font-weight:700}
+    .stat-no{color:#b91c1c;font-weight:700}
+    .stat-wait{color:#475569}
+
+    .print-summary{
+      margin-top:22px;page-break-inside:avoid;break-inside:avoid;
+      border:2.5px solid #000;padding:12px 16px;background:#fafafa;
+    }
+    .print-summary h2{margin:0 0 10px;font-size:12pt;font-weight:800}
+    .print-summary .sum-grid{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;
+    }
+    .print-summary .sum-item{
+      border:1px solid #999;padding:6px 9px;border-radius:6px;background:#fff;
+    }
+    .print-summary .sum-item .lbl{font-size:8pt;color:#555;text-transform:uppercase;letter-spacing:.03em}
+    .print-summary .sum-item .val{font-size:13pt;font-weight:800;line-height:1.1;margin-top:2px}
+    .print-summary p{margin:5px 0;font-size:9.5pt;line-height:1.45}
+    .print-summary .overall{
+      font-style:italic;background:#fff;padding:7px 11px;
+      border-left:3px solid #333;margin-top:8px;
+    }
+    .print-summary .final-status{
+      margin-top:10px;padding-top:8px;border-top:1.5px solid #333;
+      font-size:10pt;
+    }
+    .print-summary .final-status b{font-weight:800}
+
+    .print-stamp-wrap{
+      margin-top:26px;display:flex;justify-content:flex-end;
+      page-break-inside:avoid;break-inside:avoid;padding-right:20px;
+    }
+    .print-stamp-wrap .stamp{
+      width:200px;height:200px;
+      background:radial-gradient(circle at 50% 40%, #fffaf7 0%, #fdf2ee 100%) !important;
+    }
+    .print-stamp-wrap .stamp-inner{padding:18px 14px}
+    .print-stamp-wrap .stamp-check{width:26px;height:26px;font-size:15px;margin-bottom:5px}
+    .print-stamp-wrap .stamp-title{font-size:16px;letter-spacing:1.5px;margin-bottom:6px}
+    .print-stamp-wrap .stamp-name{font-size:12px;margin-bottom:3px}
+    .print-stamp-wrap .stamp-position{font-size:9.5px;margin-bottom:6px}
+    .print-stamp-wrap .stamp-date{
+      font-size:11px;font-weight:700;letter-spacing:.3px;
+      color:#8a2a22;opacity:1;
+    }
+    .print-stamp-wrap .stamp::before{inset:9px;border-width:1.5px}
+    .print-stamp-wrap .stamp::after{inset:18px}
+  }
+
+  @media (max-width:760px){
+    .footer-card{flex-direction:column;align-items:center}
+    .footer-stamp .stamp{width:180px;height:180px}
+  }
+
+  @media (max-width:640px){
+    .task-body{padding-left:16px}
+    .header{padding:20px 16px 16px}
+    .header h1{font-size:20px}
+    .container,.toolbar{padding-left:14px;padding-right:14px}
+    .toolbar-inner{gap:8px}
+    .search{min-width:100%}
+    .year-head{flex-wrap:wrap}
+    .year-progress{width:100%}
+    .stamp{width:260px;height:260px}
+    .stamp-title{font-size:20px;letter-spacing:2px}
+    .stamp-name{font-size:14px}
+    .author-box{width:100%}
+    .author-box input#author,.author-box input#position{flex:1;width:auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="header" id="headerEl">
+  <div class="header-inner">
+    <h1 id="pageTitle">План задач 2026 – 2027 — согласование <span class="check">✓</span></h1>
+    <p>Перетаскивайте задачи, задавайте приоритеты, оставляйте комментарии и отмечайте согласование</p>
+    <div class="header-row">
+      <div class="author-box">
+        <div class="field">
+          <label for="author">ФИО:</label>
+          <input id="author" type="text" placeholder="Иванов И.И.">
+        </div>
+        <div class="field">
+          <label for="position">Должность:</label>
+          <input id="position" type="text" placeholder="Председатель комиссии">
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">0 / 0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+      </svg>
+      <input id="search" type="text" placeholder="Поиск по названию или описанию…">
+    </div>
+    <select id="filterStatus">
+      <option value="">Все статусы</option>
+      <option value="pending">На согласовании</option>
+      <option value="approved">Согласовано</option>
+      <option value="rejected">Отклонено</option>
+    </select>
+    <select id="filterPriority">
+      <option value="">Все приоритеты</option>
+      <option value="high">Высокий</option>
+      <option value="medium">Средний</option>
+      <option value="low">Низкий</option>
+      <option value="none">Не задан</option>
+    </select>
+    <select id="filterYear">
+      <option value="">Все годы</option>
+      <option value="2026">Только 2026</option>
+      <option value="2027">Только 2027</option>
+    </select>
+    <button class="btn" id="expandAll">Развернуть</button>
+    <button class="btn" id="collapseAll">Свернуть</button>
+    <button class="btn" id="exportBtn">Экспорт JSON</button>
+    <button class="btn" id="printBtn">Печать / PDF</button>
+    <button class="btn btn-ghost-danger" id="resetBtn">Сбросить</button>
+  </div>
+</div>
+
+<div class="container">
+  <p class="hint" id="hint">💡 Тяните задачу за ручку <b>⋮⋮</b> слева. Перетаскивание между годами меняет год задачи, а номера пересчитываются автоматически.</p>
+  <div id="years"></div>
+
+  <div class="footer-card" id="footerCard">
+    <div class="footer-main">
+      <h3>Общий комментарий / решение</h3>
+      <p class="sub">Итоговое заключение по всему списку задач</p>
+      <textarea id="overallComment" placeholder="Например: список согласован с замечаниями к п. 10 и п. 16…"></textarea>
+      <div class="footer-actions">
+        <button class="btn btn-primary" id="approveAll">✓ Согласовать весь список</button>
+        <button class="btn" id="resetStatuses">Сбросить статусы</button>
+      </div>
+    </div>
+    <div class="footer-stamp" id="footerStamp"></div>
+  </div>
+</div>
+
+<div class="print-view" id="printView"></div>
+
+<div class="stamp-overlay" id="stampOverlay">
+  <div class="stamp-backdrop" data-action="close-stamp"></div>
+  <div class="stamp-wrap">
+    <button class="stamp-close" data-action="close-stamp" title="Закрыть">×</button>
+    <div id="overlayStampBody"></div>
+    <div class="stamp-hint">Нажмите в любом месте, чтобы закрыть</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal-backdrop" data-action="close-reject"></div>
+  <div class="modal">
+    <h3>Отклонить задачу</h3>
+    <p class="modal-task" id="rejectTaskTitle"></p>
+    <label for="rejectReason">Причина отклонения <span class="req">*</span></label>
+    <textarea id="rejectReason" placeholder="Опишите причину отклонения — она будет добавлена в комментарий…"></textarea>
+    <div class="modal-actions">
+      <button class="btn" data-action="close-reject">Отмена</button>
+      <button class="btn btn-danger" id="confirmReject" disabled>Отклонить</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ДАННЫЕ ЗАДАЧ
+   ============================================================ */
+const DEFAULT_TASKS = [
+  {id:1, year:2026, title:'Выездные мероприятия',
+   desc:'Фиксация результатов выездных проверок в системе: заполнение оценочного листа и прикрепление подтверждающих материалов (актов, фото, документов).'},
+  {id:2, year:2026, title:'Повторная оценка',
+   desc:'При выявлении замечаний система автоматически формирует оценочный лист для повторной оценки, включает выявленные замечания и направляет его на повторное согласование.'},
+  {id:3, year:2026, title:'Верификация подписантов',
+   desc:'Проверка и подтверждение полномочий лиц, которые подписывают документы по многоквартирному дому (МКД). Результат проверки фиксируется в системе.'},
+  {id:4, year:2026, title:'Модуль «Административная ответственность (работа с нарушениями)»',
+   desc:'Модуль для работы с нарушениями и административной ответственностью. Ведёт единый реестр нарушений по данным Ростехнадзора (РТН) и Государственной жилищной инспекции (ГЖИ), автоматически отслеживает просрочку устранения замечаний. Доступ к реестру предоставляется председателю комиссии.'},
+  {id:5, year:2026, title:'Выгрузка каталога с определённой структурой (ТСО, ОМСУ, ПТЭ, Бесхоз)',
+   desc:'Формирование выгрузки каталога/архива по заданной структуре: теплоснабжающие организации (ТСО), органы местного самоуправления (ОМСУ), потребители тепловой энергии (ПТЭ), бесхозные объекты. В выгрузку включаются оценочные листы и загруженная документация.'},
+  {id:6, year:2026, title:'Отображение доп. данных по объектам, ч.1',
+   desc:'В разделе «Инфраструктура» предоставить возможность создавать и редактировать оборудование (основное и вспомогательное), здания и сооружения. Данные должны быть связаны с объектами системы.'},
+  {id:7, year:2026, title:'Система push-уведомлений, ч.1',
+   desc:'Push-уведомления о значимых событиях подготовки к отопительно-зимнему периоду (ОЗП) для ТСО, ПТЭ, ОМСУ и оцениваемых организаций.\nСобытия:\n1) сформирован список объектов оценки;\n2) устранение замечаний;\n3) поступление акта оценки готовности;\n4) поступление паспорта готовности;\n5) назначена повторная оценка;\n6) нарушен срок устранения замечаний;\n7) оценка завершена.'},
+  {id:8, year:2026, title:'Реализовать форму программы проведения оценки ОМСУ',
+   desc:'Реализовать в системе электронную форму программы проведения оценки ОМСУ на основе утверждённого шаблона (постановления и программы оценки). Форма должна задавать единые правила, показатели и порядок оценки эффективности работы ОМСУ.'},
+  {id:9, year:2026, title:'Механизм уведомлений о наступлении срока проведения оценки',
+   desc:'Добавить механизм уведомлений, который заранее информирует всех участников оценки о наступлении срока её проведения.'},
+  {id:10, year:2026, title:'Справки в электронном виде, ч.1',
+   desc:'Перевести 32 утверждённые формы справок в электронный вид. Создать конструктор и реестр шаблонов, позволяющие формировать, редактировать, проверять и выпускать справки средствами информационной системы.'},
+  {id:11, year:2027, title:'Логирование, часть 1',
+   desc:'Сохранять историю событий и действий пользователей по подготовке к ОЗП. В части 1 логируются события по конструктору и актам.'},
+  {id:12, year:2027, title:'Логирование, часть 2',
+   desc:'Расширить логирование: добавить сохранение событий по паспортам готовности и оценочным листам.'},
+  {id:13, year:2027, title:'Система push-уведомлений, ч.2',
+   desc:'Расширить push-уведомления событиями из других модулей, не относящихся к ОЗП: создание, редактирование и удаление объектов/организаций; создание и редактирование аварийных заявок и плановых отключений.'},
+  {id:14, year:2027, title:'Справки в электронном виде, ч.2',
+   desc:'Добавить версионность шаблонов справок. Обеспечить формирование цифровой справки в PDF и её подписание электронной цифровой подписью (ЭЦП).'},
+  {id:15, year:2027, title:'Личный кабинет УК и СО, часть 2',
+   desc:'В личном кабинете управляющих компаний (УК) и социальных организаций (СО) предоставить участникам подготовки к ОЗП возможность самостоятельно загружать документы, направлять оценочные листы на согласование, отвечать на комментарии и подписывать акты.'},
+  {id:16, year:2027, title:'Задачи от РТН',
+   desc:'16.1. Добавить в акт (PDF) гиперссылки по всем типам оценочных листов для быстрого перехода к нужному оценочному листу.\n16.2. Обеспечить отображение ЭЦП всех членов комиссии на печатной форме акта.'},
+  {id:17, year:2027, title:'Эксплуатационная документация',
+   desc:'Предоставить пользователям возможность добавлять и удалять эксплуатационную документацию к объектам системы.'},
+  {id:18, year:2027, title:'Оперативные журналы',
+   desc:'Предоставить пользователям возможность заполнять электронные оперативные журналы по объектам системы, в том числе по теплоисточникам.'},
+  {id:19, year:2027, title:'Механизм нотификаций (отправка во внешние источники)',
+   desc:'Реализовать механизм нотификаций с отправкой во внешние источники: информировать пользователей по электронной почте о событиях, произошедших в системе.'}
+];
+
+const YEARS = [
+  {year:2026, title:'Основной объём работ', sub:'10 задач · базовые модули и процессы ОЗП'},
+  {year:2027, title:'Развитие и расширение',  sub:'9 задач · логирование, уведомления, личный кабинет'}
+];
+
+const PRIORITIES = [
+  {key:'high',   label:'Высокий'},
+  {key:'medium', label:'Средний'},
+  {key:'low',    label:'Низкий'},
+  {key:'none',   label:'Не задан'}
+];
+const STATUSES = [
+  {key:'pending',  label:'На согласовании'},
+  {key:'approved', label:'Согласовано'},
+  {key:'rejected', label:'Отклонено'}
+];
+
+const STORAGE_KEY = 'ozp_tasks_approval_v5';
+
+/* ============================================================
+   СОСТОЯНИЕ
+   ============================================================ */
+let state = loadState();
+let collapsed = new Set();
+let dragId = null;
+let pendingRejectTaskId = null;
+
+let lastAllApprovedState = state.tasks.length > 0
+  && state.tasks.every(t => t.status === 'approved');
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed.tasks) && parsed.tasks.length){
+        parsed.tasks = parsed.tasks.map(t => {
+          const def = DEFAULT_TASKS.find(d => d.id === t.id);
+          if(!def) return t;
+          const status = (t.status === 'revision') ? 'pending' : (t.status || 'pending');
+          return {...def, ...t, year: t.year || def.year, status};
+        });
+        return parsed;
+      }
+    }
+  }catch(e){ console.warn('Не удалось загрузить состояние', e); }
+  return {
+    tasks: DEFAULT_TASKS.map(t => ({
+      ...t, priority:'none', status:'pending', comments:[]
+    })),
+    author:'',
+    position:'',
+    overall:'',
+    approvedAt: null
+  };
+}
+
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ console.warn('Не удалось сохранить', e); }
+}
+
+/* ============================================================
+   УТИЛИТЫ
+   ============================================================ */
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  ));
+}
+function fmtDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  const pad = n => String(n).padStart(2,'0');
+  return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2200);
+}
+const prioLabel = k => (PRIORITIES.find(p=>p.key===k)||{}).label || '';
+const statLabel = k => (STATUSES.find(s=>s.key===k)||{}).label || '';
+
+function ensureIdentity(){
+  if(!state.author || !state.author.trim()){
+    toast('Сначала укажите ФИО в шапке страницы');
+    document.getElementById('author').focus();
+    return false;
+  }
+  return true;
+}
+
+/* ============================================================
+   STAMP MARKUP
+   ============================================================ */
+function stampMarkup(){
+  const date = state.approvedAt || new Date().toISOString();
+  return `
+    <div class="stamp">
+      <div class="stamp-inner">
+        <div class="stamp-check">✓</div>
+        <div class="stamp-title">Согласовано</div>
+        <div class="stamp-divider"></div>
+        <div class="stamp-name">${esc(state.author || '—')}</div>
+        <div class="stamp-position">${esc(state.position || 'Должность не указана')}</div>
+        <div class="stamp-date">${fmtDate(date)}</div>
+      </div>
+    </div>`;
+}
+
+/* ============================================================
+   ФИЛЬТРЫ И РЕНДЕР
+   ============================================================ */
+const yearsEl = document.getElementById('years');
+
+function getFilters(){
+  return {
+    q:  document.getElementById('search').value.trim().toLowerCase(),
+    fs: document.getElementById('filterStatus').value,
+    fp: document.getElementById('filterPriority').value,
+    fy: document.getElementById('filterYear').value
+  };
+}
+function matchFilters(t, f){
+  if(f.fs && t.status !== f.fs) return false;
+  if(f.fp && t.priority !== f.fp) return false;
+  if(f.q && !(t.title.toLowerCase().includes(f.q) || t.desc.toLowerCase().includes(f.q))) return false;
+  return true;
+}
+
+function render(){
+  const f = getFilters();
+  const filtersActive = !!(f.q || f.fs || f.fp || f.fy);
+  document.getElementById('hint').style.display = filtersActive ? 'none' : 'flex';
+
+  const numMap = new Map();
+  state.tasks.forEach((t, i) => numMap.set(t.id, i + 1));
+
+  let html = '';
+  YEARS.forEach(y => {
+    if(f.fy && String(y.year) !== f.fy) return;
+
+    const tasks = state.tasks.filter(t => t.year === y.year && matchFilters(t, f));
+    const totalYear = state.tasks.filter(t => t.year === y.year).length;
+    const approvedYear = state.tasks.filter(t => t.year === y.year && t.status === 'approved').length;
+    const pct = totalYear ? Math.round(approvedYear / totalYear * 100) : 0;
+
+    const tasksHtml = tasks.length
+      ? tasks.map(t => renderTask(t, numMap.get(t.id))).join('')
+      : '<div class="empty">По этому году нет задач под заданные фильтры</div>';
+
+    html += `
+    <section class="year year-${y.year}" data-year="${y.year}">
+      <div class="year-head">
+        <div class="year-badge">${y.year}</div>
+        <div class="year-info">
+          <p class="year-title">${esc(y.title)}</p>
+          <p class="year-sub">${esc(y.sub)}</p>
+        </div>
+        <div class="year-progress">
+          <div class="year-progress-bar">
+            <div class="year-progress-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="year-progress-text">${approvedYear} / ${totalYear}</div>
+        </div>
+      </div>
+      <div class="tasks" data-year="${y.year}">${tasksHtml}</div>
+    </section>`;
+  });
+
+  yearsEl.innerHTML = html;
+  updateProgress();
+  renderInlineStamp();
+  renderPrintView();
+  saveState();
+}
+
+function renderTask(t, displayNum){
+  const isOpen = !collapsed.has(t.id);
+  const prio = t.priority || 'none';
+  const stat = t.status || 'pending';
+
+  const commentsHtml = (t.comments || []).map((c, i) => {
+    const isAuto = !!c.auto;
+    let tagHtml = '';
+    let autoCls = '';
+    if(c.tag === 'reject'){
+      tagHtml = '<span class="comment-tag no">Отклонено</span>';
+      autoCls = isAuto ? 'auto-reject' : '';
+    } else if(c.tag === 'approve'){
+      tagHtml = '<span class="comment-tag ok">Согласовано</span>';
+      autoCls = isAuto ? 'auto' : '';
+    } else if(c.tag === 'pending'){
+      tagHtml = '<span class="comment-tag pend">На согласовании</span>';
+      autoCls = isAuto ? 'auto-pending' : '';
+    }
+    return `
+    <div class="comment ${autoCls}">
+      <div class="comment-meta">
+        <span>
+          <span class="comment-author">${esc(c.author || 'Аноним')}</span>
+          ${c.position ? `<span class="comment-position">· ${esc(c.position)}</span>` : ''}
+          · ${fmtDate(c.date)}
+          ${tagHtml}
+        </span>
+        <button class="comment-del" title="Удалить" data-action="del-comment" data-task="${t.id}" data-index="${i}">×</button>
+      </div>
+      <div class="comment-text">${esc(c.text)}</div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="task ${isOpen?'open':''}" data-id="${t.id}" data-priority="${prio}">
+    <div class="task-head">
+      <div class="handle" draggable="true" title="Перетащите, чтобы изменить порядок или год">⋮⋮</div>
+      <div class="num">${displayNum}</div>
+      <div class="task-title-wrap">
+        <h3 class="task-title" data-action="toggle" data-task="${t.id}">${esc(t.title)}</h3>
+        <div class="badges">
+          <span class="badge b-${prio}"><span class="dot"></span>${prioLabel(prio)}</span>
+          <span class="badge s-${stat}"><span class="dot"></span>${statLabel(stat)}</span>
+          ${(t.comments && t.comments.length) ? `<span class="badge comment-count">💬 ${t.comments.length}</span>` : ''}
+        </div>
+      </div>
+      <button class="chev" data-action="toggle" data-task="${t.id}" title="Развернуть/свернуть">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="task-body">
+      <div class="desc">${esc(t.desc)}</div>
+
+      <div class="ctrl-label">Приоритет</div>
+      <div class="ctrl-row">
+        ${PRIORITIES.map(p => `
+          <button class="pill p-${p.key} ${prio===p.key?'active':''}"
+                  data-action="priority" data-task="${t.id}" data-value="${p.key}">${p.label}</button>
+        `).join('')}
+      </div>
+
+      <div class="ctrl-label">Статус согласования</div>
+      <div class="ctrl-row">
+        ${STATUSES.map(s => `
+          <button class="pill s-${s.key} ${stat===s.key?'active':''}"
+                  data-action="status" data-task="${t.id}" data-value="${s.key}">${s.label}</button>
+        `).join('')}
+      </div>
+
+      <div class="ctrl-label">Год реализации</div>
+      <div class="ctrl-row">
+        ${YEARS.map(y => `
+          <button class="pill ${t.year===y.year?'active':''}"
+                  style="${t.year===y.year?'background:'+(y.year===2026?'#3b5bdb':'#7048e8')+';border-color:'+(y.year===2026?'#3b5bdb':'#7048e8')+';color:#fff':''}"
+                  data-action="year" data-task="${t.id}" data-value="${y.year}">${y.year}</button>
+        `).join('')}
+      </div>
+
+      <div class="ctrl-label">Комментарии${t.comments && t.comments.length ? ` (${t.comments.length})` : ''}</div>
+      <div class="comments">
+        ${commentsHtml || '<div style="font-size:13px;color:#94a3b8;margin-bottom:6px">Комментариев пока нет</div>'}
+        <div class="comment-form">
+          <textarea placeholder="Ваш комментарий к задаче…" data-comment-input="${t.id}"></textarea>
+          <button class="btn btn-primary" data-action="add-comment" data-task="${t.id}">Добавить</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateProgress(){
+  const total = state.tasks.length;
+  const approved = state.tasks.filter(t => t.status === 'approved').length;
+  const pct = total ? Math.round(approved / total * 100) : 0;
+  const allApproved = total > 0 && approved === total;
+
+  if(allApproved && !state.approvedAt) state.approvedAt = new Date().toISOString();
+  if(!allApproved) state.approvedAt = null;
+
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${approved} / ${total} согласовано (${pct}%)`;
+
+  const pageTitle = document.getElementById('pageTitle');
+  const headerEl = document.getElementById('headerEl');
+
+  if(allApproved){
+    pageTitle.childNodes[0].nodeValue = 'План задач 2026 – 2027 — Согласовано ';
+    pageTitle.classList.add('approved');
+    headerEl.classList.add('all-approved');
+    document.title = '✓ План задач 2026 – 2027 — Согласовано';
+  } else {
+    pageTitle.childNodes[0].nodeValue = 'План задач 2026 – 2027 — согласование ';
+    pageTitle.classList.remove('approved');
+    headerEl.classList.remove('all-approved');
+    document.title = 'План задач 2026 – 2027 — согласование';
+  }
+
+  if(allApproved && !lastAllApprovedState && state.author){
+    setTimeout(showStamp, 250);
+  }
+  lastAllApprovedState = allApproved;
+}
+
+function renderInlineStamp(){
+  const wrap = document.getElementById('footerStamp');
+  const card = document.getElementById('footerCard');
+  const allApproved = state.tasks.length > 0 && state.tasks.every(t => t.status === 'approved');
+  if(allApproved && state.author){
+    wrap.innerHTML = stampMarkup();
+    wrap.style.display = 'flex';
+    card.classList.add('with-stamp');
+  } else {
+    wrap.innerHTML = '';
+    wrap.style.display = 'none';
+    card.classList.remove('with-stamp');
+  }
+}
+
+/* ============================================================
+   PRINT VIEW — структурированный список
+   ============================================================ */
+function renderPrintView(){
+  const total = state.tasks.length;
+  const approvedCount = state.tasks.filter(t=>t.status==='approved').length;
+  const rejectedCount = state.tasks.filter(t=>t.status==='rejected').length;
+  const pendingCount  = state.tasks.filter(t=>t.status==='pending').length;
+  const allApproved = total > 0 && approvedCount === total;
+  const now = new Date().toISOString();
+
+  let html = `
+  <div class="print-header">
+    <h1>План задач 2026 – 2027</h1>
+    <div class="print-status ${allApproved ? 'approved' : 'pending'}">
+      ${allApproved ? '✓ Согласовано' : 'На согласовании'}
+    </div>
+    <div class="print-meta">
+      ${state.author ? `<div><b>ФИО:</b> ${esc(state.author)}</div>` : ''}
+      ${state.position ? `<div><b>Должность:</b> ${esc(state.position)}</div>` : ''}
+      <div><b>Дата:</b> ${fmtDate(now)}</div>
+    </div>
+  </div>`;
+
+  YEARS.forEach(y => {
+    const yearTasks = state.tasks.filter(t => t.year === y.year);
+    const yearApproved = yearTasks.filter(t => t.status === 'approved').length;
+
+    html += `
+    <section class="print-year">
+      <h2>${y.year} год — ${esc(y.title)}</h2>
+      <div class="print-year-progress">
+        Согласовано: <b>${yearApproved}</b> из <b>${yearTasks.length}</b>
+        ${yearApproved === yearTasks.length ? ' · <b>год полностью согласован</b>' : ''}
+      </div>
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th class="c-num">№</th>
+            <th class="c-desc">Задача и описание</th>
+            <th class="c-prio">Приоритет</th>
+            <th class="c-stat">Статус</th>
+            <th class="c-com">Комментарии</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    yearTasks.forEach(t => {
+      const num = state.tasks.indexOf(t) + 1;
+      const stat = t.status || 'pending';
+      const statClass = stat === 'approved' ? 'stat-ok'
+                      : stat === 'rejected' ? 'stat-no'
+                      : 'stat-wait';
+      const comments = (t.comments || []);
+      const commentsHtml = comments.length
+        ? comments.map(c => {
+            let cls = '';
+            if(c.tag === 'reject')       cls = 'rej';
+            else if(c.tag === 'approve') cls = 'ok';
+            else if(c.tag === 'pending') cls = 'pend';
+            return `<div class="pc ${cls}">
+              <b>${esc(c.author || 'Аноним')}</b>${c.position ? ', ' + esc(c.position) : ''}
+              <span class="pc-meta"> · ${fmtDate(c.date)}</span><br>
+              ${esc(c.text)}
+            </div>`;
+          }).join('')
+        : '<span class="no-com">—</span>';
+
+      html += `<tr>
+        <td class="c-num">${num}</td>
+        <td class="c-desc">
+          <b>${esc(t.title)}</b>
+          <div class="p-desc">${esc(t.desc)}</div>
+        </td>
+        <td class="c-prio">${prioLabel(t.priority)}</td>
+        <td class="c-stat ${statClass}">${statLabel(stat)}</td>
+        <td class="c-com">${commentsHtml}</td>
+      </tr>`;
+    });
+
+    html += `</tbody></table></section>`;
+  });
+
+  html += `
+  <section class="print-summary">
+    <h2>Итог по всему списку</h2>
+    <div class="sum-grid">
+      <div class="sum-item"><div class="lbl">Всего задач</div><div class="val">${total}</div></div>
+      <div class="sum-item"><div class="lbl">Согласовано</div><div class="val stat-ok">${approvedCount}</div></div>
+      <div class="sum-item"><div class="lbl">Отклонено</div><div class="val stat-no">${rejectedCount}</div></div>
+      <div class="sum-item"><div class="lbl">На согласовании</div><div class="val stat-wait">${pendingCount}</div></div>
+    </div>
+    ${state.overall ? `<p><b>Общий комментарий:</b></p><div class="overall">${esc(state.overall)}</div>` : ''}
+    <div class="final-status">
+      <b>Итоговый статус:</b>
+      ${allApproved ? 'весь список задач согласован.' :
+        `согласовано ${approvedCount} из ${total}.`}
+    </div>
+  </section>`;
+
+  if(allApproved && state.author){
+    html += `<div class="print-stamp-wrap">${stampMarkup()}</div>`;
+  }
+
+  document.getElementById('printView').innerHTML = html;
+}
+
+/* ============================================================
+   МОДАЛКА ОТКЛОНЕНИЯ
+   ============================================================ */
+const rejectModal = document.getElementById('rejectModal');
+const rejectReason = document.getElementById('rejectReason');
+const confirmReject = document.getElementById('confirmReject');
+
+function openRejectModal(taskId){
+  pendingRejectTaskId = taskId;
+  const t = state.tasks.find(x => x.id === taskId);
+  document.getElementById('rejectTaskTitle').textContent = t ? t.title : '';
+  rejectReason.value = '';
+  confirmReject.disabled = true;
+  rejectModal.classList.add('show');
+  setTimeout(()=>rejectReason.focus(), 50);
+}
+function closeRejectModal(){
+  rejectModal.classList.remove('show');
+  pendingRejectTaskId = null;
+  rejectReason.value = '';
+  confirmReject.disabled = true;
+}
+rejectReason.addEventListener('input', () => {
+  confirmReject.disabled = !rejectReason.value.trim();
+});
+confirmReject.addEventListener('click', () => {
+  const reason = rejectReason.value.trim();
+  if(!reason) return;
+  const t = state.tasks.find(x => x.id === pendingRejectTaskId);
+  if(!t) { closeRejectModal(); return; }
+
+  t.status = 'rejected';
+  t.comments = t.comments || [];
+  t.comments.push({
+    author:   state.author   || 'Аноним',
+    position: state.position || '',
+    date:     new Date().toISOString(),
+    text:     `Отклонено. Причина: ${reason}`,
+    auto:     true,
+    tag:      'reject'
+  });
+  saveState(); render();
+  toast('Задача отклонена');
+  closeRejectModal();
+});
+
+/* ============================================================
+   КЛИКИ
+   ============================================================ */
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if(!btn) return;
+  const action = btn.dataset.action;
+
+  if(action === 'close-stamp'){ hideStamp(); return; }
+  if(action === 'close-reject'){ closeRejectModal(); return; }
+
+  const id = Number(btn.dataset.task);
+  const task = state.tasks.find(t => t.id === id);
+
+  if(action === 'toggle'){
+    if(collapsed.has(id)) collapsed.delete(id); else collapsed.add(id);
+    render();
+    return;
+  }
+  if(!task) return;
+
+  if(action === 'priority'){ task.priority = btn.dataset.value; saveState(); render(); return; }
+
+  if(action === 'status'){
+    const newStatus = btn.dataset.value;
+    if(!ensureIdentity()) return;
+
+    if(newStatus === 'approved'){
+      task.status = 'approved';
+      task.comments = task.comments || [];
+      task.comments.push({
+        author:   state.author,
+        position: state.position || '',
+        date:     new Date().toISOString(),
+        text:     'Задача согласована.',
+        auto:     true,
+        tag:      'approve'
+      });
+      saveState(); render();
+      toast(`«${task.title}» — Согласовано`);
+    } else if(newStatus === 'rejected'){
+      openRejectModal(task.id);
+    } else if(newStatus === 'pending'){
+      task.status = 'pending';
+      task.comments = task.comments || [];
+      task.comments.push({
+        author:   state.author,
+        position: state.position || '',
+        date:     new Date().toISOString(),
+        text:     'Задача возвращена на согласование.',
+        auto:     true,
+        tag:      'pending'
+      });
+      saveState(); render();
+      toast(`«${task.title}» — На согласовании`);
+    }
+    return;
+  }
+
+  if(action === 'year'){
+    task.year = Number(btn.dataset.value);
+    saveState(); render();
+    toast(`«${task.title}» → ${task.year}`);
+    return;
+  }
+
+  if(action === 'add-comment'){
+    if(!ensureIdentity()) return;
+    const ta = document.querySelector(`[data-comment-input="${id}"]`);
+    const text = ta ? ta.value.trim() : '';
+    if(!text){ ta && ta.focus(); return; }
+    task.comments = task.comments || [];
+    task.comments.push({
+      author:   state.author,
+      position: state.position || '',
+      date:     new Date().toISOString(),
+      text
+    });
+    saveState(); render();
+    toast('Комментарий добавлен');
+    return;
+  }
+
+  if(action === 'del-comment'){
+    const i = Number(btn.dataset.index);
+    if(task.comments && task.comments[i] !== undefined){
+      task.comments.splice(i, 1);
+      saveState(); render();
+    }
+    return;
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ hideStamp(); closeRejectModal(); }
+});
+
+/* ============================================================
+   STAMP OVERLAY
+   ============================================================ */
+function showStamp(){
+  const overlay = document.getElementById('stampOverlay');
+  document.getElementById('overlayStampBody').innerHTML = stampMarkup();
+  overlay.classList.add('show');
+  const wrap = overlay.querySelector('.stamp-wrap');
+  wrap.style.animation = 'none';
+  void wrap.offsetWidth;
+  wrap.style.animation = '';
+}
+function hideStamp(){
+  document.getElementById('stampOverlay').classList.remove('show');
+}
+
+/* ============================================================
+   DRAG & DROP
+   ============================================================ */
+yearsEl.addEventListener('dragstart', e => {
+  const handle = e.target.closest('.handle');
+  if(!handle) return;
+  const card = handle.closest('.task');
+  dragId = Number(card.dataset.id);
+  card.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  try{ e.dataTransfer.setData('text/plain', String(dragId)); }catch(_){}
+  try{ e.dataTransfer.setDragImage(card, 20, 20); }catch(_){}
+});
+
+yearsEl.addEventListener('dragend', () => {
+  document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+  document.querySelectorAll('.dragover-year').forEach(el => el.classList.remove('dragover-year'));
+  persistOrder();
+  dragId = null;
+  render();
+});
+
+yearsEl.addEventListener('dragover', e => {
+  if(dragId === null) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+
+  const tasksContainer = e.target.closest('.tasks');
+  if(!tasksContainer){
+    const section = e.target.closest('.year');
+    if(section){
+      section.classList.add('dragover-year');
+      document.querySelectorAll('.dragover-year').forEach(el => { if(el !== section) el.classList.remove('dragover-year'); });
+    }
+    return;
+  }
+  document.querySelectorAll('.dragover-year').forEach(el => el.classList.remove('dragover-year'));
+
+  const dragging = yearsEl.querySelector('.task.dragging');
+  if(!dragging) return;
+  const after = getDragAfterElement(tasksContainer, e.clientY);
+  if(after == null) tasksContainer.appendChild(dragging);
+  else tasksContainer.insertBefore(dragging, after);
+});
+
+function getDragAfterElement(container, y){
+  const els = [...container.querySelectorAll('.task:not(.dragging)')];
+  let closest = { offset: Number.NEGATIVE_INFINITY, element: null };
+  for(const child of els){
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if(offset < 0 && offset > closest.offset){
+      closest = { offset, element: child };
+    }
+  }
+  return closest.element;
+}
+
+function persistOrder(){
+  const sections = [...yearsEl.querySelectorAll('.year')];
+  const orderMap = new Map();
+  sections.forEach(sec => {
+    const y = Number(sec.dataset.year);
+    const items = [...sec.querySelectorAll('.tasks .task')];
+    items.forEach((el, i) => orderMap.set(Number(el.dataset.id), {year:y, index:i}));
+  });
+
+  state.tasks.forEach(t => {
+    const m = orderMap.get(t.id);
+    if(m) t.year = m.year;
+  });
+  state.tasks.sort((a,b) => {
+    const ma = orderMap.get(a.id), mb = orderMap.get(b.id);
+    if(!ma || !mb) return 0;
+    if(ma.year !== mb.year) return ma.year - mb.year;
+    return ma.index - mb.index;
+  });
+  saveState();
+}
+
+/* ============================================================
+   ПАНЕЛЬ
+   ============================================================ */
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('filterStatus').addEventListener('change', render);
+document.getElementById('filterPriority').addEventListener('change', render);
+document.getElementById('filterYear').addEventListener('change', render);
+
+document.getElementById('expandAll').addEventListener('click', () => { collapsed.clear(); render(); });
+document.getElementById('collapseAll').addEventListener('click', () => {
+  state.tasks.forEach(t => collapsed.add(t.id)); render();
+});
+
+const authorInput   = document.getElementById('author');
+const positionInput = document.getElementById('position');
+authorInput.value   = state.author   || '';
+positionInput.value = state.position || '';
+authorInput.addEventListener('input',   () => { state.author   = authorInput.value.trim();   saveState(); render(); });
+positionInput.addEventListener('input', () => { state.position = positionInput.value.trim(); saveState(); render(); });
+
+const overall = document.getElementById('overallComment');
+overall.value = state.overall || '';
+overall.addEventListener('input', () => { state.overall = overall.value; saveState(); renderPrintView(); });
+
+document.getElementById('approveAll').addEventListener('click', () => {
+  if(!ensureIdentity()) return;
+  const stampDate = new Date().toISOString();
+  state.tasks.forEach(t => {
+    if(t.status !== 'approved'){
+      t.status = 'approved';
+      t.comments = t.comments || [];
+      t.comments.push({
+        author:   state.author,
+        position: state.position || '',
+        date:     stampDate,
+        text:     'Задача согласована (пакетно).',
+        auto:     true,
+        tag:      'approve'
+      });
+    }
+  });
+  state.approvedAt = stampDate;
+  saveState();
+  render();
+});
+
+document.getElementById('resetStatuses').addEventListener('click', () => {
+  state.tasks.forEach(t => t.status = 'pending');
+  state.approvedAt = null;
+  saveState(); render(); toast('Статусы сброшены');
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(!confirm('Сбросить всё: порядок, приоритеты, статусы и комментарии?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state = loadState();
+  collapsed.clear();
+  lastAllApprovedState = false;
+  authorInput.value = ''; positionInput.value = ''; overall.value = '';
+  render(); toast('Всё сброшено к исходному виду');
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = {
+    exportedAt: new Date().toISOString(),
+    author:   state.author,
+    position: state.position,
+    overall:  state.overall,
+    approvedAt: state.approvedAt,
+    tasks:    state.tasks
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `plan-zadach-2026-2027-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Файл выгружен');
+});
+
+document.getElementById('printBtn').addEventListener('click', () => {
+  renderPrintView();
+  setTimeout(() => window.print(), 80);
+});
+
+render();
+</script>
+</body>
+</html>
