@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Перечень выполненных работ за 2026 год — согласование</title>
+<title>Перечень выполненных работ за 2026 год</title>
 <style>
   :root{
     --bg:#f4f6f9; --card:#fff; --text:#1c2430; --muted:#6b7684; --line:#e2e7ee;
     --accent:#1f6feb; --accent-soft:#e8f0fe;
     --q1:#1f6feb; --q2:#0f9d58; --q3:#d97706;
-    --pending:#d97706;  --pending-bg:#fef3c7;
-    --approved:#0f9d58; --approved-bg:#d9f2e3;
+    --demo:#7c3aed; --demo-bg:#f3e8ff;
+    --agreed:#0f9d58; --agreed-bg:#d9f2e3;
     --radius:12px;
   }
   *{box-sizing:border-box}
@@ -48,33 +48,19 @@
   .conn.online  .dot{background:#4ade80;box-shadow:0 0 8px #4ade80}
   .conn.offline .dot{background:#f87171;box-shadow:0 0 8px #f87171}
 
-  .tabs{display:flex;gap:6px;margin-bottom:14px;background:var(--card);
-    border:1px solid var(--line);border-radius:var(--radius);padding:6px;
-    box-shadow:0 2px 10px rgba(16,24,40,.04)}
-  .tab{flex:1;border:none;background:transparent;color:var(--muted);
-    padding:10px 16px;border-radius:9px;cursor:pointer;font-size:14px;
-    font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    transition:all .15s;font-family:inherit}
-  .tab:hover{background:#f4f7fb;color:var(--text)}
-  .tab.active{background:var(--accent);color:#fff}
-  .tab .tab-ico{font-size:15px}
-  .tab-badge{display:inline-block;font-size:11px;
-    font-weight:700;padding:1px 7px;border-radius:999px;line-height:1.4;min-width:20px;text-align:center}
-  .tab.active .tab-badge{background:#fff !important;color:var(--accent) !important}
-
   .stats{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
     padding:16px 18px;margin-bottom:14px;box-shadow:0 2px 10px rgba(16,24,40,.04)}
   .stats-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px}
   .stats-top h3{margin:0;font-size:15px;font-weight:650}
   .stats-top .progress{flex:1;min-width:200px;height:10px;background:#eef1f5;border-radius:999px;overflow:hidden}
   .stats-top .progress span{display:block;height:100%;background:linear-gradient(90deg,#0f9d58,#34c38f);transition:width .3s}
-  .stats-top .pct{font-size:14px;font-weight:650;color:var(--approved);font-variant-numeric:tabular-nums}
+  .stats-top .pct{font-size:14px;font-weight:650;color:var(--agreed);font-variant-numeric:tabular-nums}
   .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
   .stat{background:#fafbfd;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
   .stat .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700}
   .stat .val{font-size:20px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
-  .stat.pending .val{color:var(--pending)}
-  .stat.approved .val{color:var(--approved)}
+  .stat.demo   .val{color:var(--demo)}
+  .stat.agreed .val{color:var(--agreed)}
 
   .toolbar{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
     padding:12px 14px;margin-bottom:14px;position:sticky;top:0;z-index:20;
@@ -94,8 +80,8 @@
     transition:all .15s;user-select:none;white-space:nowrap;font-family:inherit}
   .chip:hover{border-color:#c3ccd8;color:var(--text)}
   .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-  .chip.st-pending.active {background:var(--pending);border-color:var(--pending)}
-  .chip.st-approved.active{background:var(--approved);border-color:var(--approved)}
+  .chip.st-demo.active    {background:var(--demo);border-color:var(--demo)}
+  .chip.st-agreed.active  {background:var(--agreed);border-color:var(--agreed)}
 
   .btn{border:1px solid var(--line);background:#fbfcfe;color:var(--muted);
     padding:8px 14px;border-radius:9px;cursor:pointer;font-size:13px;transition:all .15s;font-family:inherit}
@@ -114,7 +100,7 @@
   .quarter-head .count{font-size:12px;color:var(--muted);background:#eef2f7;
     padding:3px 10px;border-radius:999px;font-weight:600}
   .quarter-head .mini-progress{width:110px;height:7px;background:#eef1f5;border-radius:999px;overflow:hidden}
-  .quarter-head .mini-progress span{display:block;height:100%;background:var(--approved);transition:width .3s}
+  .quarter-head .mini-progress span{display:block;height:100%;background:var(--agreed);transition:width .3s}
   .quarter-head .caret{transition:transform .2s;color:var(--muted);font-size:12px}
   .quarter.collapsed .caret{transform:rotate(-90deg)}
   .quarter.collapsed .table-scroll{display:none}
@@ -153,76 +139,36 @@
 
   td.appr{width:300px;min-width:300px}
 
-  .badges-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
-  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:650;
-    padding:4px 10px;border-radius:999px;white-space:nowrap;line-height:1.3}
-  .badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
-  .badge.pending {color:var(--pending); background:var(--pending-bg)}
-  .badge.approved{color:var(--approved);background:var(--approved-bg)}
+  .badges-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+  .flag-chip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;
+    padding:4px 10px;border-radius:999px;white-space:nowrap;line-height:1.3;border:1px solid transparent}
+  .flag-chip.demo   {background:var(--demo-bg);color:#5b21b6;border-color:#d8b4fe}
+  .flag-chip.agreed {background:var(--agreed-bg);color:#075c30;border-color:#7fd6a8}
+  .flag-chip.no     {background:#f1f4f8;color:#8894a3;border-color:#dfe4ea}
+  .flag-chip.desc   {background:#f3e8ff;color:#6b21a8;border-color:#d8b4fe}
 
-  .clar-status{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;
-    padding:3px 9px;border-radius:999px;white-space:nowrap;line-height:1.3}
-  .clar-status.waiting {background:#fff4d6;color:#8a5b03;border:1px solid #f0d78f}
-  .clar-status.received{background:#d9f2e3;color:#0b6b3a;border:1px solid #a9e3c4}
-  .clar-status.approved{background:#c9f0d8;color:#075c30;border:1px solid #7fd6a8}
-
-  .appr-meta{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.45}
-  .appr-meta b{color:#4a5766;font-weight:600}
-  .appr-meta .block-hint{color:#8a5b03}
-  .appr-meta .ok-hint{color:#0b6b3a}
-
-  .appr-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .appr-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:0}
   .mini-btn{border:1px solid var(--line);background:#fff;color:var(--muted);
     padding:5px 10px;border-radius:7px;font-size:11.5px;font-weight:600;cursor:pointer;
     transition:all .13s;white-space:nowrap;font-family:inherit;display:inline-flex;align-items:center;gap:4px}
   .mini-btn:hover{transform:translateY(-1px)}
-  .mini-btn.approve{color:var(--approved); border-color:#a9e3c4;background:#f2fbf7}
-  .mini-btn.approve:hover{background:var(--approved);color:#fff;border-color:var(--approved)}
-  .mini-btn.ask    {color:#1f6feb;        border-color:#b6d2f7;background:#f5f9ff}
-  .mini-btn.ask:hover{background:#1f6feb;color:#fff;border-color:#1f6feb}
-  .mini-btn.reply  {color:#0b4bb3;        border-color:#b6d2f7;background:#f5f9ff}
-  .mini-btn.reply:hover{background:#0b4bb3;color:#fff;border-color:#0b4bb3}
-  .mini-btn.open   {color:#4a5766;        border-color:#cfd6df;background:#f8fafc}
-  .mini-btn.open:hover{background:#4a5766;color:#fff;border-color:#4a5766}
   .mini-btn.desc   {color:#7c3aed;        border-color:#d8c8f5;background:#f9f5ff}
   .mini-btn.desc:hover{background:#7c3aed;color:#fff;border-color:#7c3aed}
   .mini-btn.desc.has-items{background:#7c3aed;color:#fff;border-color:#7c3aed}
   .mini-btn.desc.has-items:hover{background:#6d28d9;border-color:#6d28d9}
-
+  .mini-btn.demo-btn{color:var(--demo);   border-color:#d8c8f5;background:#f9f5ff}
+  .mini-btn.demo-btn:hover{background:var(--demo);color:#fff;border-color:var(--demo)}
+  .mini-btn.demo-btn.active{background:var(--demo);color:#fff;border-color:var(--demo)}
+  .mini-btn.demo-btn.active:hover{background:#6d28d9;border-color:#6d28d9}
+  .mini-btn.agree-btn{color:var(--agreed); border-color:#a9e3c4;background:#f2fbf7}
+  .mini-btn.agree-btn:hover{background:var(--agreed);color:#fff;border-color:var(--agreed)}
+  .mini-btn.agree-btn.active{background:var(--agreed);color:#fff;border-color:var(--agreed)}
+  .mini-btn.agree-btn.active:hover{background:#0b7d44;border-color:#0b7d44}
   .mini-btn[disabled]{cursor:not-allowed;opacity:.55;
     background:#eef1f5;border-color:#dfe4ea;color:#9aa7b6}
   .mini-btn[disabled]:hover{transform:none;background:#eef1f5;color:#9aa7b6;border-color:#dfe4ea}
 
   .role-note{font-size:11px;color:var(--muted);margin-top:5px;font-style:italic}
-
-  .clar-list{display:flex;flex-direction:column;gap:12px}
-  .clar-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    padding:16px 18px;cursor:pointer;transition:all .15s;
-    box-shadow:0 2px 10px rgba(16,24,40,.04);position:relative;overflow:hidden}
-  .clar-card:hover{border-color:#c3ccd8;transform:translateY(-1px);box-shadow:0 6px 16px rgba(16,24,40,.08)}
-  .clar-card.open    {border-left:4px solid #d97706}
-  .clar-card.done    {border-left:4px solid #0f9d58}
-  .clar-card.approved{border-left:4px solid #075c30}
-  .clar-card-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;flex-wrap:wrap}
-  .clar-card-ref{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .clar-card .q-ref{display:inline-block;background:var(--accent-soft);color:#0b4bb3;
-    font-size:12px;font-weight:700;padding:2px 9px;border-radius:6px}
-  .clar-card .p-ref{display:inline-block;background:#eef2f7;color:#4a5766;
-    font-size:12px;font-weight:700;padding:2px 9px;border-radius:6px}
-  .clar-card .wait-badge{margin-left:auto;font-size:11.5px;font-weight:700;padding:3px 10px;
-    border-radius:999px;white-space:nowrap}
-  .clar-card .wait-badge.act-required {background:#fee4e2;color:#a12a20}
-  .clar-card .wait-badge.waiting      {background:#fef3c7;color:#8a5b03}
-  .clar-card .wait-badge.done         {background:#d9f2e3;color:#0b6b3a}
-  .clar-card .wait-badge.approved     {background:#c9f0d8;color:#075c30}
-  .clar-card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .clar-card-last{background:#f7f9fc;border-radius:8px;padding:10px 12px;font-size:13px;
-    color:#33404f;line-height:1.5}
-  .clar-card-last .who{font-weight:700;color:var(--text);margin-right:6px}
-  .clar-card-last .when{color:var(--muted);font-size:11.5px;margin-left:6px}
-  .clar-card-foot{display:flex;gap:10px;margin-top:10px;font-size:12px;color:var(--muted);
-    align-items:center;flex-wrap:wrap}
 
   .empty{text-align:center;padding:50px 20px;color:var(--muted);
     background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);display:none}
@@ -280,53 +226,6 @@
 
   .hist-empty{padding:30px;text-align:center;color:var(--muted);font-size:13.5px}
   .history-actions{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
-
-  .clar-modal{max-width:720px;padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:90vh}
-  .clar-head{padding:18px 22px;background:linear-gradient(135deg,#1f6feb,#0b4bb3);color:#fff}
-  .clar-head.approved{background:linear-gradient(135deg,#0f9d58,#0b6b3a)}
-  .clar-head h3{margin:0 0 6px;font-size:16px;color:#fff}
-  .clar-head p{margin:0;font-size:13px;opacity:.9}
-  .clar-head .clar-task-title{margin-top:6px;font-size:13.5px;font-weight:600;opacity:.95;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .clar-head .clar-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-  .clar-head .clar-jump,
-  .clar-head .clar-approve{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);
-    color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
-    transition:background .15s;font-family:inherit}
-  .clar-head .clar-jump:hover{background:rgba(255,255,255,.32)}
-  .clar-head .clar-approve{background:#4ade80;color:#063a1c;border-color:#4ade80}
-  .clar-head .clar-approve:hover{background:#22c55e;border-color:#22c55e;color:#063a1c}
-
-  .clar-thread{flex:1;overflow-y:auto;padding:16px 22px;background:#f7f9fc;
-    display:flex;flex-direction:column;gap:12px}
-  .clar-thread:empty::before{
-    content:"Пока сообщений нет. Начните обсуждение первым сообщением.";
-    color:var(--muted);font-size:13px;text-align:center;padding:24px 0;display:block
-  }
-  .clar-msg{max-width:82%;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.5;
-    position:relative;word-wrap:break-word}
-  .clar-msg.mine{align-self:flex-end;background:#d9ecff;border:1px solid #b6d2f7;border-bottom-right-radius:4px}
-  .clar-msg.other{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px}
-  .clar-msg .who{font-weight:700;color:var(--text);font-size:12.5px;margin-bottom:3px;display:flex;
-    justify-content:space-between;gap:10px;align-items:center}
-  .clar-msg .when{font-weight:500;color:var(--muted);font-size:11px}
-
-  .clar-input{padding:14px 22px 18px;background:#fff;border-top:1px solid var(--line)}
-  .clar-input textarea{width:100%;min-height:78px;padding:11px 13px;border:1px solid var(--line);
-    border-radius:9px;font:14px/1.5 inherit;resize:vertical;outline:none;color:var(--text);
-    background:#fbfcfe;font-family:inherit}
-  .clar-input textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:#fff}
-  .clar-input textarea[disabled]{background:#f1f4f8;color:#9aa7b6;cursor:not-allowed;resize:none}
-  .clar-input .row{display:flex;justify-content:space-between;gap:10px;margin-top:10px;align-items:center}
-  .clar-input .hint{font-size:11.5px;color:var(--muted)}
-  .clar-input .btns{display:flex;gap:8px}
-
-  .clar-waiting{background:#fef3c7;border:1px solid #f0d78f;color:#7c4a03;font-size:12.5px;
-    padding:9px 12px;border-radius:8px;margin-top:10px;display:flex;align-items:center;gap:8px;line-height:1.4}
-  .clar-waiting.success{background:#d9f2e3;border-color:#7fd6a8;color:#075c30}
-
-  .clar-readonly{background:#eef2f7;color:#4a5766;font-size:12.5px;padding:10px 14px;
-    border-top:1px solid var(--line);text-align:center}
 
   .desc-modal{max-width:760px;padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:90vh}
   .desc-head{padding:18px 22px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff}
@@ -387,11 +286,10 @@
     tbody td{padding:11px}
     .stats-top .progress{min-width:100%}
     .login-modal .role-options{grid-template-columns:1fr}
-    .clar-msg{max-width:95%}
   }
   @media print{
     body{background:#fff;padding:0}
-    .toolbar,.role-row,footer.note,.appr-actions,.tabs{display:none!important}
+    .toolbar,.role-row,footer.note,.appr-actions{display:none!important}
     .quarter{break-inside:avoid;box-shadow:none;border-color:#ccc}
     .quarter.collapsed .table-scroll{display:block}
     thead th{background:#eee}
@@ -410,6 +308,7 @@
         <span id="userNameLabel">—</span>
         <span class="role" id="userRoleLabel"></span>
       </span>
+      <button class="link-btn" id="excelBtn">📊 Excel</button>
       <button class="link-btn" id="pdfBtn">📄 PDF</button>
       <button class="link-btn" id="historyBtn">📋 История</button>
       <button class="link-btn" id="changeUserBtn" style="display:none">↺ Сменить пользователя</button>
@@ -417,87 +316,56 @@
     </div>
   </header>
 
-  <div class="tabs">
-    <button class="tab active" id="tabTasks">
-      <span class="tab-ico">📋</span>
-      <span>Задачи</span>
-    </button>
-    <button class="tab" id="tabClar">
-      <span class="tab-ico">💬</span>
-      <span>Вопросы</span>
-      <span class="tab-badge" id="clarBadge" style="display:none">0</span>
-    </button>
-  </div>
-
-  <div id="tasksView">
-    <div class="stats">
-      <div class="stats-top">
-        <h3>Согласование заказчиком</h3>
-        <div class="progress"><span id="progressBar" style="width:0%"></span></div>
-        <div class="pct" id="progressPct">0%</div>
-      </div>
-      <div class="stats-grid">
-        <div class="stat pending">  <div class="lbl">На согласовании</div>  <div class="val" data-c="pending">0</div></div>
-        <div class="stat approved"> <div class="lbl">Согласовано</div>      <div class="val" data-c="approved">0</div></div>
-        <div class="stat">          <div class="lbl">Всего позиций</div>    <div class="val" data-c="total">0</div></div>
-      </div>
+  <div class="stats">
+    <div class="stats-top">
+      <h3>Признаки задач</h3>
+      <div class="progress"><span id="progressBar" style="width:0%"></span></div>
+      <div class="pct" id="progressPct">0%</div>
     </div>
-
-    <div class="toolbar">
-      <div class="row">
-        <div class="search">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
-            <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
-          </svg>
-          <input id="search" type="search" placeholder="Поиск по описанию, пункту ТЗ или задаче…" autocomplete="off">
-        </div>
-        <div class="chips" id="chips">
-          <div class="chip active" data-q="all">Все кварталы</div>
-          <div class="chip" data-q="1">1 квартал</div>
-          <div class="chip" data-q="2">2 квартал</div>
-          <div class="chip" data-q="3">3 квартал</div>
-        </div>
-      </div>
-      <div class="row">
-        <span style="font-size:12px;color:var(--muted);font-weight:600;margin-right:4px">Статус:</span>
-        <div class="chips" id="statusChips">
-          <div class="chip active" data-s="all">Все</div>
-          <div class="chip st-pending"  data-s="pending">На согласовании</div>
-          <div class="chip st-approved" data-s="approved">Согласовано</div>
-        </div>
-        <button class="btn" id="toggleAll" style="margin-left:auto">Свернуть всё</button>
-      </div>
-    </div>
-
-    <div id="content"></div>
-    <div class="empty" id="empty">
-      <div class="big">🔎</div>
-      Ничего не найдено. Попробуйте изменить запрос или фильтры.
-    </div>
-
-    <footer class="note">
-      Всего позиций: <span id="totalCount">0</span> · найдено: <span id="shownCount">0</span>
-    </footer>
-  </div>
-
-  <div id="clarView" style="display:none">
-    <div class="toolbar" style="position:static">
-      <div class="row">
-        <span style="font-size:12px;color:var(--muted);font-weight:600;margin-right:4px">Показать:</span>
-        <div class="chips" id="clarFilters">
-          <div class="chip active" data-cf="all">Все обсуждения</div>
-          <div class="chip" data-cf="awaiting">Ждут ответа</div>
-          <div class="chip" data-cf="received">Ответ получен</div>
-          <div class="chip" data-cf="approved">Согласовано</div>
-        </div>
-      </div>
-    </div>
-    <div id="clarList" class="clar-list"></div>
-    <div class="empty" id="clarEmpty">
-      <div class="big">💬</div>
-      Пока нет обсуждений. Заказчик может начать диалог по любой задаче кнопкой «❓ Уточнить».
+    <div class="stats-grid">
+      <div class="stat demo">   <div class="lbl">🎬 Демо: Да</div>          <div class="val" data-c="demo">0</div></div>
+      <div class="stat agreed"> <div class="lbl">✓ Согласована: Да</div>   <div class="val" data-c="agreed">0</div></div>
+      <div class="stat">        <div class="lbl">Всего позиций</div>       <div class="val" data-c="total">0</div></div>
     </div>
   </div>
+
+  <div class="toolbar">
+    <div class="row">
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+        </svg>
+        <input id="search" type="search" placeholder="Поиск по описанию, пункту ТЗ или задаче…" autocomplete="off">
+      </div>
+      <div class="chips" id="chips">
+        <div class="chip active" data-q="all">Все кварталы</div>
+        <div class="chip" data-q="1">1 квартал</div>
+        <div class="chip" data-q="2">2 квартал</div>
+        <div class="chip" data-q="3">3 квартал</div>
+      </div>
+    </div>
+    <div class="row">
+      <span style="font-size:12px;color:var(--muted);font-weight:600;margin-right:4px">Фильтр:</span>
+      <div class="chips" id="statusChips">
+        <div class="chip active" data-s="all">Все</div>
+        <div class="chip st-demo"   data-s="demo">🎬 Демо: Да</div>
+        <div class="chip"           data-s="demo-no">🎬 Демо: Нет</div>
+        <div class="chip st-agreed" data-s="agreed">✓ Согласована: Да</div>
+        <div class="chip"           data-s="agreed-no">✓ Согласована: Нет</div>
+      </div>
+      <button class="btn" id="toggleAll" style="margin-left:auto">Свернуть всё</button>
+    </div>
+  </div>
+
+  <div id="content"></div>
+  <div class="empty" id="empty">
+    <div class="big">🔎</div>
+    Ничего не найдено. Попробуйте изменить запрос или фильтры.
+  </div>
+
+  <footer class="note">
+    Всего позиций: <span id="totalCount">0</span> · найдено: <span id="shownCount">0</span>
+  </footer>
 </div>
 
 <div class="overlay" id="loginOverlay">
@@ -536,42 +404,13 @@
 <div class="overlay" id="historyOverlay">
   <div class="modal history-modal" role="dialog" aria-modal="true">
     <h3>История изменений</h3>
-    <p class="sub">Последние 500 событий согласования. Обновляется автоматически.</p>
+    <p class="sub">Последние 500 событий. Обновляется автоматически.</p>
     <div class="history-list" id="historyList">
       <div class="hist-empty">Пока изменений не было.</div>
     </div>
     <div class="history-actions">
       <button class="btn" id="historyClear" type="button">🗑 Очистить историю</button>
       <button class="btn primary" id="historyClose" type="button">Закрыть</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="clarOverlay">
-  <div class="modal clar-modal" role="dialog" aria-modal="true">
-    <div class="clar-head" id="clarHead">
-      <h3 id="clarTitle">Уточнение по задаче</h3>
-      <p id="clarTaskRef">—</p>
-      <div class="clar-task-title" id="clarTaskTitle"></div>
-      <div class="clar-actions">
-        <button class="clar-jump" id="clarJumpBtn" type="button">↗ Перейти к задаче</button>
-        <button class="clar-approve" id="clarApproveBtn" type="button" style="display:none">✓ Согласовать задачу</button>
-      </div>
-    </div>
-    <div class="clar-thread" id="clarThread"></div>
-    <div class="clar-input" id="clarInputBlock">
-      <textarea id="clarInput" placeholder="Введите ваш вопрос или ответ…"></textarea>
-      <div class="row">
-        <span class="hint" id="clarHint">Введите сообщение от 2 символов</span>
-        <div class="btns">
-          <button class="btn" id="clarCloseBtn" type="button">Закрыть</button>
-          <button class="btn primary" id="clarSendBtn" type="button">Отправить</button>
-        </div>
-      </div>
-      <div class="clar-waiting" id="clarWaiting" style="display:none"></div>
-    </div>
-    <div class="clar-readonly" id="clarReadonly" style="display:none">
-      Роль «Наблюдатель» — только просмотр обсуждения
     </div>
   </div>
 </div>
@@ -666,92 +505,51 @@ const DATA = [
 ];
 
 /* ========================= СОСТОЯНИЕ ========================= */
-let approvalState      = {};
 let historyState       = [];
-let clarificationState = {};
 let descriptionState   = {};
+let flagsState         = {};
 let activeQuarter = "all";
 let activeStatus  = "all";
-let clarFilter    = "all";
 let query = "";
 let currentUser = null;
-let activeTab = "tasks";
-let openClarKey = null;
 let openDescKey = null;
-let pollTimer = null;                 /* ← таймер автообновления */
+let pollTimer = null;
 const collapsed = { 1:false, 2:false, 3:false };
 
-const STATUS_LABELS = { pending: "На согласовании", approved: "Согласовано" };
-const ACTION_LABELS = { approve: "согласовал", clarification: "оставил уточнение", description: "добавил описание" };
-const ACTION_COLORS = { approve: "#0f9d58", clarification: "#1f6feb", description: "#7c3aed" };
-
-const rowKey = (q,n) => `${q}-${n}`;
-
-const getApproval = (q,n) => {
-  const v = approvalState[rowKey(q,n)];
-  if (!v || (v.status !== "pending" && v.status !== "approved")){
-    return { status: "pending", comment: "", changedAt: null, changedBy: null, actor: null };
-  }
-  return v;
+const ACTION_LABELS = {
+  description:   "добавил описание",
+  demo_on:       "установил признак 🎬 Демо: Да",
+  demo_off:      "установил признак 🎬 Демо: Нет",
+  agreed_on:     "установил признак ✓ Согласована: Да",
+  agreed_off:    "установил признак ✓ Согласована: Нет"
+};
+const ACTION_COLORS = {
+  description: "#7c3aed",
+  demo_on:     "#7c3aed",
+  demo_off:    "#6b7684",
+  agreed_on:   "#0f9d58",
+  agreed_off:  "#6b7684"
 };
 
-const getThread = (q,n) => Array.isArray(clarificationState[rowKey(q,n)])
-  ? clarificationState[rowKey(q,n)] : [];
+const rowKey = (q,n) => `${q}-${n}`;
 
 const getDescriptions = (q,n) => Array.isArray(descriptionState[rowKey(q,n)])
   ? descriptionState[rowKey(q,n)] : [];
 
-function getClarState(q, n){
-  const thread = getThread(q, n);
-  if (!thread.length) return 'none';
-  if (getApproval(q, n).status === 'approved') return 'approved';
-  const last = thread[thread.length - 1];
-  return last.targetRole === 'contractor' ? 'awaiting' : 'received';
-}
-
-function clarBucket(key){
-  const thread = clarificationState[key];
-  if (!thread || !thread.length) return null;
-  const [q, n] = key.split('-').map(Number);
-  if (getApproval(q, n).status === 'approved') return 'approved';
-  const last = thread[thread.length - 1];
-  return last.targetRole === 'contractor' ? 'awaiting' : 'received';
-}
-
-function canIWriteNow(key, role){
-  if (!role || role === 'viewer') return false;
-  const [q, n] = key.split('-').map(Number);
-  if (getApproval(q, n).status === 'approved') return false;
-  const thread = clarificationState[key] || [];
-  if (!thread.length) return role === 'customer';
-  const last = thread[thread.length - 1];
-  return last.targetRole === role;
-}
-
-function countByBucket(bucket){
-  let c = 0;
-  for (const k of Object.keys(clarificationState)){
-    if (clarBucket(k) === bucket) c++;
-  }
-  return c;
-}
+const getFlags = (q,n) => {
+  const v = flagsState[rowKey(q,n)];
+  return (v && typeof v === 'object') ? { demo: !!v.demo, agreed: !!v.agreed } : { demo: false, agreed: false };
+};
+const isDemo   = (q,n) => getFlags(q,n).demo;
+const isAgreed = (q,n) => getFlags(q,n).agreed;
 
 /* ========================= DOM ========================= */
 const content      = document.getElementById("content");
-const clarList     = document.getElementById("clarList");
 const emptyBox     = document.getElementById("empty");
-const clarEmpty    = document.getElementById("clarEmpty");
 const shownCount   = document.getElementById("shownCount");
 const totalCount   = document.getElementById("totalCount");
 const toggleAllBtn = document.getElementById("toggleAll");
 const connStatus   = document.getElementById("connStatus");
-
-const tabTasks  = document.getElementById("tabTasks");
-const tabClar   = document.getElementById("tabClar");
-const clarBadge = document.getElementById("clarBadge");
-
-const tasksView = document.getElementById("tasksView");
-const clarView  = document.getElementById("clarView");
 
 const loginOverlay = document.getElementById("loginOverlay");
 const loginName    = document.getElementById("loginName");
@@ -761,22 +559,6 @@ const loginBtn     = document.getElementById("loginBtn");
 
 const historyOverlay = document.getElementById("historyOverlay");
 const historyList    = document.getElementById("historyList");
-
-const clarOverlay   = document.getElementById("clarOverlay");
-const clarHead      = document.getElementById("clarHead");
-const clarThread    = document.getElementById("clarThread");
-const clarInput     = document.getElementById("clarInput");
-const clarInputBlock= document.getElementById("clarInputBlock");
-const clarReadonly  = document.getElementById("clarReadonly");
-const clarWaiting   = document.getElementById("clarWaiting");
-const clarTitle     = document.getElementById("clarTitle");
-const clarTaskRef   = document.getElementById("clarTaskRef");
-const clarTaskTitle = document.getElementById("clarTaskTitle");
-const clarJumpBtn   = document.getElementById("clarJumpBtn");
-const clarApproveBtn= document.getElementById("clarApproveBtn");
-const clarSendBtn   = document.getElementById("clarSendBtn");
-const clarCloseBtn  = document.getElementById("clarCloseBtn");
-const clarHint      = document.getElementById("clarHint");
 
 const descOverlay   = document.getElementById("descOverlay");
 const descTitle     = document.getElementById("descTitle");
@@ -799,6 +581,7 @@ const userRoleLabel = document.getElementById("userRoleLabel");
 const changeUserBtn = document.getElementById("changeUserBtn");
 const historyBtn    = document.getElementById("historyBtn");
 const pdfBtn        = document.getElementById("pdfBtn");
+const excelBtn      = document.getElementById("excelBtn");
 
 const TOTAL = DATA.reduce((a,q)=>a+q.rows.length,0);
 totalCount.textContent = TOTAL;
@@ -811,12 +594,6 @@ const fmtDate = iso => {
   const d = new Date(iso);
   const p = n => String(n).padStart(2,"0");
   return `${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
-};
-const fmtDateShort = iso => {
-  if(!iso) return "—";
-  const d = new Date(iso);
-  const p = n => String(n).padStart(2,"0");
-  return `${p(d.getDate())}.${p(d.getMonth()+1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
 };
 
 function renderText(raw){
@@ -876,29 +653,8 @@ async function fetchRawFromServer(){
   return await r.json();
 }
 
-function extractApprovals(json){
-  const raw = (json && json.data && json.data.approvals && typeof json.data.approvals === 'object')
-    ? json.data.approvals : {};
-  const clean = {};
-  for (const key of Object.keys(raw)){
-    const v = raw[key];
-    if (!v || typeof v !== 'object') continue;
-    if (v.status !== 'approved' && v.status !== 'pending') continue;
-    clean[key] = v;
-  }
-  return clean;
-}
 function extractHistory(json){
   return (json && json.data && Array.isArray(json.data.history)) ? json.data.history : [];
-}
-function extractClarifications(json){
-  const raw = (json && json.data && json.data.clarifications && typeof json.data.clarifications === 'object')
-    ? json.data.clarifications : {};
-  const clean = {};
-  for (const key of Object.keys(raw)){
-    if (Array.isArray(raw[key]) && raw[key].length) clean[key] = raw[key];
-  }
-  return clean;
 }
 function extractDescriptions(json){
   const raw = (json && json.data && json.data.descriptions && typeof json.data.descriptions === 'object')
@@ -912,36 +668,40 @@ function extractDescriptions(json){
   }
   return clean;
 }
+function extractFlags(json){
+  const raw = (json && json.data && json.data.flags && typeof json.data.flags === 'object')
+    ? json.data.flags : {};
+  const clean = {};
+  for (const key of Object.keys(raw)){
+    const v = raw[key];
+    if (!v || typeof v !== 'object') continue;
+    const obj = {};
+    if (typeof v.demo === 'boolean') obj.demo = v.demo;
+    if (typeof v.agreed === 'boolean') obj.agreed = v.agreed;
+    if (Object.keys(obj).length) clean[key] = obj;
+  }
+  return clean;
+}
 
-async function loadApprovals(){
+async function loadData(){
   try {
     const json = await fetchRawFromServer();
-    approvalState      = extractApprovals(json);
-    historyState       = extractHistory(json);
-    clarificationState = extractClarifications(json);
-    descriptionState   = extractDescriptions(json);
+    historyState     = extractHistory(json);
+    descriptionState = extractDescriptions(json);
+    flagsState       = extractFlags(json);
     setConn(true);
     render();
-    renderClarifications();
-    updateClarBadge();
     if (historyOverlay.classList.contains("show")) renderHistory();
-    if (openClarKey && clarOverlay.classList.contains("show")){
-      renderClarThread(openClarKey);
-      updateClarModalApproveBtn(openClarKey);
-    }
-    if (openDescKey && descOverlay.classList.contains("show")){
-      renderDescriptionList(openDescKey);
-    }
+    if (openDescKey && descOverlay.classList.contains("show")) renderDescriptionList(openDescKey);
   } catch(e){
     setConn(false);
     console.warn('Не удалось загрузить данные:', e);
   }
 }
 
-/* ====== АВТООБНОВЛЕНИЕ ====== */
 function startPolling(){
   if (pollTimer) clearInterval(pollTimer);
-  pollTimer = setInterval(loadApprovals, 10000);
+  pollTimer = setInterval(loadData, 10000);
 }
 function stopPolling(){
   if (pollTimer){ clearInterval(pollTimer); pollTimer = null; }
@@ -949,24 +709,21 @@ function stopPolling(){
 
 async function persistAll(){
   try {
-    let freshApprovals = {}, freshHistory = [], freshClarifications = {}, freshDescriptions = {};
+    let freshHistory = [], freshDescriptions = {}, freshFlags = {};
     try {
       const json = await fetchRawFromServer();
-      freshApprovals      = extractApprovals(json);
-      freshHistory        = extractHistory(json);
-      freshClarifications = extractClarifications(json);
-      freshDescriptions   = extractDescriptions(json);
+      freshHistory      = extractHistory(json);
+      freshDescriptions = extractDescriptions(json);
+      freshFlags        = extractFlags(json);
     } catch(_) {}
 
-    const mergedApprovals    = Object.assign({}, freshApprovals, approvalState);
-    const mergedClar         = Object.assign({}, freshClarifications, clarificationState);
     const mergedDescriptions = Object.assign({}, freshDescriptions, descriptionState);
+    const mergedFlags        = Object.assign({}, freshFlags, flagsState);
     const mergedHistory      = historyState.slice(0, 500);
 
-    approvalState      = mergedApprovals;
-    clarificationState = mergedClar;
-    descriptionState   = mergedDescriptions;
-    historyState       = mergedHistory;
+    descriptionState = mergedDescriptions;
+    flagsState       = mergedFlags;
+    historyState     = mergedHistory;
 
     const r = await fetch(`${API_URL}?action=store`, {
       method: 'POST',
@@ -976,10 +733,9 @@ async function persistAll(){
       },
       body: JSON.stringify({
         data_update: {
-          approvals: mergedApprovals,
           history: mergedHistory,
-          clarifications: mergedClar,
-          descriptions: mergedDescriptions
+          descriptions: mergedDescriptions,
+          flags: mergedFlags
         }
       })
     });
@@ -991,21 +747,29 @@ async function persistAll(){
   }
 }
 
-async function updateApproval(q, n, status){
-  const key = rowKey(q,n);
+/* ========================= ПРИЗНАКИ ========================= */
+async function toggleFlag(q, n, flagName){
+  const role = currentUser ? currentUser.role : "viewer";
+  if (role === "viewer"){ alert("Роль «Наблюдатель» — только просмотр."); return; }
+
+  // Оба признака может ставить и заказчик, и исполнитель
+  if (role !== 'customer' && role !== 'contractor') return;
+
+  const key = rowKey(q, n);
+  const cur = getFlags(q, n);
+  const newVal = !cur[flagName];
+  const next = Object.assign({}, cur, { [flagName]: newVal });
+  flagsState[key] = next;
+
   const now = new Date().toISOString();
-  approvalState[key] = {
-    status,
-    changedBy: currentUser ? currentUser.name : "Аноним",
-    actor:     currentUser ? currentUser.name : "Аноним",
-    changedAt: now
-  };
   const task = findTask(q, n);
+  const actionName = flagName + (newVal ? '_on' : '_off');
   historyState = [{
     id: now + '-' + Math.random().toString(36).slice(2, 8),
-    key, q, n, action: 'approve',
-    actionLabel: ACTION_LABELS.approve,
-    status,
+    key, q, n,
+    action: actionName,
+    actionLabel: ACTION_LABELS[actionName],
+    status: null,
     user: currentUser ? currentUser.name : "Аноним",
     role: currentUser ? currentUser.role : "viewer",
     changedAt: now,
@@ -1013,72 +777,11 @@ async function updateApproval(q, n, status){
   }, ...historyState].slice(0, 500);
 
   render();
-  renderClarifications();
-  updateClarBadge();
-  if (openClarKey === key){
-    renderClarThread(key);
-    updateClarModalApproveBtn(key);
-  }
-  if (openDescKey === key) renderDescriptionList(key);
+  updateStats();
   await persistAll();
 }
 
-async function addClarificationMessage(key, text){
-  const role = currentUser.role;
-
-  if (!canIWriteNow(key, role)){
-    const [q, n] = key.split('-').map(Number);
-    if (getApproval(q, n).status === 'approved'){
-      alert('Задача согласована. Обсуждение закрыто.');
-    } else {
-      const thread = clarificationState[key] || [];
-      if (!thread.length && role === 'contractor'){
-        alert('Заказчик ещё не задавал вопросов по этой задаче.');
-      } else {
-        const last = thread[thread.length - 1];
-        alert(`Сейчас ожидается ответ от ${ROLE_LABELS[last.targetRole]}. Дождитесь ответа.`);
-      }
-    }
-    return;
-  }
-
-  const [q, n] = key.split('-').map(Number);
-  const targetRole = role === "customer" ? "contractor" : "customer";
-  const now = new Date().toISOString();
-
-  const msg = {
-    id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-    text: text.trim(),
-    user: currentUser ? currentUser.name : "Аноним",
-    role,
-    targetRole,
-    createdAt: now
-  };
-
-  if (!Array.isArray(clarificationState[key])) clarificationState[key] = [];
-  clarificationState[key] = clarificationState[key].concat([msg]);
-
-  historyState = [{
-    id: now + '-' + Math.random().toString(36).slice(2, 8),
-    key, q, n, action: 'clarification',
-    actionLabel: ACTION_LABELS.clarification,
-    status: null,
-    user: currentUser ? currentUser.name : "Аноним",
-    role,
-    changedAt: now,
-    taskTitle: (() => { const t = findTask(q,n); return t ? `${t.point} — ${t.akt.split("\n")[0]}` : ""; })()
-  }, ...historyState].slice(0, 500);
-
-  render();
-  renderClarifications();
-  updateClarBadge();
-  if (openClarKey === key){
-    renderClarThread(key);
-    updateClarModalApproveBtn(key);
-  }
-  await persistAll();
-}
-
+/* ========================= ОПИСАНИЯ ========================= */
 async function addDescription(key, text){
   const now = new Date().toISOString();
   const item = {
@@ -1203,137 +906,62 @@ function renderDescriptionList(key){
   });
 }
 
-function updateClarBadge(){
-  if (!currentUser){ clarBadge.style.display = 'none'; return; }
-  const awaiting = countByBucket('awaiting');
-  const received = countByBucket('received');
-
-  if (currentUser.role === 'contractor'){
-    if (awaiting > 0){
-      clarBadge.textContent = awaiting;
-      clarBadge.style.display = '';
-      clarBadge.style.background = '#d92d20';
-      clarBadge.style.color = '#fff';
-    } else if (received > 0){
-      clarBadge.textContent = received;
-      clarBadge.style.display = '';
-      clarBadge.style.background = '#0f9d58';
-      clarBadge.style.color = '#fff';
-    } else {
-      clarBadge.style.display = 'none';
-    }
-    return;
-  }
-  if (currentUser.role === 'customer'){
-    if (awaiting > 0){
-      clarBadge.textContent = awaiting;
-      clarBadge.style.display = '';
-      clarBadge.style.background = '#d97706';
-      clarBadge.style.color = '#fff';
-    } else if (received > 0){
-      clarBadge.textContent = received;
-      clarBadge.style.display = '';
-      clarBadge.style.background = '#0f9d58';
-      clarBadge.style.color = '#fff';
-    } else {
-      clarBadge.style.display = 'none';
-    }
-    return;
-  }
-  clarBadge.style.display = 'none';
-}
-
+/* ========================= ЯЧЕЙКА ЗАДАЧИ ========================= */
 function buildButtons(q, n, role){
   const btns = [];
+  const descCount = getDescriptions(q, n).length;
+  const demo = isDemo(q, n);
+  const agreed = isAgreed(q, n);
+
   if (role === "viewer"){
-    if (getDescriptions(q, n).length){
+    if (descCount){
       btns.push({ act:'desc', label:'📝 Описание', cls:'desc has-items' });
     }
     return btns;
   }
 
-  const st = getApproval(q, n).status;
-  const clar = getClarState(q, n);
-  const descCount = getDescriptions(q, n).length;
-
-  if (role === "customer"){
-    if (clar === "none"){
-      if (st === "pending"){
-        btns.push({ act:'ask',     label:'❓ Уточнить',    cls:'ask' });
-        btns.push({ act:'approve', label:'✓ Согласовать', cls:'approve' });
-      }
-    } else if (clar === "awaiting"){
-      btns.push({ act:'open',    label:'💬 Обсуждение',  cls:'open' });
-      btns.push({ act:'approve', label:'✓ Согласовать', cls:'approve',
-                  disabled:true, title:'Согласование недоступно, пока не получен ответ на уточнение' });
-    } else if (clar === "received"){
-      btns.push({ act:'open',    label:'💬 Обсуждение',  cls:'open' });
-      if (st === "pending"){
-        btns.push({ act:'approve', label:'✓ Согласовать', cls:'approve' });
-      }
-    } else if (clar === "approved"){
-      btns.push({ act:'open',    label:'💬 Обсуждение',  cls:'open' });
-    }
-    if (descCount){
-      btns.push({ act:'desc', label:`📝 Описание (${descCount})`, cls:'desc has-items' });
-    }
-  } else if (role === "contractor"){
-    if (clar === "awaiting"){
-      btns.push({ act:'reply',   label:'💬 Ответить',    cls:'reply' });
-    } else if (clar === "received" || clar === "approved"){
-      btns.push({ act:'open',    label:'💬 Обсуждение',  cls:'open' });
-    }
-    if (descCount){
-      btns.push({ act:'desc', label:`📝 Описание (${descCount})`, cls:'desc has-items' });
-    } else {
-      btns.push({ act:'desc', label:'📝 Добавить описание', cls:'desc' });
-    }
+  // Кнопка описания — у всех ролей, кроме наблюдателя
+  if (descCount){
+    btns.push({ act:'desc', label:`📝 Описание (${descCount})`, cls:'desc has-items' });
+  } else {
+    btns.push({ act:'desc', label:'📝 Добавить описание', cls:'desc' });
   }
+
+  // Переключатель Демо — заказчик и исполнитель
+  btns.push({
+    act:'demo',
+    label: demo ? '🎬 Демо: Да ✓' : '🎬 Демо: Нет',
+    cls: 'demo-btn' + (demo ? ' active' : '')
+  });
+
+  // Переключатель Согласована — заказчик и исполнитель
+  btns.push({
+    act:'agree',
+    label: agreed ? '✓ Согласована: Да ✓' : '✓ Согласована: Нет',
+    cls: 'agree-btn' + (agreed ? ' active' : '')
+  });
+
   return btns;
 }
 
 function renderApprovalCell(q, n, role){
-  const a = getApproval(q,n);
-  const st = a.status;
-  const clar = getClarState(q, n);
   const descCount = getDescriptions(q, n).length;
+  const demo = isDemo(q, n);
+  const agreed = isAgreed(q, n);
 
-  const mainBadge = `<span class="badge ${st}">${STATUS_LABELS[st]}</span>`;
-  let clarBadgeHtml = "";
-  if (clar === "awaiting"){
-    clarBadgeHtml = `<span class="clar-status waiting">⏳ Ожидает ответа</span>`;
-  } else if (clar === "received"){
-    clarBadgeHtml = `<span class="clar-status received">✓ Ответ получен</span>`;
-  } else if (clar === "approved"){
-    clarBadgeHtml = `<span class="clar-status approved">✓ Задача согласована</span>`;
-  }
+  const demoChip = demo
+    ? `<span class="flag-chip demo" title="Признак 🎬 Демо: Да">🎬 Демо: Да</span>`
+    : `<span class="flag-chip no" title="Признак 🎬 Демо: Нет">🎬 Демо: Нет</span>`;
 
-  let descBadgeHtml = "";
-  if (descCount){
-    descBadgeHtml = `<span class="clar-status" style="background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe">📝 ${descCount}</span>`;
-  }
+  const agreedChip = agreed
+    ? `<span class="flag-chip agreed" title="Признак ✓ Согласована: Да">✓ Согласована: Да</span>`
+    : `<span class="flag-chip no" title="Признак ✓ Согласована: Нет">✓ Согласована: Нет</span>`;
 
-  let meta = "";
-  if (clar === "approved"){
-    meta = `<div class="appr-meta">
-      <div class="ok-hint">✓ Задача согласована ${escapeHtml(a.changedBy||"")} · ${fmtDate(a.changedAt)}</div>
-    </div>`;
-  } else if (st === "approved"){
-    meta = `<div class="appr-meta">
-      <div><b>Согласовано:</b> ${escapeHtml(a.changedBy||"—")}</div>
-      <div>${fmtDate(a.changedAt)}</div>
-    </div>`;
-  } else if (clar === "awaiting"){
-    if (role === 'contractor'){
-      meta = `<div class="appr-meta block-hint">Требуется ваш ответ на уточнение</div>`;
-    } else {
-      meta = `<div class="appr-meta block-hint">Согласование заблокировано до получения ответа</div>`;
-    }
-  } else if (clar === "received"){
-    meta = `<div class="appr-meta">Ответ получен — можно согласовать или продолжить обсуждение</div>`;
-  } else {
-    meta = `<div class="appr-meta">Ожидает решения</div>`;
-  }
+  const descChip = descCount
+    ? `<span class="flag-chip desc" title="Описаний по задаче">📝 ${descCount}</span>`
+    : '';
+
+  const badgesHtml = `<div class="badges-row">${demoChip}${agreedChip}${descChip}</div>`;
 
   const btnList = buildButtons(q, n, role);
   const btns = btnList.map(b => {
@@ -1341,14 +969,11 @@ function renderApprovalCell(q, n, role){
     attrs.push(`data-act="${b.act}"`);
     attrs.push(`data-q="${q}"`);
     attrs.push(`data-n="${n}"`);
-    if (b.disabled) attrs.push(`disabled`);
-    if (b.title) attrs.push(`title="${escapeHtml(b.title)}"`);
     return `<button class="mini-btn ${b.cls}" ${attrs.join(' ')}>${b.label}</button>`;
   });
   const actions = btns.length ? `<div class="appr-actions">${btns.join("")}</div>` : "";
-  const roleNote = (role === "viewer" && st === "pending" && !descCount) ? `<div class="role-note">Только просмотр</div>` : "";
 
-  return `<div class="badges-row">${mainBadge}${clarBadgeHtml}${descBadgeHtml}</div>${meta}${actions}${roleNote}`;
+  return badgesHtml + actions;
 }
 
 function render(){
@@ -1360,8 +985,14 @@ function render(){
     if(activeQuarter !== "all" && String(q.q) !== String(activeQuarter)) return;
 
     const rows = q.rows.filter(r => {
-      const a = getApproval(q.q, r.n);
-      if(activeStatus !== "all" && a.status !== activeStatus) return false;
+      const demo = isDemo(q.q, r.n);
+      const agreed = isAgreed(q.q, r.n);
+
+      if(activeStatus === "demo"      && !demo) return false;
+      if(activeStatus === "demo-no"   && demo) return false;
+      if(activeStatus === "agreed"    && !agreed) return false;
+      if(activeStatus === "agreed-no" && agreed) return false;
+
       if(!nq) return true;
       return norm(r.akt + " " + r.point + " " + r.desc + " " + r.task).includes(nq);
     });
@@ -1370,8 +1001,8 @@ function render(){
     shown += rows.length;
 
     const qTotal = q.rows.length;
-    const qApproved = q.rows.filter(r => getApproval(q.q, r.n).status === "approved").length;
-    const qPct = qTotal ? Math.round(qApproved / qTotal * 100) : 0;
+    const qAgreed = q.rows.filter(r => isAgreed(q.q, r.n)).length;
+    const qPct = qTotal ? Math.round(qAgreed / qTotal * 100) : 0;
 
     html += `
       <section class="quarter ${collapsed[q.q] ? "collapsed" : ""}" data-q="${q.q}">
@@ -1379,7 +1010,7 @@ function render(){
           <div class="bar"></div>
           <h2>${q.title}</h2>
           <span class="count">${rows.length} ${plural(rows.length)}</span>
-          <div class="mini-progress" title="Согласовано: ${qApproved} из ${qTotal}"><span style="width:${qPct}%"></span></div>
+          <div class="mini-progress" title="Согласовано: ${qAgreed} из ${qTotal}"><span style="width:${qPct}%"></span></div>
           <span style="font-size:12px;color:var(--muted);font-weight:650">${qPct}%</span>
           <span class="caret">▼</span>
         </div>
@@ -1391,7 +1022,7 @@ function render(){
                 <th>Описание (АКТ)</th>
                 <th>Пункт в ТЗ</th>
                 <th>Описание (ТЗ)</th>
-                <th>Согласование</th>
+                <th>Признаки и действия</th>
               </tr>
             </thead>
             <tbody>
@@ -1435,94 +1066,6 @@ function render(){
   updateStats();
 }
 
-function renderClarifications(){
-  const role = currentUser ? currentUser.role : "viewer";
-  const keys = Object.keys(clarificationState).filter(k => clarificationState[k] && clarificationState[k].length);
-
-  let filtered = keys.filter(k => {
-    const bucket = clarBucket(k);
-    if (clarFilter === "awaiting") return bucket === 'awaiting';
-    if (clarFilter === "received") return bucket === 'received';
-    if (clarFilter === "approved") return bucket === 'approved';
-    return true;
-  });
-
-  const order = { awaiting: 0, received: 1, approved: 2 };
-  filtered.sort((a,b) => {
-    const oa = order[clarBucket(a)] ?? 3;
-    const ob = order[clarBucket(b)] ?? 3;
-    if (oa !== ob) return oa - ob;
-    const ta = clarificationState[a].slice(-1)[0].createdAt;
-    const tb = clarificationState[b].slice(-1)[0].createdAt;
-    return tb.localeCompare(ta);
-  });
-
-  if (!filtered.length){
-    clarList.innerHTML = "";
-    clarEmpty.classList.add("show");
-    return;
-  }
-  clarEmpty.classList.remove("show");
-
-  clarList.innerHTML = filtered.map(key => {
-    const [q, n] = key.split('-').map(Number);
-    const thread = clarificationState[key];
-    const last = thread[thread.length - 1];
-    const task = findTask(q, n);
-    const bucket = clarBucket(key);
-
-    const cardClass = bucket === 'awaiting' ? 'open'
-                    : bucket === 'received' ? 'done'
-                    : 'approved';
-
-    let badgeCls = 'waiting';
-    let badgeText = '';
-    if (bucket === 'awaiting'){
-      if (role === 'contractor'){ badgeCls = 'act-required'; badgeText = 'Ждёт вашего ответа'; }
-      else if (role === 'customer'){ badgeCls = 'waiting'; badgeText = 'Ждёт ответа исполнителя'; }
-      else { badgeCls = 'waiting'; badgeText = 'Ожидает ответа'; }
-    } else if (bucket === 'received'){
-      if (role === 'contractor'){ badgeCls = 'done'; badgeText = 'Вы ответили'; }
-      else if (role === 'customer'){ badgeCls = 'done'; badgeText = 'Ответ получен'; }
-      else { badgeCls = 'done'; badgeText = 'Ответ получен'; }
-    } else {
-      badgeCls = 'approved';
-      badgeText = '✓ Задача согласована';
-    }
-
-    const lastPreview = escapeHtml(last.text.length > 140 ? last.text.slice(0,140) + "…" : last.text);
-    const titleText = task
-      ? escapeHtml(task.akt.replace(/\n/g, " ").slice(0, 160))
-      : "";
-
-    return `
-      <div class="clar-card ${cardClass}" data-open-thread="${key}">
-        <div class="clar-card-head">
-          <div class="clar-card-ref">
-            <span class="q-ref">${q} кв · №${n}</span>
-            <span class="p-ref">${escapeHtml(task ? task.point : "")}</span>
-          </div>
-          <span class="wait-badge ${badgeCls}">${badgeText}</span>
-        </div>
-        <div class="clar-card-title">${titleText}</div>
-        <div class="clar-card-last">
-          <span class="who">${escapeHtml(last.user)}:</span>
-          ${lastPreview}
-          <span class="when">${fmtDateShort(last.createdAt)}</span>
-        </div>
-        <div class="clar-card-foot">
-          <span>💬 ${thread.length} ${thread.length === 1 ? 'сообщение' : 'сообщений'}</span>
-          <span>·</span>
-          <span>Последний автор: ${escapeHtml(ROLE_LABELS[last.role] || last.role)}</span>
-        </div>
-      </div>`;
-  }).join("");
-
-  clarList.querySelectorAll("[data-open-thread]").forEach(card => {
-    card.addEventListener("click", () => openClarification(card.dataset.openThread, "open"));
-  });
-}
-
 function renderHistory(){
   if (!historyState.length){
     historyList.innerHTML = `<div class="hist-empty">Пока изменений не было.</div>`;
@@ -1552,234 +1095,27 @@ function renderHistory(){
 }
 
 function updateStats(){
-  const counts = { pending:0, approved:0, total:0 };
+  const counts = { demo:0, agreed:0, total:0 };
   DATA.forEach(q => q.rows.forEach(r => {
-    const st = getApproval(q.q, r.n).status;
-    counts[st] = (counts[st]||0)+1;
+    if (isDemo(q.q, r.n))   counts.demo++;
+    if (isAgreed(q.q, r.n)) counts.agreed++;
     counts.total++;
   }));
   document.querySelectorAll("[data-c]").forEach(el => {
     el.textContent = counts[el.dataset.c] || 0;
   });
-  const pct = counts.total ? Math.round(counts.approved / counts.total * 100) : 0;
+  const pct = counts.total ? Math.round(counts.agreed / counts.total * 100) : 0;
   document.getElementById("progressBar").style.width = pct + "%";
   document.getElementById("progressPct").textContent = pct + "%";
 }
 
 function handleAction(act, q, n){
-  const role = currentUser ? currentUser.role : "viewer";
-
-  if (act === "desc"){
-    openDescriptionModal(rowKey(q, n));
-    return;
-  }
-
-  if (role === "viewer"){ alert("Роль «Наблюдатель» — только просмотр."); return; }
-
-  if (act === "approve"){
-    if (role !== "customer"){ alert("Согласовать может только заказчик."); return; }
-    if (getApproval(q, n).status === "approved") return;
-    if (getClarState(q, n) === "awaiting"){
-      alert("Согласование заблокировано: сначала нужно получить ответ на уточнение.");
-      return;
-    }
-    updateApproval(q, n, "approved");
-    return;
-  }
-  if (act === "ask" || act === "reply" || act === "open"){
-    openClarification(rowKey(q, n), act);
-  }
+  if (act === "desc"){ openDescriptionModal(rowKey(q, n)); return; }
+  if (act === "demo"){ toggleFlag(q, n, 'demo'); return; }
+  if (act === "agree"){ toggleFlag(q, n, 'agreed'); return; }
 }
 
-function renderClarThread(key){
-  const thread = clarificationState[key] || [];
-  const role = currentUser ? currentUser.role : "viewer";
-  const [q, n] = key.split('-').map(Number);
-  const clarState = getClarState(q, n);
-
-  if (!thread.length){
-    clarThread.innerHTML = "";
-  } else {
-    clarThread.innerHTML = thread.map(m => {
-      const mine = currentUser && m.user === currentUser.name;
-      return `
-        <div class="clar-msg ${mine ? 'mine' : 'other'}">
-          <div class="who">
-            <span>${escapeHtml(m.user)} · ${escapeHtml(ROLE_LABELS[m.role] || m.role)}</span>
-            <span class="when">${fmtDateShort(m.createdAt)}</span>
-          </div>
-          <div>${escapeHtml(m.text).replace(/\n/g, "<br>")}</div>
-        </div>`;
-    }).join("");
-    clarThread.scrollTop = clarThread.scrollHeight;
-  }
-
-  if (clarState === 'approved'){
-    clarHead.classList.add('approved');
-  } else {
-    clarHead.classList.remove('approved');
-  }
-
-  if (role === "viewer"){
-    clarInputBlock.style.display = "none";
-    clarReadonly.style.display = "";
-    return;
-  }
-  clarInputBlock.style.display = "";
-  clarReadonly.style.display = "none";
-
-  if (clarState === 'approved'){
-    clarInput.disabled = true;
-    clarSendBtn.style.display = "none";
-    clarInput.value = "";
-    clarInput.placeholder = "Задача согласована";
-    clarHint.textContent = "";
-    clarWaiting.style.display = "";
-    clarWaiting.classList.add('success');
-    clarWaiting.innerHTML = `<span style="font-size:15px">✓</span> <span>Задача согласована заказчиком. Обсуждение закрыто.</span>`;
-    return;
-  }
-
-  clarSendBtn.style.display = "";
-
-  const canWrite = canIWriteNow(key, role);
-  const last = thread[thread.length - 1];
-  let waitingText = "";
-
-  if (!thread.length){
-    if (role === "contractor"){
-      waitingText = "Заказчик ещё не задавал вопросов по этой задаче.";
-    }
-  } else if (!canWrite){
-    waitingText = `Ожидается ответ от ${ROLE_LABELS[last.targetRole] || last.targetRole}. Дождитесь, чтобы продолжить обсуждение.`;
-  }
-
-  if (canWrite){
-    clarInput.disabled = false;
-    clarSendBtn.disabled = false;
-    clarWaiting.classList.remove('success');
-    if (!thread.length){
-      clarInput.placeholder = "Опишите, что именно непонятно в задаче…";
-      clarHint.textContent = "Введите сообщение от 2 символов";
-    } else if (role === 'contractor'){
-      clarInput.placeholder = "Введите ваш ответ на вопрос заказчика…";
-      clarHint.textContent = "Ожидается ваш ответ";
-    } else {
-      clarInput.placeholder = "Задайте новый вопрос или согласуйте задачу…";
-      clarHint.textContent = "После отправки нового вопроса согласование снова заблокируется";
-    }
-    clarHint.style.color = "";
-    clarWaiting.style.display = "none";
-    clarWaiting.textContent = "";
-  } else {
-    clarInput.disabled = true;
-    clarSendBtn.disabled = true;
-    clarInput.value = "";
-    clarInput.placeholder = "Поле недоступно, пока ждём ответ другой стороны…";
-    clarHint.textContent = "";
-    clarWaiting.style.display = waitingText ? "" : "none";
-    clarWaiting.classList.remove('success');
-    clarWaiting.innerHTML = `<span style="font-size:15px">⏳</span> <span>${escapeHtml(waitingText)}</span>`;
-  }
-}
-
-function updateClarModalApproveBtn(key){
-  if (!currentUser){ clarApproveBtn.style.display = "none"; return; }
-  const [q, n] = key.split('-').map(Number);
-  const role = currentUser.role;
-  const st = getApproval(q, n).status;
-  const clar = getClarState(q, n);
-
-  if (role === "customer" && st === "pending" && clar !== "awaiting" && clar !== "approved"){
-    clarApproveBtn.style.display = "";
-  } else {
-    clarApproveBtn.style.display = "none";
-  }
-}
-
-function openClarification(key, mode){
-  openClarKey = key;
-  const [q, n] = key.split('-').map(Number);
-  const task = findTask(q, n);
-  const role = currentUser ? currentUser.role : "viewer";
-  const thread = clarificationState[key] || [];
-  const clarState = getClarState(q, n);
-  const isNew = !thread.length;
-
-  if (clarState === 'approved'){
-    clarTitle.textContent = "Задача согласована";
-  } else if (isNew){
-    clarTitle.textContent = "Уточнение по задаче";
-  } else if (mode === "reply"){
-    clarTitle.textContent = "Ответ на уточнение";
-  } else if (mode === "ask"){
-    clarTitle.textContent = "Новый вопрос по задаче";
-  } else {
-    clarTitle.textContent = "Обсуждение задачи";
-  }
-
-  clarTaskRef.textContent = `${q} квартал · задача №${n} · ${task ? task.point : ""}`;
-  clarTaskTitle.textContent = task ? task.akt.replace(/\n/g, " ") : "";
-
-  clarSendBtn.style.display = role === "viewer" ? "none" : "";
-  clarInput.value = "";
-  clarHint.style.color = "";
-  clarHint.textContent = "Введите сообщение от 2 символов";
-  clarWaiting.style.display = "none";
-  clarWaiting.classList.remove('success');
-
-  renderClarThread(key);
-  updateClarModalApproveBtn(key);
-  clarOverlay.classList.add("show");
-  if (role !== "viewer" && !clarInput.disabled) setTimeout(() => clarInput.focus(), 60);
-}
-function closeClarification(){
-  openClarKey = null;
-  clarOverlay.classList.remove("show");
-}
-
-clarSendBtn.addEventListener("click", async () => {
-  if (clarInput.disabled) return;
-  const text = clarInput.value.trim();
-  if (text.length < 2){
-    clarHint.textContent = "Введите минимум 2 символа";
-    clarHint.style.color = "#d92d20";
-    clarInput.focus();
-    return;
-  }
-  clarHint.style.color = "";
-  if (!openClarKey) return;
-  const key = openClarKey;
-  clarInput.value = "";
-  await addClarificationMessage(key, text);
-});
-
-clarApproveBtn.addEventListener("click", async () => {
-  if (!openClarKey) return;
-  const [q, n] = openClarKey.split('-').map(Number);
-  const role = currentUser ? currentUser.role : "viewer";
-  if (role !== "customer") return;
-  if (getApproval(q, n).status === "approved") return;
-  if (getClarState(q, n) === "awaiting"){
-    alert("Согласование заблокировано: сначала нужно получить ответ на уточнение.");
-    return;
-  }
-  await updateApproval(q, n, "approved");
-});
-
-clarInput.addEventListener("keydown", e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !clarInput.disabled){ clarSendBtn.click(); }
-});
-clarCloseBtn.addEventListener("click", closeClarification);
-clarOverlay.addEventListener("click", e => { if (e.target === clarOverlay) closeClarification(); });
-
-clarJumpBtn.addEventListener("click", () => {
-  if (!openClarKey) return;
-  const [q, n] = openClarKey.split('-').map(Number);
-  closeClarification();
-  jumpToTask(q, n);
-});
-
+/* ========================= ОБРАБОТЧИКИ ========================= */
 descSaveBtn.addEventListener("click", async () => {
   const text = descInput.value.trim();
   if (text.length < 2){
@@ -1811,14 +1147,12 @@ descJumpBtn.addEventListener("click", () => {
 });
 
 function jumpToTask(q, n){
-  activeTab = "tasks";
   activeQuarter = String(q);
   activeStatus = "all";
   query = "";
   document.getElementById("search").value = "";
   document.querySelectorAll("#chips .chip").forEach(c => c.classList.toggle("active", c.dataset.q === String(q)));
   document.querySelectorAll("#statusChips .chip").forEach(c => c.classList.toggle("active", c.dataset.s === "all"));
-  updateTabs();
   render();
   setTimeout(() => {
     const row = document.querySelector(`tr[data-task-key="${q}-${n}"]`);
@@ -1829,22 +1163,6 @@ function jumpToTask(q, n){
     }
   }, 120);
 }
-
-function updateTabs(){
-  if (activeTab === "tasks"){
-    tabTasks.classList.add("active");
-    tabClar.classList.remove("active");
-    tasksView.style.display = "";
-    clarView.style.display = "none";
-  } else {
-    tabTasks.classList.remove("active");
-    tabClar.classList.add("active");
-    tasksView.style.display = "none";
-    clarView.style.display = "";
-  }
-}
-tabTasks.addEventListener("click", () => { activeTab = "tasks"; updateTabs(); });
-tabClar .addEventListener("click", () => { activeTab = "clarifications"; updateTabs(); renderClarifications(); });
 
 let debounce;
 document.getElementById("search").addEventListener("input", e => {
@@ -1864,13 +1182,6 @@ document.getElementById("statusChips").addEventListener("click", e => {
   chip.classList.add("active");
   activeStatus = chip.dataset.s;
   render();
-});
-document.getElementById("clarFilters").addEventListener("click", e => {
-  const chip = e.target.closest(".chip"); if(!chip) return;
-  document.querySelectorAll("#clarFilters .chip").forEach(c => c.classList.remove("active"));
-  chip.classList.add("active");
-  clarFilter = chip.dataset.cf;
-  renderClarifications();
 });
 toggleAllBtn.addEventListener("click", () => {
   const visible = DATA.filter(q => activeQuarter === "all" || String(q.q) === String(activeQuarter));
@@ -1914,13 +1225,10 @@ function applyUserUI(){
     changeUserBtn.style.display = "none";
   }
   render();
-  renderClarifications();
-  updateClarBadge();
 }
 
 function showLogin(){
   document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show'));
-  openClarKey = null;
   openDescKey = null;
 
   try {
@@ -1956,29 +1264,18 @@ loginBtn.addEventListener("click", () => {
   const role = roleOpt ? roleOpt.dataset.role : "customer";
   saveUser({ name, role });
   hideLogin();
-  loadApprovals();
+  loadData();
   startPolling();
 });
 loginName.addEventListener("keydown", e => { if (e.key === "Enter") loginBtn.click(); });
 
 changeUserBtn.addEventListener("click", () => {
   if (!confirm("Сменить пользователя? Текущая сессия завершится.")) return;
-
   stopPolling();
   currentUser = null;
   try { localStorage.removeItem(USER_KEY); } catch(_){}
-
   showLogin();
-
-  setTimeout(() => {
-    try {
-      render();
-      renderClarifications();
-      updateClarBadge();
-    } catch(e){
-      console.error('Render after logout error:', e);
-    }
-  }, 0);
+  setTimeout(() => { try { render(); } catch(e){ console.error(e); } }, 0);
 });
 
 /* ========================= ИСТОРИЯ ========================= */
@@ -1990,32 +1287,28 @@ document.getElementById("historyClose").addEventListener("click", () => historyO
 historyOverlay.addEventListener("click", e => { if (e.target === historyOverlay) historyOverlay.classList.remove("show"); });
 
 document.getElementById("historyClear").addEventListener("click", async () => {
-  if (!confirm("Очистить всю историю изменений? Статусы, обсуждения и описания останутся на месте.")) return;
+  if (!confirm("Очистить всю историю изменений? Описания и признаки останутся на месте.")) return;
   stopPolling();
   try {
-    let freshApprovals = approvalState, freshClar = clarificationState, freshDesc = descriptionState;
+    let freshDesc = descriptionState, freshFlags = flagsState;
     try {
       const json = await fetchRawFromServer();
-      freshApprovals = extractApprovals(json);
-      freshClar      = extractClarifications(json);
-      freshDesc      = extractDescriptions(json);
+      freshDesc  = extractDescriptions(json);
+      freshFlags = extractFlags(json);
     } catch(_) {}
     historyState = [];
-    approvalState = freshApprovals;
-    clarificationState = freshClar;
     descriptionState = freshDesc;
+    flagsState = freshFlags;
     renderHistory();
     render();
-    renderClarifications();
 
     const r = await fetch(`${API_URL}?action=store`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + API_KEY },
       body: JSON.stringify({ data_update: {
-        approvals: freshApprovals,
         history: [],
-        clarifications: freshClar,
-        descriptions: freshDesc
+        descriptions: freshDesc,
+        flags: freshFlags
       }})
     });
     if(!r.ok) throw new Error('HTTP ' + r.status);
@@ -2032,10 +1325,10 @@ function buildPdfHtml(){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const clean = s => esc(String(s||'').replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim());
 
-  const counts = { pending:0, approved:0, total:0 };
+  const counts = { demo:0, agreed:0, total:0 };
   DATA.forEach(q => q.rows.forEach(r => {
-    const st = getApproval(q.q, r.n).status;
-    counts[st] = (counts[st]||0)+1;
+    if (isDemo(q.q, r.n))   counts.demo++;
+    if (isAgreed(q.q, r.n)) counts.agreed++;
     counts.total++;
   }));
 
@@ -2045,19 +1338,16 @@ function buildPdfHtml(){
 
   function tableFor(q){
     const rowsHtml = q.rows.map(r => {
-      const a = getApproval(q.q, r.n);
-      const status = STATUS_LABELS[a.status] || a.status;
-      const by = a.status === "approved" ? (a.changedBy||"—") : "—";
-      const at = a.status === "approved" && a.changedAt ? fmtDate(a.changedAt) : "—";
       const desc = getDescriptions(q.q, r.n).length || "—";
+      const demo = isDemo(q.q, r.n) ? "Да" : "Нет";
+      const agreed = isAgreed(q.q, r.n) ? "Да" : "Нет";
       return `<tr>
         <td class="num">${r.n}</td>
         <td class="point">${clean(r.point)}</td>
         <td class="akt">${clean(r.akt)}</td>
-        <td class="status ${a.status}">${esc(status)}</td>
+        <td class="flag">${demo}</td>
+        <td class="flag">${agreed}</td>
         <td class="desc">${desc}</td>
-        <td class="by">${clean(by)}</td>
-        <td class="date">${at}</td>
       </tr>`;
     }).join('');
 
@@ -2069,10 +1359,9 @@ function buildPdfHtml(){
             <th class="num">№</th>
             <th class="point">Пункт ТЗ</th>
             <th class="akt">Описание (АКТ)</th>
-            <th class="status">Статус</th>
+            <th class="flag">🎬 Демо</th>
+            <th class="flag">✓ Согласована</th>
             <th class="desc">Описаний</th>
-            <th class="by">Согласовал</th>
-            <th class="date">Дата</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
@@ -2084,7 +1373,7 @@ function buildPdfHtml(){
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Согласование 2026</title>
+<title>Признаки задач 2026</title>
 <style>
   @page { size: A4 landscape; margin: 12mm; }
   * { box-sizing: border-box; }
@@ -2093,7 +1382,7 @@ function buildPdfHtml(){
   header h1 { margin: 0 0 4px; font-size: 16pt; }
   header .sub { font-size: 10pt; color: #555; margin: 0; }
   header .meta { font-size: 9.5pt; color: #666; margin-top: 8px; }
-  .summary { display: flex; gap: 18px; margin-bottom: 16px; font-size: 10pt; }
+  .summary { display: flex; gap: 18px; margin-bottom: 16px; font-size: 10pt; flex-wrap: wrap; }
   .summary div { padding: 6px 12px; border: 1px solid #d9dee6; border-radius: 6px; background: #fafbfd; }
   .summary b { color: #1f6feb; }
   section.quarter { margin-bottom: 22px; }
@@ -2104,12 +1393,8 @@ function buildPdfHtml(){
   thead th { background: #e8f0fe; font-weight: 700; font-size: 9pt; }
   td.num { width: 32px; text-align: center; font-weight: 600; }
   td.point { width: 90px; white-space: nowrap; font-weight: 600; }
-  td.status { width: 110px; white-space: nowrap; font-weight: 600; }
-  td.status.approved { color: #0f9d58; }
-  td.status.pending { color: #d97706; }
-  td.desc { width: 70px; text-align: center; font-weight: 600; color: #7c3aed; }
-  td.by { width: 140px; }
-  td.date { width: 120px; white-space: nowrap; }
+  td.flag { width: 90px; text-align: center; font-weight: 600; }
+  td.desc { width: 80px; text-align: center; font-weight: 600; color: #7c3aed; }
   footer { margin-top: 20px; font-size: 9pt; color: #777; text-align: center; }
   @media print {
     thead { display: table-header-group; }
@@ -2119,14 +1404,14 @@ function buildPdfHtml(){
 </head>
 <body>
 <header>
-  <h1>Согласование работ за 2026 год</h1>
+  <h1>Признаки задач за 2026 год</h1>
   <p class="sub">Государственная информационная система Московской области «ЖКХ-Контур Подмосковья»</p>
   <div class="meta">Дата формирования: ${dateStr}</div>
 </header>
 <div class="summary">
   <div>Всего: <b>${counts.total}</b></div>
-  <div>Согласовано: <b>${counts.approved}</b></div>
-  <div>На согласовании: <b>${counts.pending}</b></div>
+  <div>🎬 Демо: Да — <b>${counts.demo}</b></div>
+  <div>✓ Согласована: Да — <b>${counts.agreed}</b></div>
 </div>
 ${DATA.map(q => tableFor(q)).join('')}
 <footer>Документ сформирован автоматически · ${dateStr}</footer>
@@ -2154,26 +1439,109 @@ function exportPdf(){
 }
 pdfBtn.addEventListener("click", exportPdf);
 
+/* ========================= ЭКСПОРТ EXCEL ========================= */
+function buildExcelHtml(){
+  const esc = s => String(s == null ? "" : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const clean = s => esc(String(s||'').replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim());
+
+  const COLS = ["Квартал", "№", "Пункт ТЗ", "Описание (АКТ)", "Описание (ТЗ)",
+                "🎬 Демо", "✓ Согласована", "Описаний"];
+
+  function tableFor(rows){
+    let html = '<table><thead><tr>' + COLS.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+    for (const r of rows){
+      const demo = isDemo(r.q, r.n) ? "Да" : "Нет";
+      const agreed = isAgreed(r.q, r.n) ? "Да" : "Нет";
+      const desc = getDescriptions(r.q, r.n).length || 0;
+      const cells = [
+        r.q + " квартал",
+        r.n,
+        r.point,
+        r.akt,
+        r.desc,
+        demo,
+        agreed,
+        desc
+      ];
+      html += '<tr>' + cells.map(c => `<td>${clean(c)}</td>`).join('') + '</tr>';
+    }
+    html += '</tbody></table>';
+    return html;
+  }
+
+  const allRows = [];
+  DATA.forEach(q => q.rows.forEach(r => allRows.push({ ...r, q: q.q })));
+
+  const sheetNames = ['Все задачи', ...DATA.map(q => `${q.q} квартал`)];
+  const sheetXml = sheetNames.map(n => `
+    <x:ExcelWorksheet>
+      <x:Name>${n}</x:Name>
+      <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+    </x:ExcelWorksheet>`).join('');
+
+  const tables = [
+    tableFor(allRows),
+    ...DATA.map(q => tableFor(q.rows.map(r => ({ ...r, q: q.q }))))
+  ];
+
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<!--[if gte mso 9]>
+<xml>
+<x:ExcelWorkbook>
+<x:ExcelWorksheets>${sheetXml}</x:ExcelWorksheets>
+</x:ExcelWorkbook>
+</xml>
+<![endif]-->
+<style>
+  table { border-collapse: collapse; font-family: Arial, sans-serif; font-size: 10pt; }
+  th, td { border: 1px solid #c9d2dd; padding: 4px 8px; vertical-align: top; }
+  th { background: #e8f0fe; font-weight: bold; text-align: left; }
+  td { mso-number-format:"\\@"; }
+</style>
+</head>
+<body>
+${tables.join('\n')}
+</body>
+</html>`;
+}
+
+function exportExcel(){
+  const html = buildExcelHtml();
+  const blob = new Blob(["\ufeff", html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const d = new Date();
+  const p = n => String(n).padStart(2,"0");
+  const fname = `Признаки_2026_${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}.xls`;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fname;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+excelBtn.addEventListener("click", exportExcel);
+
 document.addEventListener("keydown", e => {
   if (e.key === "Escape"){
-    if (clarOverlay.classList.contains("show")) closeClarification();
-    else if (descOverlay.classList.contains("show")) closeDescriptionModal();
+    if (descOverlay.classList.contains("show")) closeDescriptionModal();
     else if (historyOverlay.classList.contains("show")) historyOverlay.classList.remove("show");
   }
 });
 
 /* ========================= INIT ========================= */
 (async () => {
-  updateTabs();
   render();
-  renderClarifications();
   syncToggleAll();
 
   const saved = loadSavedUser();
   if (saved){
     currentUser = saved;
     applyUserUI();
-    loadApprovals();
+    loadData();
     startPolling();
   } else {
     applyUserUI();
