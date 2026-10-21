@@ -71,6 +71,26 @@
   .rp-steps li::before{content:counter(rp); flex:0 0 auto; width:22px;height:22px;border-radius:6px;background:var(--accent); color:#fff; font-size:11.5px;font-weight:700;display:grid;place-items:center; margin-top:1px;}
   .rp-result{margin-top:14px; padding:11px 14px; background:#f0fdf4;border:1px solid #bbf7d0; color:#166534; border-radius:10px; font-size:13.5px;}
 
+  /* Ongoing actions (сквозные) */
+  .rp-ongoing{margin-top:14px;padding:12px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;}
+  .rp-ongoing-title{font-weight:700;font-size:12px;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .rp-ongoing-title::before{content:'∞';font-size:16px;line-height:1}
+  .rp-ongoing ul{margin:0;padding-left:18px;font-size:13px;color:#5b4a2e;line-height:1.5}
+  .rp-ongoing li{margin-bottom:6px}
+  .rp-ongoing li:last-child{margin-bottom:0}
+
+  /* Alternative steps (альтернативные) */
+  .rp-alt{margin-top:14px;padding:12px 14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;}
+  .rp-alt-title{font-weight:700;font-size:12px;color:#9a3412;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .rp-alt-title::before{content:'⑂';font-size:16px;line-height:1}
+  .rp-alt-item{padding:11px 13px;background:#fff;border-radius:8px;border:1px solid #fde68a;margin-bottom:8px;}
+  .rp-alt-item:last-child{margin-bottom:0}
+  .rp-alt-cond{font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px;display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+  .rp-alt-cond::before{content:'ЕСЛИ';flex:0 0 auto;font-size:10px;background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:4px;letter-spacing:.03em}
+  .rp-alt-cond span{flex:1;font-weight:600}
+  .rp-alt-action{font-size:13px;color:#414a60;line-height:1.55;padding-left:44px}
+  .rp-alt-action b{color:#15803d}
+
   .role-tag{display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px;font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;white-space:nowrap;}
   .role-tag.rp{background:#eef0ff;color:#4338ca}
   .role-tag.designer{background:#fef3c7;color:#b45309}
@@ -80,21 +100,9 @@
   .role-tag.writer{background:#dbeafe;color:#1e40af}
   .role-tag.lead{background:#f3e8ff;color:#7e22ce}
   .role-tag.stp{background:#fed7aa;color:#9a3412}
-  .role-tag.all{background:#f0f1f7;color:#5b6377}
 
-  .lifecycle{
-    display:grid;
-    grid-template-columns:
-      minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto
-      minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);
-    gap:0; align-items:stretch; margin-bottom:22px;
-  }
-  .lc-stage{
-    border:1px solid var(--border); border-radius:11px;
-    padding:12px 14px; background:#fff;
-    display:flex; flex-direction:column; gap:6px;
-    min-width:0;
-  }
+  .lifecycle{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:0; align-items:stretch; margin-bottom:22px;}
+  .lc-stage{border:1px solid var(--border); border-radius:11px;padding:12px 14px; background:#fff;display:flex; flex-direction:column; gap:6px;min-width:0;}
   .lc-num{width:22px;height:22px;border-radius:6px;background:var(--accent);color:#fff;font-size:11.5px;font-weight:700;display:grid;place-items:center;}
   .lc-title{font-weight:650;font-size:13px;line-height:1.2;overflow-wrap:anywhere}
   .lc-roles{display:flex;gap:4px;flex-wrap:wrap}
@@ -121,6 +129,8 @@
   .rule-list b{font-weight:600}
   .rule-list li.highlight{background:#f5f7ff; border:1px solid #dfe3fb; border-radius:11px; padding:11px 13px}
   .rule-list li.highlight .dot{background:var(--accent); color:#fff}
+  .rule-list li.bug-highlight{background:#fff7ed; border:1px solid #fed7aa; border-radius:11px; padding:11px 13px}
+  .rule-list li.bug-highlight .dot{background:#ea580c; color:#fff}
 
   table{width:100%; border-collapse:collapse; font-size:13.5px}
   th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top}
@@ -157,7 +167,9 @@
   .pill.track-test{background:#ffe4e6; color:#9f1239}
   .pill.status-new{background:#dbeafe; color:#1d4ed8}
   .pill.status-work{background:#dcfce7; color:#15803d}
-  .pill.status-review{background:#fed7aa; color:#9a3412}
+  .pill.status-review{background:#fed7aa; color:#9a3412; border:1px solid #fdba74}
+  .pill.status-solved{background:#d1fae5; color:#065f46; border:1px solid #10b981}
+  .pill.status-deploy-test{background:#cffafe; color:#0e7490; border:1px solid #67e8f9}
   .pill.status-done{background:#e5e7eb; color:#374151}
   .pill.fb{background:#fce7f3; color:#9d174d}
   .pill.est{background:#fef3c7; color:#b45309}
@@ -179,7 +191,6 @@
   .pill.dev{background:#d1fae5; color:#065f46}
   .pill.stage{background:#fef3c7; color:#92400e; border:1px solid #fcd34d}
   .pill.prod{background:#fee2e2; color:#991b1b; border:1px solid #fca5a5}
-  .pill.lead-only{background:#f3e8ff; color:#6b21a8; border:1px dashed #a855f7}
   .pill.tc{background:#e0f2fe; color:#075985; border:1px solid #7dd3fc}
 
   .pill.label-dev{background:#c7f9e5; color:#065f46; border:1px dashed #10b981}
@@ -189,24 +200,12 @@
   .pill.label-smoke{background:#fee2e2; color:#991b1b; border:1px dashed #f87171}
   .pill.label-smoke-done{background:#fecaca; color:#7f1d1d; border:1px solid #dc2626}
 
-  .label-flow{
-    display:grid;
-    grid-template-columns:repeat(6, minmax(0,1fr));
-    gap:8px; margin:14px 0;
-  }
-  .label-step{
-    border:1px solid var(--border); border-radius:11px;
-    padding:12px 12px; background:#fff;
-    display:flex; flex-direction:column; gap:8px;
-    text-align:center;
-  }
+  .label-flow{display:grid;grid-template-columns:repeat(6, minmax(0,1fr));gap:8px; margin:14px 0;}
+  .label-step{border:1px solid var(--border); border-radius:11px;padding:12px 12px; background:#fff;display:flex; flex-direction:column; gap:8px;text-align:center;}
   .label-step.dev-c{border-color:#a7f3d0; background:#f0fdf4}
   .label-step.stage-c{border-color:#fcd34d; background:#fffbeb}
   .label-step.prod-c{border-color:#fca5a5; background:#fef2f2}
-  .label-step .ls-contour{
-    font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
-    color:var(--muted);
-  }
+  .label-step .ls-contour{font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;color:var(--muted);}
   .label-step .ls-pill{margin:0 auto}
   .label-step .ls-desc{font-size:11.5px; color:var(--muted); line-height:1.35}
   .label-step .ls-role{margin:4px auto 0}
@@ -255,7 +254,9 @@
   .doc-arrow{display:flex; align-items:center; justify-content:center; padding:0 10px; color:#c7cbe0; font-size:20px}
 
   .review-flow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:0; align-items:stretch; margin:6px 0 4px}
+  .review-flow.review-flow-5{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1fr}
   .review-flow.review-flow-4{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr}
+  .review-flow.review-flow-3{grid-template-columns:1fr auto 1fr auto 1fr}
   .review-step{border:1px solid var(--border); border-radius:11px; padding:14px 16px; background:#fff}
   .review-step .step-num{display:inline-block; width:22px; height:22px; border-radius:7px;background:#fed7aa; color:#9a3412;font-size:11.5px; font-weight:700; text-align:center; line-height:22px; margin-bottom:6px;}
   .review-step .step-title{font-weight:650; font-size:13px; margin-bottom:4px}
@@ -266,6 +267,10 @@
   .review-step.prod .step-num{background:#fee2e2; color:#991b1b}
   .review-step.lead .step-num{background:#f3e8ff; color:#7e22ce}
   .review-step.tc .step-num{background:#e0f2fe; color:#075985}
+  .review-step.bug .step-num{background:#ffedd5; color:#9a3412; border:1px solid #fb923c}
+  .review-step.review .step-num{background:#fed7aa; color:#9a3412; border:1px solid #fdba74}
+  .review-step.solved .step-num{background:#d1fae5; color:#065f46; border:1px solid #10b981}
+  .review-step.correction .step-num{background:#ffe4e6; color:#9f1239; border:1px solid #fda4af}
 
   .contour-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0; align-items:stretch; margin:6px 0 14px;}
   .contour-step{border:1px solid var(--border); border-radius:11px;padding:14px 16px; background:#fff;}
@@ -322,12 +327,14 @@
   .mc-item .mc-role.stp{background:#fed7aa;color:#9a3412}
   .mc-item .mc-role.writer{background:#dbeafe;color:#1e40af}
   .mc-item .mc-role.lead{background:#f3e8ff;color:#7e22ce}
+  .mc-item.alt-cond{background:#fff7ed}
+  .mc-item.alt-cond label::before{content:'ЕСЛИ';flex:0 0 auto;font-size:9px;background:#fef3c7;color:#92400e;padding:2px 5px;border-radius:4px;font-weight:700;margin-right:2px}
 
   @media (max-width: 1180px){
     .lifecycle{grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px}
     .lc-arrow{display:none}
-    .review-flow, .review-flow.review-flow-4{grid-template-columns:1fr; gap:8px}
-    .review-flow .doc-arrow, .review-flow.review-flow-4 .doc-arrow{transform:rotate(90deg); padding:4px 0}
+    .review-flow, .review-flow.review-flow-5, .review-flow.review-flow-4, .review-flow.review-flow-3{grid-template-columns:1fr; gap:8px}
+    .review-flow .doc-arrow, .review-flow.review-flow-5 .doc-arrow, .review-flow.review-flow-4 .doc-arrow, .review-flow.review-flow-3 .doc-arrow{transform:rotate(90deg); padding:4px 0}
     .contour-flow{grid-template-columns:1fr; gap:8px}
     .contour-flow .doc-arrow{transform:rotate(90deg); padding:4px 0}
   }
@@ -413,7 +420,7 @@
     <!-- 1 -->
     <section class="card" id="roles-start">
       <header><div class="badge-num">1</div><h2>Что делать по ролям</h2></header>
-      <p class="hint" style="margin-bottom:16px">Выберите роль сверху — увидите подробный алгоритм.</p>
+      <p class="hint" style="margin-bottom:16px">Выберите роль сверху — увидите подробный алгоритм. Если в роли есть <b>сквозные действия</b> — они выполняются на всём протяжении задачи. <b>Альтернативные шаги</b> — только при выполнении условия.</p>
 
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">Жизненный цикл задачи</h3>
       <div class="lifecycle">
@@ -442,7 +449,7 @@
           <div class="lc-num">4</div>
           <div class="lc-title">Разработка (DEV)</div>
           <div class="lc-roles"><span class="role-tag front">Front</span><span class="role-tag back">Back</span><span class="role-tag lead">Лид</span></div>
-          <div class="lc-desc">Реализация, ревью, публикация, закрытие</div>
+          <div class="lc-desc">«Проверка кода» / «Развернута на тесте»</div>
         </div>
         <div class="lc-arrow">→</div>
         <div class="lc-stage">
@@ -497,40 +504,42 @@
           <ul class="rc-bullets">
             <li>Списывает трудозатраты перед ревью</li>
             <li>Ревью ТЗ: «Ответственный за ревью», чат, встреча</li>
-            <li>Закрывает после согласования</li>
+            <li><b>Корректировки ТЗ:</b> правки → повторное согласование</li>
           </ul>
           <button class="rc-btn" data-role="analytics">Показать мой алгоритм →</button>
         </div>
 
         <div class="role-card">
           <div class="rc-head"><span class="rc-icon">🖥</span><div><div class="rc-name">Front-разработчик</div><div class="rc-sub">Направление Front</div></div></div>
-          <div class="rc-when"><b>Когда:</b> назначена Front-задача</div>
+          <div class="rc-when"><b>Когда:</b> назначена Front-задача (Улучшение или Ошибка)</div>
           <ul class="rc-bullets">
             <li>Оценка, Направление = FRONT</li>
-            <li>Списывает трудозатраты перед ревью</li>
-            <li>Передаёт Лиду/заму. <b>Закрывает Лид/зам.</b></li>
+            <li><b>Перед передачей на ревью:</b> трудозатраты + статус Улучшения <span class="pill status-review">Проверка кода</span></li>
+            <li>Для Ошибки — <span class="pill status-deploy-test">Развернута на тесте (контур)</span></li>
+            <li>Закрытие: Улучшение — Лид, Ошибка — Тест</li>
           </ul>
           <button class="rc-btn" data-role="front">Показать мой алгоритм →</button>
         </div>
 
         <div class="role-card">
           <div class="rc-head"><span class="rc-icon">⚙️</span><div><div class="rc-name">Back-разработчик</div><div class="rc-sub">Направление Back</div></div></div>
-          <div class="rc-when"><b>Когда:</b> назначена Back-задача</div>
+          <div class="rc-when"><b>Когда:</b> назначена Back-задача (Улучшение или Ошибка)</div>
           <ul class="rc-bullets">
             <li>Оценка, Направление = BACK</li>
-            <li>Списывает трудозатраты перед ревью</li>
-            <li>Передаёт Лиду/заму. <b>Закрывает Лид/зам.</b></li>
+            <li><b>Перед передачей на ревью:</b> трудозатраты + статус Улучшения <span class="pill status-review">Проверка кода</span></li>
+            <li>Для Ошибки — <span class="pill status-deploy-test">Развернута на тесте (контур)</span></li>
+            <li>Закрытие: Улучшение — Лид, Ошибка — Тест</li>
           </ul>
           <button class="rc-btn" data-role="back">Показать мой алгоритм →</button>
         </div>
 
         <div class="role-card">
           <div class="rc-head"><span class="rc-icon">🧪</span><div><div class="rc-name">Тестировщик</div><div class="rc-sub">Test · 3 контура + тест-кейсы</div></div></div>
-          <div class="rc-when"><b>Когда:</b> после согласования ТЗ → тест-кейсы; DEV / STAGE / PROD → тесты</div>
+          <div class="rc-when"><b>Когда:</b> после ТЗ → тест-кейсы; DEV/STAGE/PROD → тесты; Ошибки → закрывает</div>
           <ul class="rc-bullets">
-            <li><b>Пишет тест-кейсы в описании тест-задачи</b> после ТЗ</li>
+            <li>Пишет тест-кейсы в описании тест-задачи</li>
             <li>DEV → «Протестировано на DEV»</li>
-            <li>STAGE → «Регресс завершен» · PROD → «Смоук проведен»</li>
+            <li><b>Ошибки: закрывает после проверки</b></li>
           </ul>
           <button class="rc-btn" data-role="tester">Показать мой алгоритм →</button>
         </div>
@@ -551,19 +560,19 @@
           <div class="rc-when"><b>Когда:</b> после «Регресс завершен» — задачи готовы к PROD</div>
           <ul class="rc-bullets">
             <li>Сообщение в чате о техработах</li>
-            <li><b>Не публикует на контура</b> — координирует</li>
+            <li>Публикацию не выполняет</li>
             <li>Релиз-ноут, письмо, уведомление в чате</li>
           </ul>
           <button class="rc-btn" data-role="stp">Показать мой алгоритм →</button>
         </div>
 
         <div class="role-card">
-          <div class="rc-head"><span class="rc-icon">👤</span><div><div class="rc-name">Лид / зам направления</div><div class="rc-sub">Публикация + закрытие Front/Back</div></div></div>
-          <div class="rc-when"><b>Когда:</b> ревью ТЗ; проверка кода; <b>публикация на контура; закрытие Front/Back</b></div>
+          <div class="rc-head"><span class="rc-icon">👤</span><div><div class="rc-name">Лид / зам направления</div><div class="rc-sub">Ревью + публикация + закрытие Улучшений</div></div></div>
+          <div class="rc-when"><b>Когда:</b> ревью ТЗ; проверка кода; публикация; закрытие Улучшений</div>
           <ul class="rc-bullets">
-            <li>Ревью ТЗ, проверка кода</li>
-            <li><b>Публикация на DEV / STAGE / PROD</b></li>
-            <li><b>Закрывает Front/Back задачи</b> после DEV (при списанных трудозатратах)</li>
+            <li><b>Улучшение:</b> ревью → «Решена» → DEV → <b>закрыть</b></li>
+            <li><b>Ошибка:</b> ревью → контур (не закрывать — закроет Тест)</li>
+            <li>Публикация на STAGE и PROD</li>
           </ul>
           <button class="rc-btn" data-role="lead">Показать мой алгоритм →</button>
         </div>
@@ -574,30 +583,32 @@
     <section class="card" id="principles">
       <header><div class="badge-num">2</div><h2>Общие принципы</h2></header>
       <ul class="rule-list">
-        <li><span class="dot">1</span><div>Все задачи — <b>в проекте исполнителя</b>. Родительская: трекер <code>Структура</code>, статус <code>Backlog</code>, релиз <code>Backlog</code>. Инициатор — <b>РП</b> (от заказчика) или <b>Лид/зам</b> (техдолг, рефакторинг, баг).</div></li>
-        <li><span class="dot">2</span><div><b>Дочерние задачи</b> — свой трекер по направлению. Статус <code>Backlog</code>.</div></li>
-        <li class="highlight"><span class="dot">3</span><div><b>Взятие в работу:</b> трекер не меняется, статус <code>Новая</code>/<code>В работе</code>, задача переводится в актуальный <b>релиз и спринт</b>, ставятся <b>Дата начала</b> и <b>Срок завершения</b>. Раньше — <b>фактическая дата закрытия</b>.</div></li>
-        <li class="highlight"><span class="dot">4</span><div><b>Оценка временных затрат</b> (с риском <b>+20 %</b>, в ч и днях) — обязательна для каждой задачи. <b>Исполнитель при получении задачи от лида проверяет и проставляет оценку</b> по своему направлению, если она ещё не заполнена.</div></li>
-        <li class="highlight"><span class="dot">5</span><div><b>Ревью обязательно:</b> аналитика — ревью ТЗ (все лиды); Front/Back — статус <b>«Проверка кода»</b> → фидбек лида → <b>публикация на DEV</b> (публикует Лид/зам) + метка <b>«Развернута на DEV»</b>.</div></li>
-        <li class="highlight"><span class="dot">6</span><div><b>Жизненный путь меток по контурам:</b><br>
-          <span class="pill label-dev">Развернута на DEV</span> →
-          <span class="pill label-tested">Протестировано на DEV</span> →
-          <span class="pill label-regress">Регресс</span> →
-          <span class="pill label-regress-done">Регресс завершен</span> →
-          <span class="pill label-smoke">Смоук</span> →
-          <span class="pill label-smoke-done">Смоук проведен</span>.
+        <li><span class="dot">1</span><div>Все задачи — <b>в проекте исполнителя</b>. Родительская: <code>Структура</code>, <code>Backlog</code>, релиз <code>Backlog</code>. Инициатор — <b>РП</b> (от заказчика) или <b>Лид/зам</b>.</div></li>
+        <li><span class="dot">2</span><div><b>Дочерние задачи</b> — свой трекер по направлению. Статус <code>Backlog</code>. Тип: <b>Улучшение</b> или <b>Ошибка</b>.</div></li>
+        <li class="highlight"><span class="dot">3</span><div><b>Взятие в работу:</b> трекер не меняется, статус <code>Новая</code>/<code>В работе</code>, задача переводится в актуальный <b>релиз и спринт</b>, ставятся <b>Дата начала</b> и <b>Срок завершения</b>.</div></li>
+        <li class="highlight"><span class="dot">4</span><div><b>Оценка временных затрат</b> (с риском <b>+20 %</b>) — обязательна. <b>Исполнитель при получении задачи проверяет и проставляет оценку</b>, если не заполнена.</div></li>
+        <li class="highlight"><span class="dot">5</span><div><b>Ревью обязательно:</b> аналитика — ревью ТЗ; Front/Back — проверка кода Лидом. Публикация на DEV — только Лид/зам.</div></li>
+        <li class="highlight"><span class="dot">6</span><div><b>Жизненный путь меток:</b> <span class="pill label-dev">Развернута на DEV</span> → <span class="pill label-tested">Протестировано на DEV</span> → <span class="pill label-regress">Регресс</span> → <span class="pill label-regress-done">Регресс завершен</span> → <span class="pill label-smoke">Смоук</span> → <span class="pill label-smoke-done">Смоук проведен</span>.</div></li>
+        <li class="highlight"><span class="dot">7</span><div><b>Публикацию на любой контур выполняет только Лид направления или его зам.</b> Разработчик, тестировщик, СТП не публикуют.</div></li>
+        <li class="highlight"><span class="dot">8</span><div><b>СТП оповещается только перед PROD</b> (после «Регресс завершен»). На DEV и STAGE — оповещения нет.</div></li>
+        <li class="bug-highlight"><span class="dot">9</span><div><b>WORKFLOW «Ошибка» (баг):</b><br>
+          • Разработчик завершил фикс → сам ставит <b><span class="pill status-deploy-test">Развернута на тесте (контур)</span></b>.<br>
+          • Лид/зам — <b>проверяет код и публикует на контур</b>, но <b>не закрывает</b>.<br>
+          • <b>Тестировщик — закрывает задачу</b> после проверки на контуре.
         </div></li>
-        <li class="highlight"><span class="dot">7</span><div><b>Публикацию на любой контур выполняет только Лид направления или его зам.</b> Разработчик, тестировщик, СТП не публикуют на контура.</div></li>
-        <li class="highlight"><span class="dot">8</span><div><b>СТП оповещается только перед PROD</b> (после «Регресс завершен»). На DEV и STAGE — оповещения нет. <b>СТП не публикует на PROD</b> — публикует Лид/зам; СТП формирует сообщение, релиз-ноут, письмо, уведомление.</div></li>
-        <li class="highlight"><span class="dot">9</span><div><b>Баги при тестировании</b> создаются <b>только как дочерние задачи своей тест-задачи</b>. Статус — <b>Новая</b>. Обязательно: <b>приоритет</b>, <b>критичность</b>, <b>исполнитель</b>.</div></li>
-        <li class="highlight"><span class="dot">10</span><div><b>Hotfix</b> (срочные баги): отдельный релиз, только нужные задачи, тот же workflow, срочно.</div></li>
-        <li class="highlight"><span class="dot">11</span><div><b>Документация:</b> если функционал изменён — <b>аналитик у родительской задачи</b> ставит <span class="pill doc-need">требует корректировок</span>. Тех.пис: отчёт → правки → <b>прикрепить к задаче + Confluence</b> → <span class="pill doc-done">изменения внесены</span>.</div></li>
-        <li><span class="dot">12</span><div><b>Связи:</b> дочерняя → родительская (<code>Parent / Child</code>); <b>только родительская → задача заказчика</b>.</div></li>
-        <li><span class="dot">13</span><div><b>Направление</b> — только <span class="dir front">Front</span> / <span class="dir back">Back</span>. Для Front/Back <b>поле заполняется обязательно</b>.</div></li>
-        <li class="highlight"><span class="dot">14</span><div><b>Наименование:</b> <code>ФБ. Стори. Направление</code> — для всех задач.</div></li>
-        <li class="highlight"><span class="dot">15</span><div><b>Трудозатраты — обязательны до ревью:</b> перед передачей задачи на ревью (код / ТЗ) исполнитель проверяет, что <b>трудозатраты по задаче списаны</b>. Без списанных трудозатрат <b>задачу закрыть невозможно</b>. Раньше срока — <b>фактическая дата закрытия</b>.</div></li>
-        <li class="highlight"><span class="dot">16</span><div><b>Тест-кейсы:</b> после <b>согласования ТЗ</b> тестировщик пишет тест-кейсы <b>в описании своей тест-задачи</b> — параллельно с разработкой, чтобы к моменту готовности DEV они были готовы.</div></li>
-        <li class="highlight"><span class="dot">17</span><div><b>Закрытие Front/Back задач:</b> задачу закрывает <b>только Лид направления или его зам</b> — после публикации на DEV и проверки списанных трудозатрат. Разработчик задачу не закрывает.</div></li>
+        <li class="highlight"><span class="dot">10</span><div><b>WORKFLOW «Улучшение» (новая функциональность):</b><br>
+          • Разработчик завершил работу. <b>Перед передачей на ревью проверяет списание трудозатрат</b> и <b>ставит <span class="pill status-review">Проверка кода</span></b>.<br>
+          • Лид/зам — <b>проводит ревью кода</b>. После успешного ревью ставит <b><span class="pill status-solved">Решена</span></b>.<br>
+          • Лид/зам — публикует на DEV + метка и <b>закрывает задачу</b>.
+        </div></li>
+        <li class="highlight"><span class="dot">11</span><div><b>Баги при тестировании</b> создаются <b>только как дочерние задачи своей тест-задачи</b>. Статус — <b>Новая</b>. Обязательно: <b>приоритет</b>, <b>критичность</b>, <b>исполнитель</b>.</div></li>
+        <li class="highlight"><span class="dot">12</span><div><b>Hotfix</b> (срочные баги): отдельный релиз, только нужные задачи, тот же workflow, срочно.</div></li>
+        <li class="highlight"><span class="dot">13</span><div><b>Документация:</b> если функционал изменён — <b>аналитик у родительской</b> ставит <span class="pill doc-need">требует корректировок</span>. Тех.пис: отчёт → правки → <b>прикрепить к задаче + Confluence</b> → <span class="pill doc-done">изменения внесены</span>.</div></li>
+        <li><span class="dot">14</span><div><b>Связи:</b> дочерняя → родительская (<code>Parent / Child</code>); <b>только родительская → задача заказчика</b>.</div></li>
+        <li><span class="dot">15</span><div><b>Направление</b> — только <span class="dir front">Front</span> / <span class="dir back">Back</span>. Для Front/Back <b>поле заполняется обязательно</b>.</div></li>
+        <li class="highlight"><span class="dot">16</span><div><b>Наименование:</b> <code>ФБ. Стори. Направление</code>.</div></li>
+        <li class="highlight"><span class="dot">17</span><div><b>Трудозатраты обязательны до ревью:</b> перед передачей на ревью исполнитель проверяет <b>списание трудозатрат</b>. Без них задачу закрыть невозможно.</div></li>
+        <li class="highlight"><span class="dot">18</span><div><b>Тест-кейсы:</b> после <b>согласования ТЗ</b> тестировщик пишет тест-кейсы <b>в описании тест-задачи</b> — параллельно с разработкой.</div></li>
       </ul>
     </section>
 
@@ -613,12 +624,13 @@
             <tr><td>Родительская</td><td><span class="pill struct">Структура</span></td><td><span class="pill warn">Backlog</span></td></tr>
             <tr><td>Дочерняя — <span class="dir design">Design</span></td><td><span class="pill track-design">Дизайн</span></td><td><span class="pill warn">Backlog</span></td></tr>
             <tr><td>Дочерняя — <span class="dir analytics">Analytics</span></td><td><span class="pill track-analytics">Аналитика</span></td><td><span class="pill warn">Backlog</span></td></tr>
-            <tr><td>Дочерняя — <span class="dir front">Front</span> / <span class="dir back">Back</span></td><td><span class="pill improve">Улучшение</span> / <span class="pill bug">Ошибка</span></td><td><span class="pill warn">Backlog</span></td></tr>
+            <tr><td>Дочерняя — <span class="dir front">Front</span> / <span class="dir back">Back</span> (разработка)</td><td><span class="pill improve">Улучшение</span></td><td><span class="pill warn">Backlog</span></td></tr>
+            <tr><td>Дочерняя — <span class="dir front">Front</span> / <span class="dir back">Back</span> (баг)</td><td><span class="pill bug">Ошибка</span></td><td><span class="pill warn">Backlog</span></td></tr>
             <tr><td>Дочерняя — <span class="dir test">Test</span></td><td><span class="pill track-test">Тестирование</span></td><td><span class="pill warn">Backlog</span></td></tr>
             <tr style="background:#fff7ed;">
               <td><b>Bug-report</b> (дочерняя тест-задачи)</td>
               <td><span class="pill bug">Ошибка</span></td>
-              <td><span class="pill status-new">Новая</span> (не Backlog!)<br><span class="hint">+ приоритет, критичность, исполнитель</span></td>
+              <td><span class="pill status-new">Новая</span> (не Backlog!)</td>
             </tr>
           </tbody>
         </table>
@@ -627,20 +639,22 @@
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">3.2. Статусы жизненного цикла</h3>
       <div class="table-wrap" style="margin-bottom:20px">
         <table>
-          <thead><tr><th style="width:28%">Статус</th><th>Когда</th></tr></thead>
+          <thead><tr><th style="width:32%">Статус</th><th>Когда применяется</th></tr></thead>
           <tbody>
             <tr><td><span class="pill warn">Backlog</span></td><td>Задача создана, ещё не взята в работу</td></tr>
-            <tr><td><span class="pill status-new">Новая</span></td><td>Взята в работу; <b>или создан bug-report</b> с назначенным исполнителем</td></tr>
+            <tr><td><span class="pill status-new">Новая</span></td><td>Взята в работу; или создан bug-report с исполнителем</td></tr>
             <tr><td><span class="pill status-work">В работе</span></td><td>Исполнитель выполняет</td></tr>
-            <tr><td><span class="pill status-review">Проверка кода</span></td><td>Front/Back завершена, ждёт лида направления. <b>Трудозатраты списаны.</b></td></tr>
+            <tr style="background:#fff7ed;"><td><span class="pill status-review">Проверка кода</span></td><td><b>Улучшение:</b> разработчик <b>сам</b> ставит перед передачей на ревью (после списания трудозатрат). Задача ждёт ревью Лида/зама.</td></tr>
+            <tr style="background:#ecfdf5;"><td><span class="pill status-solved">Решена</span></td><td><b>Улучшение:</b> Лид/зам ставит после <b>успешного ревью кода</b>. Далее — публикация на DEV и закрытие.</td></tr>
+            <tr style="background:#ecfeff;"><td><span class="pill status-deploy-test">Развернута на тесте (контур)</span></td><td><b>Ошибка:</b> разработчик <b>сам</b> ставит после фикса. Задача доступна для проверки тестировщику.</td></tr>
             <tr><td><span class="pill dev">На DEV</span></td><td>Лид/зам опубликовал + метка «Развернута на DEV»</td></tr>
-            <tr><td><span class="pill status-done">Закрыта</span></td><td>Работа принята, <b>списание трудозатрат выполнено</b></td></tr>
+            <tr><td><span class="pill status-done">Закрыта</span></td><td>Работа принята, списание трудозатрат выполнено</td></tr>
           </tbody>
         </table>
       </div>
 
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">3.3. Метки задачи по контурам</h3>
-      <p class="hint" style="margin-bottom:14px">Метки последовательно проставляются по мере прохождения контуров. По меткам строятся отчёты в Redmine.</p>
+      <p class="hint" style="margin-bottom:14px">Метки последовательно проставляются по мере прохождения контуров.</p>
 
       <div class="label-flow">
         <div class="label-step dev-c">
@@ -658,13 +672,13 @@
         <div class="label-step stage-c">
           <div class="ls-contour">STAGE · ставит тестировщик</div>
           <div class="ls-pill"><span class="pill label-regress">Регресс</span></div>
-          <div class="ls-desc">Лид/зам опубликовал на STAGE → начинается регресс</div>
+          <div class="ls-desc">Лид/зам опубликовал на STAGE → регресс</div>
           <div class="ls-role"><span class="role-tag tester">Test</span></div>
         </div>
         <div class="label-step stage-c">
           <div class="ls-contour">STAGE · ставит тестировщик</div>
           <div class="ls-pill"><span class="pill label-regress-done">Регресс завершен</span></div>
-          <div class="ls-desc">Готово к PROD → <b>оповещение СТП</b></div>
+          <div class="ls-desc">Готово к PROD → оповещение СТП</div>
           <div class="ls-role"><span class="role-tag tester">Test</span></div>
         </div>
         <div class="label-step prod-c">
@@ -676,7 +690,7 @@
         <div class="label-step prod-c">
           <div class="ls-contour">PROD · ставит тестировщик</div>
           <div class="ls-pill"><span class="pill label-smoke-done">Смоук проведен</span></div>
-          <div class="ls-desc">Успешно → СТП формирует релиз-ноут и уведомляет</div>
+          <div class="ls-desc">Успешно → СТП формирует релиз-ноут</div>
           <div class="ls-role"><span class="role-tag tester">Test</span></div>
         </div>
       </div>
@@ -695,88 +709,34 @@
       </div>
 
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">3.5. Контуры: DEV → STAGE → PROD</h3>
-      <p class="hint" style="margin-bottom:14px">Переход — только вперёд. Каждый контур = своя публикация (Лид/зам) + свои метки.</p>
+      <p class="hint" style="margin-bottom:14px">Переход — только вперёд. Публикация на каждом контуре — только Лид/зам.</p>
 
       <div class="contour-flow">
         <div class="contour-step dev-c">
           <span class="step-num">DEV</span>
           <div class="step-title">Разработка и тест</div>
-          <div class="step-desc">
-            <b>Лид/зам</b> публикует → <span class="pill label-dev">Развернута на DEV</span><br>
-            <b>Тестировщик</b> тестирует по тест-кейсам → <span class="pill label-tested">Протестировано на DEV</span>
-          </div>
-          <div class="step-roles">
-            <span class="role-tag lead">Лид/зам</span>
-            <span class="role-tag tester">Test</span>
-          </div>
+          <div class="step-desc"><b>Лид/зам</b> публикует → <span class="pill label-dev">Развернута на DEV</span><br><b>Тестировщик</b> тестирует → <span class="pill label-tested">Протестировано на DEV</span></div>
+          <div class="step-roles"><span class="role-tag lead">Лид/зам</span><span class="role-tag tester">Test</span></div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="contour-step stage-c">
           <span class="step-num">STAGE</span>
           <div class="step-title">Предпродакшн · регресс</div>
-          <div class="step-desc">
-            <b>Лид/зам</b> публикует на STAGE<br>
-            <b>Тестировщик</b> ставит <span class="pill label-regress">Регресс</span> → <span class="pill label-regress-done">Регресс завершен</span>
-          </div>
-          <div class="step-roles">
-            <span class="role-tag lead">Лид/зам</span>
-            <span class="role-tag tester">Test</span>
-          </div>
+          <div class="step-desc"><b>Лид/зам</b> публикует на STAGE<br><b>Тестировщик</b>: <span class="pill label-regress">Регресс</span> → <span class="pill label-regress-done">Регресс завершен</span></div>
+          <div class="step-roles"><span class="role-tag lead">Лид/зам</span><span class="role-tag tester">Test</span></div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="contour-step prod-c">
           <span class="step-num">PROD</span>
           <div class="step-title">Продакшн · смоук</div>
-          <div class="step-desc">
-            <b>Лид/зам</b> публикует на PROD<br>
-            <b>Тестировщик</b> ставит <span class="pill label-smoke">Смоук</span> → <span class="pill label-smoke-done">Смоук проведен</span>
-          </div>
-          <div class="step-roles">
-            <span class="role-tag lead">Лид/зам</span>
-            <span class="role-tag tester">Test</span>
-          </div>
+          <div class="step-desc"><b>Лид/зам</b> публикует на PROD<br><b>Тестировщик</b>: <span class="pill label-smoke">Смоук</span> → <span class="pill label-smoke-done">Смоук проведен</span></div>
+          <div class="step-roles"><span class="role-tag lead">Лид/зам</span><span class="role-tag tester">Test</span></div>
         </div>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th style="width:110px">Контур</th><th>Публикует</th><th>Что делает тестировщик</th><th>Оповещение СТП</th></tr></thead>
-          <tbody>
-            <tr style="background:#ecfdf5;">
-              <td><span class="pill dev">DEV</span></td>
-              <td><b>Лид / зам</b></td>
-              <td>Тест → «Протестировано на DEV»</td>
-              <td>Нет</td>
-            </tr>
-            <tr style="background:#fffbeb;">
-              <td><span class="pill stage">STAGE</span></td>
-              <td><b>Лид / зам</b></td>
-              <td>«Регресс» → «Регресс завершен»</td>
-              <td>Нет <br><span class="hint">(оповещение только перед PROD)</span></td>
-            </tr>
-            <tr style="background:#fef2f2;">
-              <td><span class="pill prod">PROD</span></td>
-              <td><b>Лид / зам</b></td>
-              <td>«Смоук» → «Смоук проведен»</td>
-              <td><b>Да</b> — СТП публикует сообщение, готовит релиз-ноут</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
 
       <div class="link-note red" style="margin-top:14px">
         <span>⚠️</span>
-        <div><b>Публикацию на контура и закрытие Front/Back задач выполняет только Лид направления или его зам.</b> Разработчик, тестировщик, СТП не публикуют и не закрывают Front/Back задачи.</div>
-      </div>
-
-      <div class="link-note orange" style="margin-top:8px">
-        <span>🔥</span>
-        <div><b>СТП не публикует на PROD.</b> СТП: сообщение в чате о техработах → ждёт публикации от Лида/зама → после «Смоук проведен» формирует релиз-ноут, письмо и уведомление в чате.</div>
-      </div>
-
-      <div class="link-note blue" style="margin-top:8px">
-        <span>ℹ️</span>
-        <div><b>Трекер при взятии в работу не меняется.</b> Метки (labels) — отдельный механизм, они не заменяют статусы.</div>
+        <div><b>Публикацию на контура выполняет только Лид/зам. Закрытие задач:</b> «Улучшение» (статус «Решена») — <b>Лид/зам</b>; «Ошибка» (статус «Развернута на тесте (контур)») — <b>тестировщик</b>.</div>
       </div>
     </section>
 
@@ -798,15 +758,15 @@
         <div class="branch">
           <div class="node"><span class="dir design">Design</span><span class="t">ФБ. Стори. DESIGN</span><span class="pill track-design">Дизайн</span><span class="pill warn">Backlog</span></div>
           <div class="node"><span class="dir analytics">Analytics</span><span class="t">ФБ. Стори. ANALYTICS</span><span class="pill track-analytics">Аналитика</span><span class="pill warn">Backlog</span></div>
-          <div class="node"><span class="dir front">Front</span><span class="t">ФБ. Стори. FRONT</span><span class="pill improve">Улучшение</span>/<span class="pill bug">Ошибка</span><span class="pill warn">Backlog</span><span class="pill review">Направление: FRONT</span></div>
-          <div class="node"><span class="dir back">Back</span><span class="t">ФБ. Стори. BACK</span><span class="pill improve">Улучшение</span>/<span class="pill bug">Ошибка</span><span class="pill warn">Backlog</span><span class="pill review">Направление: BACK</span></div>
+          <div class="node"><span class="dir front">Front</span><span class="t">ФБ. Стори. FRONT</span><span class="pill improve">Улучшение</span>/<span class="pill bug">Ошибка</span><span class="pill warn">Backlog</span><span class="pill status-review">Направление: FRONT</span></div>
+          <div class="node"><span class="dir back">Back</span><span class="t">ФБ. Стори. BACK</span><span class="pill improve">Улучшение</span>/<span class="pill bug">Ошибка</span><span class="pill warn">Backlog</span><span class="pill status-review">Направление: BACK</span></div>
           <div class="node"><span class="dir test">Test</span><span class="t">ФБ. Стори. TEST</span><span class="pill track-test">Тестирование</span><span class="pill warn">Backlog</span></div>
         </div>
       </div>
 
       <div class="link-note red" style="margin-top:0; margin-bottom:16px">
         <span>⚠️</span>
-        <div>Для дочерних <b>FRONT</b> и <b>BACK</b> в поле <b>«Направление»</b> обязательно: FRONT → <span class="dir front">Front</span>, BACK → <span class="dir back">Back</span>. Ставит РП при создании; разработчик проверяет при взятии в работу.</div>
+        <div>Для дочерних <b>FRONT</b> и <b>BACK</b> в поле <b>«Направление»</b> обязательно: FRONT → <span class="dir front">Front</span>, BACK → <span class="dir back">Back</span>.</div>
       </div>
 
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">4.2. Наименование</h3>
@@ -853,7 +813,7 @@
     <section class="card" id="estimate">
       <header><div class="badge-num">5</div><h2>Оценка временных затрат</h2></header>
       <div class="link-note" style="margin-top:0; margin-bottom:14px">
-        <span>📌</span><div>Поле <b>«Оценка временных затрат»</b>. Риск <b>+20 %</b>. В часах и днях (1 день = 8 ч). Шаблоны описания в разделе 6 <b>обновляются автоматически</b>.</div>
+        <span>📌</span><div>Поле <b>«Оценка временных затрат»</b>. Риск <b>+20 %</b>. В часах и днях (1 день = 8 ч).</div>
       </div>
       <div class="grid-2" style="align-items:start; gap:18px">
         <div>
@@ -867,7 +827,7 @@
             <li><span class="dot">1</span><div>Оценка по направлению — с риском +20 %.</div></li>
             <li><span class="dot">2</span><div>Соответствует разбивке в родительской.</div></li>
             <li><span class="dot">3</span><div>При изменении — обновить в родительской и в описании.</div></li>
-            <li class="highlight"><span class="dot">4</span><div><b>Исполнитель любого направления при получении задачи от лида</b> проверяет и при необходимости проставляет оценку по своему направлению — до взятия в работу.</div></li>
+            <li class="highlight"><span class="dot">4</span><div><b>Исполнитель любого направления при получении задачи</b> проверяет и при необходимости проставляет оценку по своему направлению.</div></li>
           </ul>
         </div>
         <div class="tool">
@@ -898,7 +858,7 @@
     <section class="card" id="description">
       <header><div class="badge-num">6</div><h2>Описание и связи</h2></header>
 
-      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">6.1. Шаблоны описания <span class="pill" style="background:#e0f2fe; color:#0369a1; font-weight:650;">⟳ авто из калькулятора</span></h3>
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">6.1. Шаблоны описания <span class="pill" style="background:#e0f2fe; color:#0369a1; font-weight:650;">⟳ авто</span></h3>
       <div class="tabs" id="descTabs">
         <button class="active" data-tab="tab-parent">Родительская</button>
         <button data-tab="tab-child">Дочерняя (пример для FRONT)</button>
@@ -907,7 +867,7 @@
       <div class="tab-panel active" id="tab-parent">
         <ul class="rule-list" style="margin-bottom:14px">
           <li><span class="dot">•</span><div>ссылка на ТЗ и на задачу заказчика;</div></li>
-          <li><span class="dot">•</span><div>общая оценка временных затрат (с риском +20 %, в ч и днях);</div></li>
+          <li><span class="dot">•</span><div>общая оценка временных затрат (с риском +20 %);</div></li>
           <li><span class="dot">•</span><div>разбивка оценки по направлениям;</div></li>
           <li><span class="dot">•</span><div>краткое описание сути.</div></li>
         </ul>
@@ -920,11 +880,10 @@
       <div class="tab-panel" id="tab-child">
         <ul class="rule-list" style="margin-bottom:14px">
           <li><span class="dot">•</span><div>ссылка на ТЗ и на родительскую задачу;</div></li>
-          <li><span class="dot">•</span><div>направление (FRONT/BACK — в поле и в описании);</div></li>
+          <li><span class="dot">•</span><div>направление (FRONT/BACK);</div></li>
           <li><span class="dot">•</span><div>краткое содержание, критерии приёмки;</div></li>
-          <li><span class="dot">•</span><div>оценка временных затрат с риском +20 %, в ч и днях.</div></li>
+          <li><span class="dot">•</span><div>оценка временных затрат с риском +20 %.</div></li>
         </ul>
-        <p class="hint" style="margin-bottom:10px">Пример — для поля <b>Front</b> из калькулятора выше.</p>
         <div class="code-block on-light">
           <button class="copy-fab" data-copy="#tplChild">Копировать</button>
           <pre class="light" id="tplChild"></pre>
@@ -953,189 +912,217 @@
       <header><div class="badge-num">7</div><h2>Ревью, проверка, тестирование</h2></header>
 
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.1. Ревью ТЗ (аналитика)</h3>
-      <p class="hint" style="margin-bottom:14px">После завершения аналитической задачи — обязательное ревью ТЗ всеми лидами направлений.</p>
-      <div class="review-flow" style="margin-bottom:14px">
+      <div class="review-flow review-flow-5" style="margin-bottom:14px">
         <div class="review-step">
           <span class="step-num">1</span>
           <div class="step-title">Списать трудозатраты</div>
-          <div class="step-desc">Аналитик <b>проверяет списание трудозатрат</b> — без них задачу не закрыть.</div>
+          <div class="step-desc">Аналитик проверяет списание.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step">
           <span class="step-num">2</span>
           <div class="step-title">«Ответственный за ревью»</div>
-          <div class="step-desc">Заполняет поле <b>«Ответственный за ревью»</b> (множественный выбор) — <b>всех лидов</b>.</div>
+          <div class="step-desc">Заполняет поле — всех лидов.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step">
           <span class="step-num">3</span>
           <div class="step-title">Чат + встреча</div>
-          <div class="step-desc">Оповещает лидов в чате о готовности ТЗ → назначает встречу для согласования.</div>
+          <div class="step-desc">Оповещает и назначает встречу.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">4</span>
+          <div class="step-title">Согласовано</div>
+          <div class="step-desc">Встреча → ТЗ согласовано → задача закрыта.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step correction">
+          <span class="step-num">5</span>
+          <div class="step-title">Корректировки (если нужны)</div>
+          <div class="step-desc">Правки → <b>возврат к шагу 2</b> (повторное оповещение + встреча).</div>
         </div>
       </div>
+      <div class="link-note orange" style="margin-top:0; margin-bottom:22px">
+        <span>⑂</span>
+        <div><b>Альтернативная ветка:</b> если после встречи лиды запросили корректировки — аналитик вносит правки, <b>повторно оповещает</b> в чате и <b>назначает повторную встречу</b>. Только после успешного согласования задача закрывается.</div>
+      </div>
 
-      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">7.2. Тест-кейсы (после согласования ТЗ) <span class="pill tc">параллельно с разработкой</span></h3>
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.2. Тест-кейсы (после согласования ТЗ) <span class="pill tc">параллельно с разработкой</span></h3>
       <div class="link-note blue" style="margin-top:0; margin-bottom:14px">
         <span>📝</span>
-        <div>После того как ТЗ согласовано — тестировщик <b>пишет тест-кейсы в описании своей тест-задачи</b>. Это происходит <b>параллельно с разработкой</b>, чтобы к моменту готовности DEV тест-кейсы уже были готовы. Без тест-кейсов тестирование на DEV не начинается.</div>
+        <div>После согласования ТЗ тестировщик <b>пишет тест-кейсы в описании своей тест-задачи</b> — параллельно с разработкой.</div>
       </div>
-      <div class="review-flow" style="margin-bottom:14px">
+      <div class="review-flow review-flow-3" style="margin-bottom:22px">
         <div class="review-step">
           <span class="step-num">1</span>
           <div class="step-title">ТЗ согласовано</div>
-          <div class="step-desc">Встреча по ревью ТЗ пройдена, все лиды согласовали.</div>
+          <div class="step-desc">Встреча по ревью пройдена.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step tc">
           <span class="step-num">2</span>
           <div class="step-title">Тест-кейсы в тест-задаче</div>
-          <div class="step-desc">Тестировщик пишет тест-кейсы <b>в описании тест-задачи</b> (трекер «Тестирование»). Формат: предусловия · шаги · ожидаемый результат.</div>
+          <div class="step-desc">Предусловия · шаги · ожидаемый результат.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step tc">
           <span class="step-num">3</span>
           <div class="step-title">Готовность к DEV-тесту</div>
-          <div class="step-desc">Когда разработка готова и Лид/зам опубликовал на DEV — тест-кейсы уже готовы, тестировщик сразу приступает.</div>
+          <div class="step-desc">К моменту публикации на DEV тест-кейсы готовы.</div>
         </div>
       </div>
 
-      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">7.3. Проверка кода + DEV (Front/Back)</h3>
-      <p class="hint" style="margin-bottom:14px">После завершения разработчик списывает трудозатраты → переводит в <b>«Проверка кода»</b>. Лид одобряет → публикует на DEV → <b>закрывает задачу</b>.</p>
+      <!-- 7.3 РАЗВИЛКА: Улучшение vs Ошибка -->
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.3. Проверка кода — <b>два workflow</b></h3>
+      <div class="link-note orange" style="margin-top:0; margin-bottom:14px">
+        <span>⚠️</span>
+        <div><b>Workflow отличается для трекера «Улучшение» и «Ошибка»</b> — как по статусу, так и по тому, кто закрывает задачу.</div>
+      </div>
+
+      <h4 style="font-size:13.5px; margin:18px 0 10px; color:#15803d">A. Улучшение (новая функциональность)</h4>
       <div class="review-flow review-flow-4" style="margin-bottom:14px">
         <div class="review-step">
           <span class="step-num">1</span>
-          <div class="step-title">Списать трудозатраты</div>
-          <div class="step-desc">Разработчик <b>проверяет наличие списанных трудозатрат</b> перед передачей на ревью — иначе задачу нельзя закрыть.</div>
-        </div>
-        <div class="doc-arrow">→</div>
-        <div class="review-step">
-          <span class="step-num">2</span>
-          <div class="step-title">Статус «Проверка кода»</div>
-          <div class="step-desc">Разработчик переводит в <b><span class="pill status-review">Проверка кода</span></b>.</div>
+          <div class="step-title">Перед передачей на ревью</div>
+          <div class="step-desc">Разработчик <b>списывает трудозатраты</b> и ставит статус <b><span class="pill status-review">Проверка кода</span></b>.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step lead">
+          <span class="step-num">2</span>
+          <div class="step-title">Лид/зам: ревью</div>
+          <div class="step-desc">Проводит ревью кода. При замечаниях — вернуть разработчику.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step solved">
           <span class="step-num">3</span>
-          <div class="step-title">Лид/зам: ревью + DEV</div>
-          <div class="step-desc">Лид/зам проверяет код → при замечаниях возвращает → после одобрения <b>публикует на DEV</b> + метка «Развернута на DEV».</div>
+          <div class="step-title">«Решена» после ревью</div>
+          <div class="step-desc">После успешного ревью Лид/зам ставит <b><span class="pill status-solved">Решена</span></b>.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step lead">
           <span class="step-num">4</span>
-          <div class="step-title">Лид/зам закрывает задачу</div>
-          <div class="step-desc"><b>Задачу закрывает только Лид/зам</b> — после публикации и проверки списанных трудозатрат. Разработчик задачу не закрывает.</div>
+          <div class="step-title">DEV + метка + закрытие</div>
+          <div class="step-desc">Лид/зам публикует на DEV, ставит метку и <b>закрывает задачу</b>.</div>
         </div>
       </div>
+
+      <h4 style="font-size:13.5px; margin:18px 0 10px; color:#9a3412">B. Ошибка (баг)</h4>
+      <div class="review-flow review-flow-4" style="margin-bottom:14px">
+        <div class="review-step">
+          <span class="step-num">1</span>
+          <div class="step-title">Списать трудозатраты</div>
+          <div class="step-desc">Разработчик проверяет списание.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step bug">
+          <span class="step-num">2</span>
+          <div class="step-title">Статус «Развернута на тесте (контур)»</div>
+          <div class="step-desc">Разработчик <b>сам</b> выставляет <span class="pill status-deploy-test">Развернута на тесте (контур)</span>.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step lead">
+          <span class="step-num">3</span>
+          <div class="step-title">Лид/зам: ревью + публикация</div>
+          <div class="step-desc">Проверяет код → публикует на контур. <b>Задачу не закрывает.</b></div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">4</span>
+          <div class="step-title">Тестировщик закрывает</div>
+          <div class="step-desc">После проверки исправления тестировщик <b>закрывает задачу Ошибки</b>.</div>
+        </div>
+      </div>
+
       <div class="link-note red" style="margin-top:0; margin-bottom:22px">
-        <span>⚠️</span><div>Разработчик не закрывает Front/Back задачу — только <b>передаёт Лиду/заму</b>. Закрытие — за Лидом/замом.</div>
+        <span>🚫</span>
+        <div><b>Ключевое отличие:</b> «Улучшение» — разработчик ставит «Проверка кода» → Лид ставит «Решена» после ревью → публикация → <b>закрывает Лид/зам</b>. «Ошибка» — разработчик ставит «Развернута на тесте (контур)» → публикация → <b>закрывает тестировщик</b>.</div>
       </div>
 
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.4. Тестирование на DEV → «Протестировано на DEV»</h3>
-      <p class="hint" style="margin-bottom:14px">Тестировщик работает по <b>отчёту в Redmine с меткой «Развернута на DEV»</b>, использует <b>заранее написанные тест-кейсы</b>.</p>
-      <div class="review-flow" style="margin-bottom:14px">
+      <p class="hint" style="margin-bottom:14px">Тестировщик работает по <b>отчёту с меткой «Развернута на DEV»</b> и по <b>заранее написанным тест-кейсам</b>.</p>
+      <div class="review-flow" style="margin-bottom:22px">
         <div class="review-step dev">
           <span class="step-num">1</span>
           <div class="step-title">Отчёт по метке</div>
-          <div class="step-desc">Строит отчёт по метке «Развернута на DEV» — берёт задачи в тест.</div>
+          <div class="step-desc">Строит отчёт по метке «Развернута на DEV».</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step tc">
           <span class="step-num">2</span>
           <div class="step-title">Тест по кейсам</div>
-          <div class="step-desc">Проверяет по <b>тест-кейсам из описания тест-задачи</b>. Баги — дочерние тест-задачи.</div>
+          <div class="step-desc">Проверяет по тест-кейсам.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step dev">
           <span class="step-num">3</span>
           <div class="step-title">Метка</div>
-          <div class="step-desc">После успешного теста: <span class="pill label-tested">Протестировано на DEV</span> → готово к STAGE.</div>
+          <div class="step-desc">После успеха: <span class="pill label-tested">Протестировано на DEV</span>.</div>
         </div>
-      </div>
-      <div class="link-note blue" style="margin-top:0; margin-bottom:22px">
-        <span>ℹ️</span><div><b>Оповещение СТП не требуется</b> — публикация на STAGE произойдёт по готовности задачи.</div>
       </div>
 
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.5. STAGE: публикация Лидом/замом + регресс</h3>
-      <div class="review-flow review-flow-4" style="margin-bottom:14px">
+      <div class="review-flow review-flow-4" style="margin-bottom:22px">
         <div class="review-step lead">
           <span class="step-num">1</span>
           <div class="step-title">Лид/зам публикует STAGE</div>
-          <div class="step-desc">Публикация задач с меткой «Протестировано на DEV» на STAGE — <b>только Лид/зам</b>.</div>
+          <div class="step-desc">Только Лид/зам.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step">
           <span class="step-num">2</span>
           <div class="step-title">«Регресс»</div>
-          <div class="step-desc">Тестировщик ставит <span class="pill label-regress">Регресс</span>, проводит регресс.</div>
+          <div class="step-desc">Тестировщик проводит регресс.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step">
           <span class="step-num">3</span>
           <div class="step-title">«Регресс завершен»</div>
-          <div class="step-desc">Успешно → <span class="pill label-regress-done">Регресс завершен</span>. При замечаниях — баги и возврат.</div>
+          <div class="step-desc">Успешно → метка ставится.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step prod">
           <span class="step-num">4</span>
           <div class="step-title">Оповещение СТП</div>
-          <div class="step-desc">После «Регресс завершен» — тестировщик <b>оповещает СТП</b> о готовности к PROD.</div>
+          <div class="step-desc">Тестировщик оповещает СТП.</div>
         </div>
       </div>
 
-      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">7.6. PROD: публикация Лидом/замом + смоук</h3>
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.6. PROD: публикация Лидом/замом + смоук</h3>
       <div class="review-flow review-flow-4" style="margin-bottom:14px">
         <div class="review-step stp">
           <span class="step-num">1</span>
           <div class="step-title">СТП: сообщение в чате</div>
-          <div class="step-desc">Публикует сообщение о техработах (дата, время).</div>
+          <div class="step-desc">О техработах (дата, время).</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step lead">
           <span class="step-num">2</span>
           <div class="step-title">Лид/зам публикует PROD</div>
-          <div class="step-desc">Публикация на PROD — <b>только Лид/зам</b>. СТП публикацию не выполняет.</div>
+          <div class="step-desc">Только Лид/зам.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step">
           <span class="step-num">3</span>
           <div class="step-title">«Смоук»</div>
-          <div class="step-desc">Тестировщик ставит <span class="pill label-smoke">Смоук</span>, проводит смоук-тест.</div>
+          <div class="step-desc">Тестировщик проводит смоук.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step">
           <span class="step-num">4</span>
           <div class="step-title">«Смоук проведен»</div>
-          <div class="step-desc">Успешно → <span class="pill label-smoke-done">Смоук проведен</span>. Далее — СТП формирует релиз-ноут.</div>
+          <div class="step-desc">Успех → СТП формирует релиз-ноут.</div>
         </div>
       </div>
       <div class="link-note green" style="margin-top:0; margin-bottom:22px">
         <span>✅</span>
-        <div>После <b>«Смоук проведен»</b> — <b>СТП формирует релиз-ноут</b>, отправляет письмо о завершении с приложенным релиз-ноутом и публикует уведомление в чате с пользователями.</div>
+        <div>После <b>«Смоук проведен»</b> — <b>СТП формирует релиз-ноут</b>, письмо о завершении + уведомление в чате с пользователями.</div>
       </div>
 
-      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.7. Регистрация багов — только в тест-задаче</h3>
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.7. Регистрация багов</h3>
       <div class="link-note red" style="margin-top:0; margin-bottom:14px">
         <span>🚫</span>
-        <div>Найденные баги регистрируются <b>только как дочерние задачи своей тест-задачи</b>. Нигде больше баги не создаются.</div>
-      </div>
-      <div class="review-flow" style="margin-bottom:14px">
-        <div class="review-step">
-          <span class="step-num">1</span>
-          <div class="step-title">Найден баг</div>
-          <div class="step-desc">Тестировщик нашёл дефект (на DEV, STAGE или PROD).</div>
-        </div>
-        <div class="doc-arrow">→</div>
-        <div class="review-step">
-          <span class="step-num">2</span>
-          <div class="step-title">Дочерняя тест-задачи</div>
-          <div class="step-desc">Трекер «Ошибка», статус <b>Новая</b>. Приоритет, критичность, исполнитель.</div>
-        </div>
-        <div class="doc-arrow">→</div>
-        <div class="review-step">
-          <span class="step-num">3</span>
-          <div class="step-title">Связь с тест-задачей</div>
-          <div class="step-desc"><code>Parent / Child</code>. Релиз — как у проверяемой.</div>
-        </div>
+        <div>Найденные баги регистрируются <b>только как дочерние задачи своей тест-задачи</b> — трекер «Ошибка», статус <b>Новая</b>.</div>
       </div>
 
       <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">7.8. Атрибуты bug-report</h3>
@@ -1144,11 +1131,11 @@
           <thead><tr><th style="width:32%">Поле</th><th>Что указывать</th></tr></thead>
           <tbody>
             <tr><td>Трекер</td><td><span class="pill bug">Ошибка</span></td></tr>
-            <tr style="background:#fff7ed;"><td><b>Статус</b></td><td><b><span class="pill status-new">Новая</span></b> (не Backlog!)</td></tr>
+            <tr style="background:#fff7ed;"><td><b>Статус</b></td><td><b><span class="pill status-new">Новая</span></b></td></tr>
             <tr style="background:#fff7ed;"><td><b>Приоритет</b></td><td><b>Обязательно</b>: <span class="pill priority-low">Low</span> <span class="pill priority-normal">Normal</span> <span class="pill priority-high">High</span> <span class="pill priority-urgent">Urgent</span></td></tr>
             <tr style="background:#fff7ed;"><td><b>Критичность</b></td><td><b>Обязательно</b>: <span class="pill crit-minor">Minor</span> <span class="pill crit-major">Major</span> <span class="pill crit-critical">Critical</span> <span class="pill crit-blocker">Blocker</span></td></tr>
             <tr style="background:#fff7ed;"><td><b>Исполнитель</b></td><td><b>Обязательно</b>. Default — <b>лид направления</b></td></tr>
-            <tr><td>Родительская</td><td>Своя тест-задача (обязательно)</td></tr>
+            <tr><td>Родительская</td><td>Своя тест-задача</td></tr>
             <tr><td>Релиз</td><td>Тот же, что у проверяемой задачи</td></tr>
             <tr><td>Наименование</td><td><code>&lt;ФБ&gt;. &lt;Проверяемая&gt;. BUG: &lt;краткое&gt;</code></td></tr>
             <tr><td>Описание</td><td>Шаги · ожидаемый · фактический · окружение · вложения</td></tr>
@@ -1161,20 +1148,20 @@
     <!-- 8 -->
     <section class="card" id="documentation">
       <header><div class="badge-num">8</div><h2>Документация</h2></header>
-      <p class="hint" style="margin-bottom:14px">Если по задаче <b>изменён функционал</b> — <b>аналитик у родительской задачи</b> ставит <span class="pill doc-need">требует корректировок</span>. Тех.пис строит отчёт, вносит правки, <b>прикрепляет документы к задаче</b> и <b>добавляет в Confluence</b>, ставит <span class="pill doc-done">изменения внесены</span>.</p>
+      <p class="hint" style="margin-bottom:14px">Если по задаче <b>изменён функционал</b> — <b>аналитик у родительской</b> ставит <span class="pill doc-need">требует корректировок</span>. Тех.пис строит отчёт, вносит правки, <b>прикрепляет документы к задаче</b> и <b>добавляет в Confluence</b>, ставит <span class="pill doc-done">изменения внесены</span>.</p>
 
       <div class="doc-flow">
         <div class="doc-step">
           <span class="step-num">1</span>
           <div class="step-title">Изменён функционал</div>
-          <div class="step-desc">Аналитик у родительской задачи ставит:</div>
+          <div class="step-desc">Аналитик у родительской ставит:</div>
           <span class="step-val"><span class="pill doc-need">требует корректировок</span></span>
         </div>
         <div class="doc-arrow">→</div>
         <div class="doc-step">
           <span class="step-num">2</span>
           <div class="step-title">Тех.пис: отчёт и правки</div>
-          <div class="step-desc">Строит отчёт <b>в Redmine</b>, вносит правки в документы.</div>
+          <div class="step-desc">Отчёт <b>в Redmine</b>, правки в документы.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="doc-step">
@@ -1184,17 +1171,6 @@
           <span class="step-val"><span class="pill doc-done">изменения внесены</span></span>
         </div>
       </div>
-
-      <div class="table-wrap" style="margin-top:18px">
-        <table>
-          <thead><tr><th style="width:38%">Значение</th><th>Когда</th><th style="width:220px">Кто</th></tr></thead>
-          <tbody>
-            <tr><td><span class="pill doc-empty">не заполнено</span></td><td>Функционал не менялся</td><td>—</td></tr>
-            <tr><td><span class="pill doc-need">требует корректировок</span></td><td>Изменён функционал</td><td>Аналитик (у родительской)</td></tr>
-            <tr><td><span class="pill doc-done">изменения внесены</span></td><td>Правки внесены, документы прикреплены</td><td>Технический писатель</td></tr>
-          </tbody>
-        </table>
-      </div>
     </section>
 
     <!-- 9 -->
@@ -1202,7 +1178,7 @@
       <header><div class="badge-num">9</div><h2>Hotfix (срочные баги)</h2></header>
       <div class="link-note orange" style="margin-top:0; margin-bottom:14px">
         <span>🔥</span>
-        <div><b>Hotfix</b> — упрощённый workflow для срочного исправления. Тот же процесс с метками и трудозатратами, но срочно.</div>
+        <div><b>Hotfix</b> — срочный workflow. Для «Ошибки»: разработчик ставит «Развернута на тесте (контур)», Лид публикует, тестировщик закрывает. Для «Улучшения»: разработчик ставит «Проверка кода», Лид ставит «Решена» → публикует → закрывает.</div>
       </div>
 
       <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">9.1. Отличия от обычного релиза</h3>
@@ -1211,11 +1187,10 @@
           <thead><tr><th style="width:32%">Параметр</th><th>Обычный релиз</th><th>Hotfix</th></tr></thead>
           <tbody>
             <tr><td>Релиз</td><td>Актуальный релиз проекта</td><td><span class="pill hotfix">Отдельный hotfix-релиз</span></td></tr>
-            <tr><td>Состав</td><td>Все готовые задачи спринта</td><td><b>Только необходимые для фикса</b></td></tr>
+            <tr><td>Состав</td><td>Все готовые задачи</td><td><b>Только необходимые для фикса</b></td></tr>
             <tr><td>Workflow + метки</td><td>Полный</td><td><b>Тот же</b>, но срочно</td></tr>
             <tr><td>Публикация на контура</td><td>Лид/зам</td><td>Лид/зам</td></tr>
             <tr><td>СТП</td><td>После «Регресс завершен»</td><td><b>Срочно</b> после «Регресс завершен»</td></tr>
-            <tr><td>Сроки</td><td>По спринту</td><td>Минимальные</td></tr>
           </tbody>
         </table>
       </div>
@@ -1225,43 +1200,24 @@
         <div class="review-step">
           <span class="step-num">1</span>
           <div class="step-title">Решение о hotfix</div>
-          <div class="step-desc">РП / Лид фиксируют проблему → решение о hotfix.</div>
+          <div class="step-desc">РП / Лид фиксируют проблему.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step">
           <span class="step-num">2</span>
           <div class="step-title">Создание задач</div>
-          <div class="step-desc">Задачи включаются в <b>отдельный hotfix-релиз</b>.</div>
+          <div class="step-desc">В отдельный hotfix-релиз.</div>
         </div>
         <div class="doc-arrow">→</div>
         <div class="review-step">
           <span class="step-num">3</span>
           <div class="step-title">DEV → STAGE → PROD</div>
-          <div class="step-desc">Полный workflow с метками. Публикация на контура — только Лид/зам.</div>
-        </div>
-      </div>
-      <div class="review-flow">
-        <div class="review-step">
-          <span class="step-num">4</span>
-          <div class="step-title">Регресс завершен</div>
-          <div class="step-desc">Тестировщик <b>срочно оповещает СТП</b>.</div>
-        </div>
-        <div class="doc-arrow">→</div>
-        <div class="review-step stp">
-          <span class="step-num">5</span>
-          <div class="step-title">СТП: сообщение в чате</div>
-          <div class="step-desc">Срочное сообщение о техработах (дата, время).</div>
-        </div>
-        <div class="doc-arrow">→</div>
-        <div class="review-step stp">
-          <span class="step-num">6</span>
-          <div class="step-title">Лид/зам → PROD → релиз-ноут</div>
-          <div class="step-desc">Лид/зам публикует PROD → после «Смоук проведен» СТП готовит релиз-ноут, письмо + уведомление в чате.</div>
+          <div class="step-desc">Полный workflow с метками.</div>
         </div>
       </div>
     </section>
 
-    <!-- 10 MASTER CHECKLIST -->
+    <!-- 10 -->
     <section class="card" id="master">
       <header><div class="badge-num">10</div><h2>Мастер-чеклист по задаче</h2></header>
       <p class="hint" style="margin-bottom:14px">Рабочий журнал по одной задаче. Прогресс сохраняется в браузере.</p>
@@ -1281,12 +1237,12 @@
           <div class="mc-stage-count" data-mc-count>0/6</div>
         </div>
         <ul class="mc-items">
-          <li class="mc-item"><input type="checkbox" data-mc><label>Источник определён: <b>заказчик (через РП)</b> или <b>Лид/зам</b> (техдолг, рефакторинг, баг) <span class="mc-role rp">РП</span> <span class="mc-role lead">Лид</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Создана родительская: трекер <b>Структура</b>, статус <b>Backlog</b>, релиз <b>Backlog</b>, ФБ <span class="mc-role rp">РП</span> <span class="mc-role lead">Лид</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Заполнено описание родительской: ТЗ, ссылка на заказчика, общая оценка (с риском +20 %), разбивка <span class="mc-role rp">РП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Источник определён: <b>заказчик</b> или <b>Лид/зам</b> <span class="mc-role rp">РП</span> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Создана родительская: <b>Структура</b>, <b>Backlog</b>, релиз <b>Backlog</b>, ФБ <span class="mc-role rp">РП</span> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Заполнено описание: ТЗ, ссылка на заказчика, общая оценка (риск +20 %), разбивка <span class="mc-role rp">РП</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Созданы 5 дочерних задач со своими трекерами <span class="mc-role rp">РП</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>У Front/Back заполнено поле <b>«Направление»</b> (FRONT / BACK) <span class="mc-role rp">РП</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Связи: дочерние → родительская (<code>Parent / Child</code>); только родительская → заказчик <span class="mc-role rp">РП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Связи: дочерние → родительская; только родительская → заказчик <span class="mc-role rp">РП</span></label></li>
         </ul>
       </div>
 
@@ -1297,7 +1253,7 @@
           <div class="mc-stage-count" data-mc-count>0/3</div>
         </div>
         <ul class="mc-items">
-          <li class="mc-item"><input type="checkbox" data-mc><label>Задачи взяты в работу: статус <b>Новая</b> / <b>В работе</b>, трекер не менялся <span class="mc-role rp">РП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Задачи взяты в работу: статус <b>Новая</b> / <b>В работе</b> <span class="mc-role rp">РП</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Задачи в актуальном релизе и спринте, установлены <b>Дата начала</b> и <b>Срок завершения</b> <span class="mc-role rp">РП</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Назначены исполнители, <b>оценка по направлению проверена/проставлена</b> <span class="mc-role lead">Лид</span></label></li>
         </ul>
@@ -1307,33 +1263,35 @@
         <div class="mc-stage-head">
           <div class="mc-stage-num">3</div>
           <div class="mc-stage-title">Проработка: Дизайн / Аналитика / ТЗ + тест-кейсы</div>
-          <div class="mc-stage-count" data-mc-count>0/6</div>
+          <div class="mc-stage-count" data-mc-count>0/7</div>
         </div>
         <ul class="mc-items">
           <li class="mc-item"><input type="checkbox" data-mc><label>Дизайнер выполнил дизайн по ТЗ, <b>списал трудозатраты</b>, закрыл <span class="mc-role dev">Design</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Аналитик проработал ТЗ, заполнил поле <b>«Ответственный за ревью»</b> <span class="mc-role an">Analytics</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Аналитик <b>списал трудозатраты</b> перед ревью ТЗ <span class="mc-role an">Analytics</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Аналитик оповестил лидов и назначил встречу <span class="mc-role an">Analytics</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>ТЗ согласовано, задача закрыта (списание). Если функционал изменён — «Документация = требует корректировок» <span class="mc-role an">Analytics</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label><b>После согласования ТЗ тестировщик пишет тест-кейсы в описании тест-задачи</b> (параллельно с разработкой) <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item alt-cond"><input type="checkbox" data-mc><label>После встречи нужны <b>корректировки ТЗ</b> — правки → повторное оповещение → повторная встреча <span class="mc-role an">Analytics</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>ТЗ согласовано, задача закрыта. Если функционал изменён — «Документация = требует корректировок» <span class="mc-role an">Analytics</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>После согласования ТЗ тестировщик пишет тест-кейсы в описании тест-задачи</b> <span class="mc-role test">Test</span></label></li>
         </ul>
       </div>
 
       <div class="mc-stage">
         <div class="mc-stage-head">
           <div class="mc-stage-num">4</div>
-          <div class="mc-stage-title">Разработка (DEV) → публикация Лидом/замом + закрытие</div>
-          <div class="mc-stage-count" data-mc-count>0/8</div>
+          <div class="mc-stage-title">Разработка (DEV) — Улучшение / Ошибка</div>
+          <div class="mc-stage-count" data-mc-count>0/9</div>
         </div>
         <ul class="mc-items">
           <li class="mc-item"><input type="checkbox" data-mc><label>Разработчик проверил/проставил <b>оценку временных затрат</b> <span class="mc-role dev">Dev</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Поле <b>«Направление»</b> установлено (FRONT / BACK) <span class="mc-role dev">Dev</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Работа выполнена, <b>трудозатраты списаны</b>, статус <b>«Проверка кода»</b> <span class="mc-role dev">Dev</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Лид/зам одобрил код <span class="mc-role lead">Лид</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам публикует на DEV</b> <span class="mc-role lead">Лид</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Метка <b>«Развернута на DEV»</b> установлена <span class="mc-role lead">Лид</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам закрыл задачу после публикации</b> (при списанных трудозатратах) <span class="mc-role lead">Лид</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Если раньше срока — поставлена фактическая дата закрытия <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Работа выполнена, <b>трудозатраты списаны</b> <span class="mc-role dev">Dev</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Улучшение:</b> разработчик поставил <span class="pill status-review">Проверка кода</span> <span class="mc-role dev">Dev</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Улучшение:</b> Лид провёл ревью → поставил <span class="pill status-solved">Решена</span> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Ошибка:</b> разработчик поставил <span class="pill status-deploy-test">Развернута на тесте (контур)</span> <span class="mc-role dev">Dev</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Лид/зам одобрил публикацию на контур <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам публикует на DEV</b> + метка <b>«Развернута на DEV»</b> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Улучшение:</b> Лид/зам закрыл задачу. <b>Ошибка:</b> закрытие отложено до тестировщика <span class="mc-role lead">Лид</span> <span class="mc-role test">Test</span></label></li>
         </ul>
       </div>
 
@@ -1344,11 +1302,11 @@
           <div class="mc-stage-count" data-mc-count>0/5</div>
         </div>
         <ul class="mc-items">
-          <li class="mc-item"><input type="checkbox" data-mc><label><b>Тест-кейсы готовы</b> в описании тест-задачи (написаны после согласования ТЗ) <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Тест-кейсы готовы</b> в описании тест-задачи <span class="mc-role test">Test</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Тестировщик построил отчёт по метке <b>«Развернута на DEV»</b> <span class="mc-role test">Test</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Проверка по тест-кейсам <span class="mc-role test">Test</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Баги заведены как <b>дочерние тест-задачи</b> и закрыты <span class="mc-role test">Test</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Тест пройден → метка <span class="pill label-tested">Протестировано на DEV</span> <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Тест пройден → метка <span class="pill label-tested">Протестировано на DEV</span>. <b>Ошибки: тестировщик закрыл задачу</b> <span class="mc-role test">Test</span></label></li>
         </ul>
       </div>
 
@@ -1361,7 +1319,7 @@
         <ul class="mc-items">
           <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам публикует на STAGE</b> <span class="mc-role lead">Лид</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Тестировщик ставит метку <span class="pill label-regress">Регресс</span> <span class="mc-role test">Test</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Регресс пройден (баги закрыты) <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Регресс пройден <span class="mc-role test">Test</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Метка <span class="pill label-regress-done">Регресс завершен</span>. Оповещение СТП <span class="mc-role test">Test</span></label></li>
         </ul>
       </div>
@@ -1373,11 +1331,11 @@
           <div class="mc-stage-count" data-mc-count>0/5</div>
         </div>
         <ul class="mc-items">
-          <li class="mc-item"><input type="checkbox" data-mc><label>СТП: сообщение в чате о техработах (дата, время) <span class="mc-role stp">СТП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>СТП: сообщение в чате о техработах <span class="mc-role stp">СТП</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам публикует на PROD</b> <span class="mc-role lead">Лид</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>Тестировщик: метка <span class="pill label-smoke">Смоук</span>, проведение смоука <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Тестировщик: метка <span class="pill label-smoke">Смоук</span>, смоук <span class="mc-role test">Test</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Метка <span class="pill label-smoke-done">Смоук проведен</span> <span class="mc-role test">Test</span></label></li>
-          <li class="mc-item"><input type="checkbox" data-mc><label>СТП: релиз-ноут + письмо + <b>уведомление в чате с пользователями</b> <span class="mc-role stp">СТП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>СТП: релиз-ноут + письмо + <b>уведомление в чате</b> <span class="mc-role stp">СТП</span></label></li>
         </ul>
       </div>
 
@@ -1388,7 +1346,7 @@
           <div class="mc-stage-count" data-mc-count>0/3</div>
         </div>
         <ul class="mc-items">
-          <li class="mc-item"><input type="checkbox" data-mc><label>Тех.пис построил отчёт в Redmine по фильтру «Документация = требует корректировок» <span class="mc-role writer">Тех.пис</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Тех.пис построил отчёт в Redmine по фильтру <span class="mc-role writer">Тех.пис</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>Документы обновлены, <b>прикреплены к задаче + в Confluence</b> <span class="mc-role writer">Тех.пис</span></label></li>
           <li class="mc-item"><input type="checkbox" data-mc><label>В задаче стоит <b>«Документация = изменения внесены»</b> <span class="mc-role writer">Тех.пис</span></label></li>
         </ul>
@@ -1400,10 +1358,11 @@
       <header><div class="badge-num">11</div><h2>Краткая памятка</h2></header>
       <div class="memo">
         <div class="memo-item"><span class="k">ТРЕКЕР</span><div>Родительская — <b>Структура</b>. Дочерние — <b>свой по направлению</b>. Не меняется.</div></div>
-        <div class="memo-item"><span class="k">СТАТУС</span><div>При создании — <b>Backlog</b>. После взятия — <b>Новая</b>/<b>В работе</b>. Front/Back → <b>Проверка кода</b> → <b>На DEV</b>. Bug — сразу <b>Новая</b>.</div></div>
-        <div class="memo-item"><span class="k">ТРУДОЗАТРАТЫ</span><div><b>Перед ревью исполнитель проверяет списание трудозатрат.</b> Без них задачу <b>закрыть нельзя</b>. Раньше срока — фактическая дата.</div></div>
-        <div class="memo-item"><span class="k">ЗАКРЫТИЕ F/B</span><div><b>Front/Back задачи закрывает только Лид/зам</b> — после публикации на DEV и проверки трудозатрат. Разработчик не закрывает.</div></div>
-        <div class="memo-item"><span class="k">ТЕСТ-КЕЙСЫ</span><div>Пишутся тестировщиком <b>в описании тест-задачи</b> после согласования ТЗ — параллельно с разработкой.</div></div>
+        <div class="memo-item"><span class="k">СТАТУСЫ</span><div>При создании — <b>Backlog</b>. После взятия — <b>Новая</b>/<b>В работе</b>. <b>Улучшение:</b> <span class="pill status-review">Проверка кода</span> → <span class="pill status-solved">Решена</span> (после ревью). <b>Ошибка:</b> <span class="pill status-deploy-test">Развернута на тесте (контур)</span>.</div></div>
+        <div class="memo-item"><span class="k">ЗАКРЫТИЕ</span><div><b>Улучшение:</b> закрывает <b>Лид/зам</b> после публикации. <b>Ошибка:</b> закрывает <b>тестировщик</b> после проверки.</div></div>
+        <div class="memo-item"><span class="k">ТРУДОЗАТРАТЫ</span><div><b>Перед ревью исполнитель проверяет списание трудозатрат.</b> Без них задачу закрыть нельзя.</div></div>
+        <div class="memo-item"><span class="k">ТЕСТ-КЕЙСЫ</span><div>Пишутся тестировщиком <b>в описании тест-задачи</b> после согласования ТЗ.</div></div>
+        <div class="memo-item"><span class="k">КОРРЕКТИРОВКИ ТЗ</span><div>Если после встречи нужны правки — <b>правки → повторное оповещение → повторная встреча → согласование</b>.</div></div>
         <div class="memo-item"><span class="k">ПУБЛИКАЦИЯ</span><div><b>Только Лид/зам.</b> Разработчик, тестировщик, СТП не публикуют.</div></div>
         <div class="memo-item"><span class="k">МЕТКИ</span><div>
           <span class="pill label-dev">Развернута на DEV</span> (Лид) →
@@ -1413,14 +1372,12 @@
           <span class="pill label-smoke">Смоук</span> (Test) →
           <span class="pill label-smoke-done">Смоук проведен</span> (Test).
         </div></div>
-        <div class="memo-item"><span class="k">КОНТУРЫ</span><div><b>DEV</b> / <b>STAGE</b> / <b>PROD</b> — публикует <b>только Лид/зам</b>.</div></div>
-        <div class="memo-item"><span class="k">ОПОВЕЩЕНИЕ СТП</span><div><b>Только перед PROD</b> — после «Регресс завершен». СТП публикацию не выполняет.</div></div>
+        <div class="memo-item"><span class="k">ОПОВЕЩЕНИЕ СТП</span><div><b>Только перед PROD</b>. СТП публикацию не выполняет.</div></div>
         <div class="memo-item"><span class="k">РЕЛИЗ · СПРИНТ</span><div>При создании — <b>Backlog</b>. После взятия — <b>актуальный релиз и спринт</b>. Hotfix — <b>отдельный hotfix-релиз</b>.</div></div>
         <div class="memo-item"><span class="k">ДАТЫ</span><div>После взятия — <b>Дата начала</b> + <b>Срок завершения</b>. Раньше — <b>фактическая дата</b>.</div></div>
-        <div class="memo-item"><span class="k">НАПРАВЛЕНИЕ</span><div>Для Front/Back — <b>обязательно</b>. Ставит РП, разработчик проверяет.</div></div>
-        <div class="memo-item"><span class="k">ОЦЕНКА</span><div>«Оценка временных затрат», риск <b>+20 %</b>. Исполнитель обязан проверить/проставить при получении задачи.</div></div>
+        <div class="memo-item"><span class="k">НАПРАВЛЕНИЕ</span><div>Для Front/Back — <b>обязательно</b>.</div></div>
+        <div class="memo-item"><span class="k">ОЦЕНКА</span><div>«Оценка временных затрат», риск <b>+20 %</b>. Исполнитель обязан проверить/проставить.</div></div>
         <div class="memo-item"><span class="k">РЕВЬЮ ТЗ</span><div>Аналитик → «Ответственный за ревью» (все лиды) → чат → встреча → согласование.</div></div>
-        <div class="memo-item"><span class="k">ПРОВЕРКА КОДА</span><div>Разработчик → «Проверка кода» → лид одобряет → лид/зам публикует DEV + метка → <b>лид/зам закрывает</b>.</div></div>
         <div class="memo-item"><span class="k">БАГИ</span><div>Только дочерние тест-задачи. Статус <b>Новая</b>. <b>Приоритет + критичность + исполнитель</b>.</div></div>
         <div class="memo-item"><span class="k">СТП</span><div>Оповещается после «Регресс завершен». Готовит сообщение и релиз-ноут. <b>Публикацию не выполняет</b>.</div></div>
         <div class="memo-item"><span class="k">HOTFIX</span><div>Отдельный релиз, тот же workflow с метками, срочно.</div></div>
@@ -1446,13 +1403,17 @@
       icon: '📋', name: 'РП / Аналитик', subtitle: 'Владелец родительской задачи',
       trigger: 'Получена задача от заказчика или инициирована Лидом; взятие в работу; изменён функционал',
       steps: [
-        'Создай <b>родительскую задачу</b>: «Структура», Backlog, релиз Backlog, нужный ФБ. Инициатор — ты или Лид/зам.',
+        'Создай <b>родительскую задачу</b>: «Структура», Backlog, релиз Backlog, нужный ФБ.',
         'Заполни <b>описание</b>: ТЗ, ссылка на заказчика, общая оценка (с риском +20 %), разбивка.',
         'Создай <b>дочерние задачи</b> по 5 направлениям со своими трекерами.',
         'В каждой дочерней: имя, <b>направление (для Front/Back — обязательно)</b>, описание, ТЗ, оценка, ссылка на родительскую.',
         'Свяжи <b>только родительскую</b> с задачей заказчика.',
         'После взятия — статус «Новая»/«В работе», актуальный релиз и спринт, Даты.',
         'Если изменён функционал — в <b>родительской</b> задаче поле «Документация» = «требует корректировок».'
+      ],
+      ongoing: [
+        'Контролируй актуальность <b>статусов, сроков, оценок и полей</b> у дочерних задач.',
+        'Следи за переходом задач по контурам и метками.'
       ],
       result: 'Готовая структура с дочерними задачами и заполненными полями.'
     },
@@ -1465,7 +1426,7 @@
         '<b>Проверь и при необходимости проставь «Оценку временных затрат»</b>.',
         'Выполни дизайн по ТЗ.',
         'Обнови оценку, если факт отличается.',
-        '<b>Проверь списание трудозатрат перед закрытием.</b> Без них задачу закрыть нельзя.',
+        '<b>Проверь списание трудозатрат перед закрытием.</b>',
         'Закрой задачу. Если раньше срока — фактическая дата.'
       ],
       result: 'Дизайн-макеты готовы, трудозатраты списаны, задача закрыта.'
@@ -1477,67 +1438,83 @@
         'Возьми задачу в работу. Статус, релиз, спринт, даты.',
         '<b>Проверь и при необходимости проставь «Оценку временных затрат»</b>.',
         'Проработай требования, критерии приёмки, ТЗ.',
-        '<b>Перед передачей на ревью проверь, что трудозатраты по задаче списаны.</b> Без них задачу закрыть нельзя.',
-        '<b>После проработки</b> — заполни поле <b>«Ответственный за ревью»</b>: всех лидов.',
-        '<b>Оповести лидов в рабочем чате</b> о готовности ТЗ.',
-        '<b>Назначь встречу</b> для согласования ТЗ.',
-        '<b>Отслеживай статус своей задачи в Redmine</b>.',
+        '<b>Перед передачей на ревью проверь, что трудозатраты списаны.</b>',
+        '<b>Заполни поле «Ответственный за ревью»</b>: всех лидов.',
+        '<b>Оповести лидов в чате</b> о готовности ТЗ.',
+        '<b>Назначь встречу</b> для согласования.',
         'После согласования — обнови оценку.',
-        '<b>Закрой задачу только после списания трудозатрат.</b> Раньше — фактическая дата.',
-        'Если менялся функционал — «Документация = требует корректировок» <b>у родительской задачи</b>.'
+        '<b>Закрой задачу только после списания трудозатрат.</b>',
+        'Если функционал изменён — «Документация = требует корректировок» <b>у родительской</b>.'
       ],
-      result: 'ТЗ согласовано, трудозатраты списаны, задача закрыта.'
+      ongoing: [
+        'Отслеживай <b>статус своей задачи в Redmine</b> и сроки — чтобы не пропустить переходы и вовремя реагировать на запросы по ТЗ.'
+      ],
+      altSteps: [
+        {
+          condition: 'После встречи по согласованию ТЗ лиды запросили корректировки',
+          action: 'Внеси правки в ТЗ → <b>повторно оповести лидов в чате</b> → при необходимости назначь <b>повторную встречу</b> → после согласования закрой задачу (трудозатраты списаны).'
+        }
+      ],
+      result: 'ТЗ согласовано (с возможными корректировками), трудозатраты списаны, задача закрыта.'
     },
     front: {
       icon: '🖥', name: 'Front-разработчик', subtitle: 'Направление Front',
-      trigger: 'Назначена Front-задача',
+      trigger: 'Назначена Front-задача (Улучшение или Ошибка)',
       steps: [
         'Возьми задачу в работу. Статус «Новая»/«В работе», актуальный релиз и спринт.',
         'Установи Дату начала и Срок завершения.',
         '<b>Обязательно проставь «Оценку временных затрат»</b>, если ещё не заполнена.',
         '<b>Установи в поле «Направление» значение FRONT</b>.',
         'Реализуй по ТЗ.',
-        '<b>Перед переводом в «Проверка кода» проверь, что трудозатраты по задаче списаны.</b> Без них задачу закрыть нельзя.',
-        'Переведи в <b>«Проверка кода»</b>.',
-        'Дождись фидбека <b>Лида/зама своего направления</b>. При замечаниях — исправь и верни.',
-        '<b>Передай задачу Лиду/заму для публикации на DEV.</b> Публикацию и закрытие делает Лид/зам.',
-        'После публикации — задача на DEV с меткой «Развернута на DEV». <b>Закрывает задачу Лид/зам</b> — разработчик не закрывает.'
+        '<b>Перед передачей на ревью:</b> проверь, что <b>трудозатраты списаны</b>, и (для «Улучшения») поставь статус <b><span class="pill status-review">Проверка кода</span></b>.',
+        'Для «Ошибки» — статус <b><span class="pill status-deploy-test">Развернута на тесте (контур)</span></b>.',
+        'Дождись фидбека <b>Лида/зама</b>. При замечаниях — исправь и верни.',
+        '<b>Публикацию выполняет Лид/зам.</b>',
+        '<b>Улучшение:</b> после ревью Лид ставит «Решена», публикует и закрывает. <b>Ошибка:</b> Лид публикует, закрывает тестировщик.'
       ],
-      result: 'Код передан Лиду/заму, на DEV с меткой, трудозатраты списаны. Задачу закрыл Лид/зам.'
+      ongoing: [
+        'Следи за фидбеком <b>Лида/зама</b> после ревью — не пропусти возврат на доработку.'
+      ],
+      result: 'Код передан Лиду/заму, трудозатраты списаны. Закрытие — по типу задачи.'
     },
     back: {
       icon: '⚙️', name: 'Back-разработчик', subtitle: 'Направление Back',
-      trigger: 'Назначена Back-задача',
+      trigger: 'Назначена Back-задача (Улучшение или Ошибка)',
       steps: [
         'Возьми задачу в работу. Статус, релиз, спринт, даты.',
         'Установи Дату начала и Срок завершения.',
-        '<b>Обязательно проставь «Оценку временных затрат»</b>, если ещё не заполнена.',
+        '<b>Обязательно проставь «Оценку временных затрат»</b>.',
         '<b>Установи в поле «Направление» значение BACK</b>.',
         'Реализуй API / бизнес-логику по ТЗ.',
-        '<b>Перед переводом в «Проверка кода» проверь, что трудозатраты списаны.</b>',
-        'Переведи в <b>«Проверка кода»</b>.',
+        '<b>Перед передачей на ревью:</b> проверь, что <b>трудозатраты списаны</b>, и (для «Улучшения») поставь статус <b><span class="pill status-review">Проверка кода</span></b>.',
+        'Для «Ошибки» — статус <b><span class="pill status-deploy-test">Развернута на тесте (контур)</span></b>.',
         'Дождись фидбека <b>Лида/зама</b>.',
-        '<b>Передай задачу Лиду/заму для публикации на DEV.</b> Публикацию и закрытие делает Лид/зам.',
-        'После публикации — задача на DEV с меткой «Развернута на DEV». <b>Закрывает Лид/зам</b>.'
+        '<b>Публикацию выполняет Лид/зам.</b>',
+        '<b>Улучшение:</b> Лид ставит «Решена», публикует и закрывает. <b>Ошибка:</b> Лид публикует, закрывает тестировщик.'
       ],
-      result: 'Код передан Лиду/заму, на DEV с меткой, трудозатраты списаны. Задачу закрыл Лид/зам.'
+      ongoing: [
+        'Следи за фидбеком <b>Лида/зама</b> после ревью — не пропусти возврат на доработку.'
+      ],
+      result: 'Код передан Лиду/заму, трудозатраты списаны. Закрытие — по типу задачи.'
     },
     tester: {
       icon: '🧪', name: 'Тестировщик', subtitle: 'Test · 3 контура + тест-кейсы',
-      trigger: 'После согласования ТЗ → тест-кейсы; DEV / STAGE / PROD → тесты',
+      trigger: 'После согласования ТЗ → тест-кейсы; DEV / STAGE / PROD → тесты; Ошибки → закрывает',
       steps: [
-        '<b>После согласования ТЗ:</b> напиши <b>тест-кейсы в описании своей тест-задачи</b> (трекер «Тестирование») — параллельно с разработкой.',
-        '<b>DEV:</b> построй отчёт в Redmine по метке <b>«Развернута на DEV»</b> — рабочий список.',
+        '<b>После согласования ТЗ:</b> напиши <b>тест-кейсы в описании своей тест-задачи</b> — параллельно с разработкой.',
+        '<b>DEV:</b> построй отчёт по метке <b>«Развернута на DEV»</b>.',
         'Возьми тест-задачу в работу. Установи даты. Проверь/проставь <b>«Оценку временных затрат»</b>.',
-        'Проверь по <b>тест-кейсам</b>. Баги — <b>только дочерние задачи тест-задачи</b> (Ошибка, Новая, приоритет+критичность+исполнитель).',
-        'После успешного теста поставь метку <span class="pill label-tested">Протестировано на DEV</span>. <b>СТП не оповещай.</b>',
-        '<b>STAGE:</b> Лид/зам опубликует на STAGE. Ставишь <span class="pill label-regress">Регресс</span>, проводишь регресс.',
-        'После успешного регресса поставь <span class="pill label-regress-done">Регресс завершен</span> и <b>оповести СТП</b> о готовности к PROD.',
-        '<b>PROD:</b> Лид/зам опубликует на PROD. Ставишь метку <span class="pill label-smoke">Смоук</span>, проводишь смоук.',
-        'После успешного смоука поставь <span class="pill label-smoke-done">Смоук проведен</span>.',
-        '<b>Перед закрытием тест-задачи проверь списание трудозатрат.</b> Закрой (или фактическая дата).'
+        'Проверь по <b>тест-кейсам</b>. Баги — <b>только дочерние задачи тест-задачи</b>.',
+        'После успешного теста поставь метку <span class="pill label-tested">Протестировано на DEV</span>.',
+        '<b>Ошибки:</b> после проверки исправления на контуре — <b>закрой задачу «Ошибка»</b>.',
+        '<b>STAGE:</b> Лид/зам публикует → ставишь <span class="pill label-regress">Регресс</span> → регресс → <span class="pill label-regress-done">Регресс завершен</span>, <b>оповести СТП</b>.',
+        '<b>PROD:</b> Лид/зам публикует → <span class="pill label-smoke">Смоук</span> → смоук → <span class="pill label-smoke-done">Смоук проведен</span>.',
+        '<b>Перед закрытием тест-задачи проверь списание трудозатрат.</b>'
       ],
-      result: 'Тест-кейсы в описании, качество подтверждено на DEV, STAGE, PROD. СТП оповещён.'
+      ongoing: [
+        'Мониторь отчёт в Redmine по метке <b>«Развернута на DEV»</b> — чтобы не пропустить новые задачи в тестирование.'
+      ],
+      result: 'Тест-кейсы готовы, качество подтверждено, Ошибки закрыты, СТП оповещён.'
     },
     writer: {
       icon: '📝', name: 'Технический писатель', subtitle: 'Работа по полю «Документация»',
@@ -1559,29 +1536,34 @@
         '<b>Оповещение только перед PROD.</b> На DEV и STAGE — СТП не участвует.',
         'Получи уведомление от тестировщика после метки «Регресс завершен».',
         'Сформируй и опубликуй <b>сообщение в чате</b> о технических работах (дата, время).',
-        '<b>Не публикуй на PROD сам</b> — публикацию выполняет Лид/зам направления.',
-        'Дождись, пока Лид/зам опубликует на PROD и тестировщик поставит <span class="pill label-smoke-done">Смоук проведен</span>.',
-        'Сформируй <b>релиз-ноут</b>, отправь <b>письмо о завершении</b> с приложенным релиз-ноутом и <b>опубликуй уведомление в чате с пользователями</b>.',
+        '<b>Не публикуй на PROD сам</b> — публикацию выполняет Лид/зам.',
+        'Дождись метки <span class="pill label-smoke-done">Смоук проведен</span> от тестировщика.',
+        'Сформируй <b>релиз-ноут</b>, отправь <b>письмо о завершении</b> и <b>опубликуй уведомление в чате с пользователями</b>.',
         'Для hotfix — те же шаги, но в минимальные сроки.'
       ],
-      result: 'Пользователи оповещены, релиз-ноут и письмо отправлены. Публикацию выполнял Лид/зам.'
+      result: 'Пользователи оповещены, релиз-ноут и письмо отправлены.'
     },
     lead: {
-      icon: '👤', name: 'Лид / зам направления', subtitle: 'Публикация + закрытие Front/Back',
-      trigger: 'Ревью ТЗ; проверка кода; публикация на контура; закрытие Front/Back',
+      icon: '👤', name: 'Лид / зам направления', subtitle: 'Ревью + публикация + закрытие Улучшений',
+      trigger: 'Ревью ТЗ; проверка кода; публикация; закрытие Улучшений',
       steps: [
         'Можешь <b>инициировать задачу</b> (техдолг, рефакторинг, баг).',
         'Получи уведомление о новой дочерней. Назначь исполнителя, проверь/подтверди <b>оценку</b>.',
         'Подтверди план: оценка, релиз, спринт, даты.',
         '<b>Ревью ТЗ:</b> получи оповещение от аналитика → участвуй во встрече → согласуй ТЗ.',
-        '<b>Проверка кода:</b> получи задачу в статусе «Проверка кода» → проверь, что <b>трудозатраты списаны</b> → оставь фидбек → одобри или верни.',
-        '<b>Публикация на DEV:</b> после одобрения кода — опубликуй задачу на DEV и установи метку <span class="pill label-dev">Развернута на DEV</span>.',
-        '<b>Закрой Front/Back задачу после публикации на DEV</b> — при списанных трудозатратах. Если раньше срока — фактическая дата.',
-        '<b>Публикация на STAGE:</b> после <span class="pill label-tested">Протестировано на DEV</span> — опубликуй на STAGE.',
-        '<b>Публикация на PROD:</b> после <span class="pill label-regress-done">Регресс завершен</span> и оповещения СТП — опубликуй на PROD.',
-        'Если тебя нет — <b>публикацию и закрытие выполняет твой зам</b>.'
+        '<b>Улучшение (статус «Проверка кода»):</b> проведи ревью кода. При замечаниях — верни. <b>После успешного ревью поставь <span class="pill status-solved">Решена</span></b>.',
+        '<b>Ошибка (статус «Развернута на тесте (контур)»):</b> просто проверь код. <b>Статус не меняй.</b>',
+        '<b>Публикация на DEV:</b> после одобрения — опубликуй и установи метку <span class="pill label-dev">Развернута на DEV</span>.',
+        '<b>Улучшение:</b> закрой задачу <b>после публикации на DEV</b> (при списанных трудозатратах).',
+        '<b>Ошибка:</b> задачу <b>не закрывай</b> — её закроет тестировщик после проверки.',
+        '<b>STAGE:</b> после <span class="pill label-tested">Протестировано на DEV</span> — опубликуй на STAGE.',
+        '<b>PROD:</b> после <span class="pill label-regress-done">Регресс завершен</span> — опубликуй на PROD.',
+        'Если тебя нет — <b>всё выполняет твой зам</b>.'
       ],
-      result: 'Задачи направления согласованы, опубликованы на контура, Front/Back закрыты (при списанных трудозатратах).'
+      ongoing: [
+        'Контролируй задачи своего направления: сроки, эскалации РП при отклонениях, наличие списанных трудозатрат.'
+      ],
+      result: 'Улучшения закрыты (Проверка кода → Решена → DEV → закрыто). Ошибки ждут тестировщика.'
     }
   };
 
@@ -1619,10 +1601,36 @@
     if (role === 'all' || !ROLES[role]){ rolePanel.classList.remove('show'); rolePanel.innerHTML = ''; return; }
     var d = ROLES[role];
     var html = '<div class="rp-head"><span class="rp-icon">' + d.icon + '</span><div><div class="rp-title">' + d.name + '</div><div class="rp-subtitle">' + d.subtitle + '</div></div><button class="rp-close">✕</button></div>'
-      + '<div class="rp-trigger"><b>Когда включаешься:</b> ' + d.trigger + '</div>'
-      + '<ol class="rp-steps">';
+      + '<div class="rp-trigger"><b>Когда включаешься:</b> ' + d.trigger + '</div>';
+
+    // Сквозные действия
+    if (d.ongoing && d.ongoing.length){
+      html += '<div class="rp-ongoing">'
+        + '<div class="rp-ongoing-title">Сквозные действия — на всём протяжении задачи</div>'
+        + '<ul>';
+      d.ongoing.forEach(function(o){ html += '<li>' + o + '</li>'; });
+      html += '</ul></div>';
+    }
+
+    // Шаги
+    html += '<ol class="rp-steps">';
     d.steps.forEach(function(s){ html += '<li>' + s + '</li>'; });
-    html += '</ol><div class="rp-result"><b>Результат:</b> ' + d.result + '</div>';
+    html += '</ol>';
+
+    // Альтернативные шаги
+    if (d.altSteps && d.altSteps.length){
+      html += '<div class="rp-alt">'
+        + '<div class="rp-alt-title">Альтернативные шаги</div>';
+      d.altSteps.forEach(function(a){
+        html += '<div class="rp-alt-item">'
+          + '<div class="rp-alt-cond"><span>' + a.condition + '</span></div>'
+          + '<div class="rp-alt-action">' + a.action + '</div>'
+          + '</div>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="rp-result"><b>Результат:</b> ' + d.result + '</div>';
     rolePanel.innerHTML = html;
     rolePanel.classList.add('show');
     rolePanel.querySelector('.rp-close').addEventListener('click', function(){
@@ -1736,7 +1744,7 @@
     var p = document.getElementById(b.getAttribute('data-tab')); if (p) p.classList.add('active');
   });
 
-  var MC_KEY = 'rm_master_checklist_v5';
+  var MC_KEY = 'rm_master_checklist_v8';
   var mcBar = document.getElementById('mcBar');
   var mcText = document.getElementById('mcText');
   var mcBoxes = Array.prototype.slice.call(document.querySelectorAll('[data-mc]'));
