@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Правила регистрации задач в Redmine</title>
+<style>
+  :root{
+    --bg:#f5f6fb; --card:#ffffff; --ink:#1b2233; --muted:#6b7280;
+    --accent:#4f46e5; --accent-soft:#eef0ff; --border:#e6e8f0;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.06);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.55; font-size:15px;}
+  h1,h2,h3,h4{margin:0; line-height:1.25; font-weight:650; letter-spacing:-.01em}
+  p{margin:0}
+  a{color:var(--accent)}
+  code, .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.8px}
+  code{background:#f2f3f9; padding:2px 6px; border-radius:6px; color:#3b4360}
+  .hint{font-size:13px;color:var(--muted)}
+
+  .sticky-head{position:sticky; top:0; z-index:50;}
+  .topbar{background:rgba(255,255,255,.92); backdrop-filter:blur(10px);border-bottom:1px solid var(--border); padding:12px 22px;display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .logo{width:34px;height:34px;border-radius:9px;flex:0 0 auto;background:linear-gradient(135deg,#4f46e5,#0ea5e9);display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px;}
+  .topbar h1{font-size:16px}
+  .topbar .sub{font-size:12.5px;color:var(--muted)}
+  .topbar .spacer{flex:1}
+  .btn{border:1px solid var(--border); background:#fff; color:var(--ink);padding:8px 14px; border-radius:10px; font-size:13.5px; font-weight:550;cursor:pointer; transition:.15s; font-family:inherit;display:inline-flex; align-items:center; gap:7px;}
+  .btn:hover{border-color:#c9cee0; background:#fafbff}
+  .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
+  .btn.primary:hover{background:#4338ca}
+  .btn.ghost{background:transparent; border-color:transparent; color:var(--muted); padding:6px 9px}
+  .btn.ghost:hover{background:#eceefb; color:var(--accent)}
+
+  .rolebar{background:#fff; border-bottom:1px solid var(--border);padding:9px 22px; display:flex; align-items:center; gap:12px;overflow-x:auto; box-shadow:0 1px 3px rgba(16,24,40,.04);}
+  .rolebar-label{font-size:12.5px; color:var(--muted); font-weight:650; white-space:nowrap; text-transform:uppercase; letter-spacing:.05em;}
+  .rolebar-btns{display:flex; gap:6px; flex-wrap:nowrap;}
+  .role-btn{padding:7px 13px; border-radius:999px; border:1px solid var(--border);background:#fff; font-size:12.8px; font-weight:600; color:#5d6579;cursor:pointer; white-space:nowrap; font-family:inherit; transition:.15s;display:inline-flex; align-items:center; gap:5px;}
+  .role-btn:hover{border-color:#c9cee0; background:#fafbff}
+  .role-btn.active{background:var(--accent); color:#fff; border-color:var(--accent)}
+
+  .layout{display:flex; align-items:flex-start; gap:26px; max-width:1240px; margin:0 auto; padding:24px 22px 90px}
+  .sidebar{flex:0 0 260px; position:sticky; top:112px;background:var(--card); border:1px solid var(--border); border-radius:var(--radius);padding:12px; box-shadow:var(--shadow);max-height:calc(100vh - 140px); overflow:auto;}
+  .sidebar .label{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); padding:6px 10px 8px}
+  .sidebar a{display:flex; align-items:center; gap:9px;padding:8px 10px; border-radius:9px; text-decoration:none; color:#414a60;font-size:13px; transition:.15s;}
+  .sidebar a:hover{background:#f4f5fb; color:var(--ink)}
+  .sidebar a.active{background:var(--accent-soft); color:var(--accent); font-weight:600}
+  .sidebar a .num{flex:0 0 auto; width:20px;height:20px;border-radius:6px;background:#f0f1f7;display:grid;place-items:center;font-size:11px;font-weight:650;color:#7a839b;}
+  .sidebar a.active .num{background:var(--accent); color:#fff}
+
+  main{flex:1; min-width:0; display:flex; flex-direction:column; gap:20px}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius);padding:22px 24px; box-shadow:var(--shadow); scroll-margin-top:130px;}
+  .card > header{display:flex; align-items:center; gap:11px; margin-bottom:14px}
+  .card > header .badge-num{width:26px;height:26px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:12.5px;font-weight:700;flex:0 0 auto;}
+  .card h2{font-size:18px}
+
+  .role-panel{background:#fff; border:1px solid #dcdffb; border-radius:var(--radius);padding:22px 26px; box-shadow:0 4px 18px rgba(79,70,229,.08);display:none;}
+  .role-panel.show{display:block; animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  .rp-head{display:flex; align-items:flex-start; gap:14px; margin-bottom:14px}
+  .rp-icon{font-size:30px;line-height:1}
+  .rp-title{font-size:19px;font-weight:700}
+  .rp-subtitle{font-size:13px;color:var(--muted);margin-top:2px}
+  .rp-close{margin-left:auto;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 6px;line-height:1;font-family:inherit;}
+  .rp-close:hover{color:var(--ink)}
+  .rp-trigger{background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af;padding:10px 14px; border-radius:10px; font-size:13.5px; margin-bottom:14px;}
+  .rp-steps{list-style:none;margin:0;padding:0;counter-reset:rp;display:flex;flex-direction:column;gap:8px;}
+  .rp-steps li{counter-increment:rp; display:flex; gap:12px; align-items:flex-start;padding:11px 14px; border-radius:10px; background:#fafbfe; border:1px solid #eef0f8;font-size:13.5px;}
+  .rp-steps li::before{content:counter(rp); flex:0 0 auto; width:22px;height:22px;border-radius:6px;background:var(--accent); color:#fff; font-size:11.5px;font-weight:700;display:grid;place-items:center; margin-top:1px;}
+  .rp-result{margin-top:14px; padding:11px 14px; background:#f0fdf4;border:1px solid #bbf7d0; color:#166534; border-radius:10px; font-size:13.5px;}
+
+  .role-tag{display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px;font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;white-space:nowrap;}
+  .role-tag.rp{background:#eef0ff;color:#4338ca}
+  .role-tag.designer{background:#fef3c7;color:#b45309}
+  .role-tag.front{background:#e0f2fe;color:#0369a1}
+  .role-tag.back{background:#dcfce7;color:#15803d}
+  .role-tag.tester{background:#ffe4e6;color:#be123c}
+  .role-tag.writer{background:#dbeafe;color:#1e40af}
+  .role-tag.lead{background:#f3e8ff;color:#7e22ce}
+  .role-tag.stp{background:#fed7aa;color:#9a3412}
+  .role-tag.all{background:#f0f1f7;color:#5b6377}
+
+  .lifecycle{
+    display:grid;
+    grid-template-columns:
+      minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto
+      minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);
+    gap:0; align-items:stretch; margin-bottom:22px;
+  }
+  .lc-stage{
+    border:1px solid var(--border); border-radius:11px;
+    padding:12px 14px; background:#fff;
+    display:flex; flex-direction:column; gap:6px;
+    min-width:0;
+  }
+  .lc-num{width:22px;height:22px;border-radius:6px;background:var(--accent);color:#fff;font-size:11.5px;font-weight:700;display:grid;place-items:center;}
+  .lc-title{font-weight:650;font-size:13px;line-height:1.2;overflow-wrap:anywhere}
+  .lc-roles{display:flex;gap:4px;flex-wrap:wrap}
+  .lc-desc{font-size:11.5px;color:var(--muted);line-height:1.4;overflow-wrap:anywhere}
+  .lc-arrow{display:flex;align-items:center;justify-content:center;padding:0 4px;color:#c7cbe0;font-size:14px;}
+
+  .role-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .role-card{border:1px solid var(--border); border-radius:12px;padding:16px 18px; background:#fff;display:flex; flex-direction:column; gap:10px; transition:.15s;}
+  .role-card:hover{border-color:#c9cee0; box-shadow:0 4px 16px rgba(16,24,40,.06)}
+  .rc-head{display:flex;gap:10px;align-items:center}
+  .rc-icon{font-size:24px;line-height:1}
+  .rc-name{font-weight:650;font-size:14.5px}
+  .rc-sub{font-size:12px;color:var(--muted)}
+  .rc-when{font-size:12.5px;color:#5b6377;padding:8px 10px;background:#f7f8ff;border-radius:8px;border:1px solid #eef0fb;}
+  .rc-bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px;font-size:12.8px;color:#414a60;}
+  .rc-bullets li{position:relative;padding-left:16px}
+  .rc-bullets li::before{content:'•';position:absolute;left:4px;color:var(--accent);font-weight:700}
+  .rc-btn{align-self:flex-start;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:6px 12px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;}
+  .rc-btn:hover{background:var(--accent);color:#fff}
+
+  .rule-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px}
+  .rule-list li{display:flex; gap:11px; align-items:flex-start}
+  .rule-list .dot{flex:0 0 auto; width:22px;height:22px;border-radius:7px;background:#f0f1f7;display:grid;place-items:center;font-size:11.5px;font-weight:700;color:#6b7387; margin-top:2px;}
+  .rule-list b{font-weight:600}
+  .rule-list li.highlight{background:#f5f7ff; border:1px solid #dfe3fb; border-radius:11px; padding:11px 13px}
+  .rule-list li.highlight .dot{background:var(--accent); color:#fff}
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top}
+  th{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:650; background:#fafbfe}
+  tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#fbfcff}
+  .table-wrap{border:1px solid var(--border); border-radius:11px; overflow:hidden}
+
+  pre{margin:0; background:#1c2130; color:#e6e9f2; padding:14px 16px; border-radius:11px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.6px;line-height:1.6; overflow:auto; white-space:pre-wrap; word-break:break-word;}
+  pre.light{background:#fafbfe; color:#2a3247; border:1px solid var(--border)}
+  .code-block{position:relative}
+  .code-block .copy-fab{position:absolute; top:9px; right:9px; z-index:2;background:rgba(255,255,255,.12); color:#dfe4f2; border:1px solid rgba(255,255,255,.18);padding:5px 10px; border-radius:8px; font-size:11.5px; cursor:pointer; font-family:inherit;transition:.15s; backdrop-filter:blur(6px);}
+  .code-block .copy-fab:hover{background:rgba(255,255,255,.22)}
+  .code-block.on-light .copy-fab{background:#fff; color:#4b5468; border-color:var(--border)}
+  .code-block.on-light .copy-fab:hover{background:#f2f4fb}
+
+  .dir{display:inline-flex; align-items:center; gap:6px;padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:700;letter-spacing:.04em; text-transform:uppercase; white-space:nowrap;}
+  .dir::before{content:''; width:6px;height:6px;border-radius:50%; background:currentColor}
+  .dir.design{background:#fef3c7; color:#b45309}
+  .dir.analytics{background:#f3e8ff; color:#7e22ce}
+  .dir.front{background:#e0f2fe; color:#0369a1}
+  .dir.back{background:#dcfce7; color:#15803d}
+  .dir.test{background:#ffe4e6; color:#be123c}
+
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px;background:#eef0ff; color:#4338ca; font-size:12px; font-weight:650;}
+  .pill.gray{background:#f0f1f7; color:#5b6377}
+  .pill.warn{background:#fef3c7; color:#b45309}
+  .pill.rel{background:#e0f2fe; color:#0369a1}
+  .pill.struct{background:#ede9fe; color:#5b21b6}
+  .pill.improve{background:#dcfce7; color:#15803d}
+  .pill.bug{background:#fee2e2; color:#b91c1c}
+  .pill.track-design{background:#fef3c7; color:#92400e}
+  .pill.track-analytics{background:#f3e8ff; color:#6b21a8}
+  .pill.track-test{background:#ffe4e6; color:#9f1239}
+  .pill.status-new{background:#dbeafe; color:#1d4ed8}
+  .pill.status-work{background:#dcfce7; color:#15803d}
+  .pill.status-review{background:#fed7aa; color:#9a3412}
+  .pill.status-done{background:#e5e7eb; color:#374151}
+  .pill.fb{background:#fce7f3; color:#9d174d}
+  .pill.est{background:#fef3c7; color:#b45309}
+  .pill.risk{background:#fde68a; color:#92400e}
+  .pill.date{background:#e0e7ff; color:#3730a3}
+  .pill.doc-need{background:#fee2e2; color:#b91c1c}
+  .pill.doc-done{background:#dcfce7; color:#15803d}
+  .pill.doc-empty{background:#f0f1f7; color:#5b6377}
+  .pill.priority-low{background:#e0f2fe; color:#0369a1}
+  .pill.priority-normal{background:#dbeafe; color:#1d4ed8}
+  .pill.priority-high{background:#fed7aa; color:#9a3412}
+  .pill.priority-urgent{background:#fee2e2; color:#b91c1c}
+  .pill.crit-minor{background:#f0f1f7; color:#5b6377}
+  .pill.crit-major{background:#fef3c7; color:#92400e}
+  .pill.crit-critical{background:#fed7aa; color:#9a3412}
+  .pill.crit-blocker{background:#fee2e2; color:#b91c1c}
+  .pill.stp{background:#fed7aa; color:#9a3412}
+  .pill.hotfix{background:#fee2e2; color:#991b1b}
+  .pill.dev{background:#d1fae5; color:#065f46}
+  .pill.stage{background:#fef3c7; color:#92400e; border:1px solid #fcd34d}
+  .pill.prod{background:#fee2e2; color:#991b1b; border:1px solid #fca5a5}
+  .pill.lead-only{background:#f3e8ff; color:#6b21a8; border:1px dashed #a855f7}
+  .pill.tc{background:#e0f2fe; color:#075985; border:1px solid #7dd3fc}
+
+  .pill.label-dev{background:#c7f9e5; color:#065f46; border:1px dashed #10b981}
+  .pill.label-tested{background:#d1fae5; color:#065f46; border:1px solid #10b981}
+  .pill.label-regress{background:#fef3c7; color:#92400e; border:1px dashed #f59e0b}
+  .pill.label-regress-done{background:#fde68a; color:#78350f; border:1px solid #d97706}
+  .pill.label-smoke{background:#fee2e2; color:#991b1b; border:1px dashed #f87171}
+  .pill.label-smoke-done{background:#fecaca; color:#7f1d1d; border:1px solid #dc2626}
+
+  .label-flow{
+    display:grid;
+    grid-template-columns:repeat(6, minmax(0,1fr));
+    gap:8px; margin:14px 0;
+  }
+  .label-step{
+    border:1px solid var(--border); border-radius:11px;
+    padding:12px 12px; background:#fff;
+    display:flex; flex-direction:column; gap:8px;
+    text-align:center;
+  }
+  .label-step.dev-c{border-color:#a7f3d0; background:#f0fdf4}
+  .label-step.stage-c{border-color:#fcd34d; background:#fffbeb}
+  .label-step.prod-c{border-color:#fca5a5; background:#fef2f2}
+  .label-step .ls-contour{
+    font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--muted);
+  }
+  .label-step .ls-pill{margin:0 auto}
+  .label-step .ls-desc{font-size:11.5px; color:var(--muted); line-height:1.35}
+  .label-step .ls-role{margin:4px auto 0}
+  @media (max-width: 900px){ .label-flow{grid-template-columns:repeat(2, minmax(0,1fr))} }
+  @media (max-width: 500px){ .label-flow{grid-template-columns:1fr} }
+
+  .diagram{display:flex; flex-direction:column; gap:0; font-size:13.5px}
+  .node{border:1px solid var(--border); border-radius:11px; padding:11px 14px; background:#fff;display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .node.root{background:#f7f8ff; border-color:#dcdffb}
+  .node .t{font-weight:600}
+  .branch{margin-left:26px; padding-left:22px; border-left:2px dashed #dfe2ef;display:flex; flex-direction:column; gap:8px; padding-top:8px; padding-bottom:4px;}
+  .link-note{margin-top:12px; padding:10px 14px; border-radius:11px; background:#fffbeb;border:1px solid #fde68a; font-size:13px; color:#8a5a00; display:flex; gap:9px; align-items:flex-start;}
+  .link-note.blue{background:#eff6ff; border-color:#bfdbfe; color:#1e40af}
+  .link-note.green{background:#f0fdf4; border-color:#bbf7d0; color:#166534}
+  .link-note.red{background:#fef2f2; border-color:#fecaca; color:#991b1b}
+  .link-note.orange{background:#fff7ed; border-color:#fed7aa; color:#9a3412}
+
+  .field{display:flex; flex-direction:column; gap:6px}
+  .field label{font-size:12.5px; font-weight:600; color:#4a5266}
+  input[type=text], input[type=number], select{font-family:inherit; font-size:13.5px; color:var(--ink);padding:9px 12px; border-radius:10px; border:1px solid var(--border);background:#fff; outline:none; transition:.15s; width:100%;}
+  input:focus, select:focus{border-color:#b9bdf5; box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+  .grid-3{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px}
+  .grid-2{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px}
+
+  .tool{border:1px solid var(--border); border-radius:12px; padding:16px; background:#fbfcff;display:flex; flex-direction:column; gap:13px;}
+  .tool .tool-head{display:flex; align-items:center; gap:9px; font-weight:650; font-size:14px; flex-wrap:wrap}
+  .tool .tool-head .ic{width:24px;height:24px;border-radius:7px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:12px;}
+  .out-row{display:flex; align-items:stretch; gap:10px}
+  .out-row .out{flex:1; background:#1c2130; color:#e6e9f2; border-radius:11px; padding:12px 14px;font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px;display:flex; align-items:center; word-break:break-word; min-height:44px;}
+  .total-box{display:flex; align-items:center; justify-content:space-between; gap:12px;background:#fff; border:1px dashed #cfd4e8; border-radius:11px; padding:11px 14px;flex-wrap:wrap;}
+  .total-box .n{font-size:22px; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums}
+  .total-box .days{font-size:15px; color:#5b6377; font-variant-numeric:tabular-nums}
+  .est-item{display:flex; flex-direction:column; gap:6px}
+  .est-item .cap{font-size:12px; font-weight:650; display:flex; align-items:center; gap:6px}
+  .est-item .with-risk{font-size:11.5px; color:#b45309; font-variant-numeric:tabular-nums;background:#fffbeb; border:1px solid #fde68a; border-radius:7px;padding:3px 8px; display:inline-block;}
+  .risk-note{font-size:12px; color:#92400e; background:#fef3c7;border:1px solid #fde68a; border-radius:8px; padding:7px 11px;display:flex; align-items:center; gap:7px;}
+  .est-grid{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px}
+  .est-grid .est-item{min-width:0}
+
+  .doc-flow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:0; align-items:stretch; margin:6px 0 4px}
+  .doc-step{border:1px solid var(--border); border-radius:11px; padding:14px 16px; background:#fff}
+  .doc-step .step-num{display:inline-block; width:22px; height:22px; border-radius:7px;background:var(--accent-soft); color:var(--accent);font-size:11.5px; font-weight:700; text-align:center; line-height:22px; margin-bottom:6px;}
+  .doc-step .step-title{font-weight:650; font-size:13px; margin-bottom:4px}
+  .doc-step .step-desc{font-size:12.3px; color:var(--muted); line-height:1.4}
+  .doc-step .step-val{display:inline-flex; margin-top:8px}
+  .doc-arrow{display:flex; align-items:center; justify-content:center; padding:0 10px; color:#c7cbe0; font-size:20px}
+
+  .review-flow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:0; align-items:stretch; margin:6px 0 4px}
+  .review-flow.review-flow-4{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr}
+  .review-step{border:1px solid var(--border); border-radius:11px; padding:14px 16px; background:#fff}
+  .review-step .step-num{display:inline-block; width:22px; height:22px; border-radius:7px;background:#fed7aa; color:#9a3412;font-size:11.5px; font-weight:700; text-align:center; line-height:22px; margin-bottom:6px;}
+  .review-step .step-title{font-weight:650; font-size:13px; margin-bottom:4px}
+  .review-step .step-desc{font-size:12.3px; color:var(--muted); line-height:1.4}
+  .review-step.stp .step-num{background:#fed7aa; color:#9a3412}
+  .review-step.dev .step-num{background:#d1fae5; color:#065f46}
+  .review-step.stage .step-num{background:#fef3c7; color:#92400e}
+  .review-step.prod .step-num{background:#fee2e2; color:#991b1b}
+  .review-step.lead .step-num{background:#f3e8ff; color:#7e22ce}
+  .review-step.tc .step-num{background:#e0f2fe; color:#075985}
+
+  .contour-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0; align-items:stretch; margin:6px 0 14px;}
+  .contour-step{border:1px solid var(--border); border-radius:11px;padding:14px 16px; background:#fff;}
+  .contour-step.dev-c{border-color:#a7f3d0; background:#ecfdf5}
+  .contour-step.stage-c{border-color:#fcd34d; background:#fffbeb}
+  .contour-step.prod-c{border-color:#fca5a5; background:#fef2f2}
+  .contour-step .step-num{display:inline-block; width:24px; height:24px; border-radius:7px;font-size:11.5px; font-weight:700; text-align:center; line-height:24px; margin-bottom:6px;}
+  .contour-step.dev-c .step-num{background:#065f46; color:#fff}
+  .contour-step.stage-c .step-num{background:#92400e; color:#fff}
+  .contour-step.prod-c .step-num{background:#991b1b; color:#fff}
+  .contour-step .step-title{font-weight:650; font-size:13px; margin-bottom:6px}
+  .contour-step .step-desc{font-size:12.3px; color:var(--muted); line-height:1.4}
+  .contour-step .step-roles{margin-top:8px; display:flex; gap:4px; flex-wrap:wrap}
+
+  .tabs{display:flex; gap:6px; background:#f2f3f9; padding:4px; border-radius:11px; margin-bottom:14px; flex-wrap:wrap}
+  .tabs button{border:none; background:transparent; padding:8px 14px; border-radius:8px; cursor:pointer;font-family:inherit; font-size:13.5px; font-weight:600; color:#5d6579; transition:.15s;}
+  .tabs button.active{background:#fff; color:var(--accent); box-shadow:0 1px 3px rgba(16,24,40,.09)}
+  .tab-panel{display:none}
+  .tab-panel.active{display:block}
+
+  #toast{position:fixed; left:50%; bottom:28px; transform:translate(-50%, 20px);background:#1c2130; color:#fff; padding:10px 18px; border-radius:11px; font-size:13.5px;opacity:0; pointer-events:none; transition:.25s; z-index:999; box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  #toast.show{opacity:1; transform:translate(-50%, 0)}
+
+  .memo{display:flex; flex-direction:column; gap:8px}
+  .memo-item{display:flex; gap:10px; align-items:flex-start; padding:9px 12px; border-radius:10px; background:#fafbfe; border:1px solid #eef0f8}
+  .memo-item .k{color:var(--accent); font-weight:700; flex:0 0 auto; font-size:12px; margin-top:2px; min-width:110px}
+
+  .dyn-val{transition:background-color .3s ease}
+  .dyn-val.flash{background:#fff3c4; border-radius:6px}
+
+  .mc-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding:12px 16px;background:#fafbfe;border:1px solid #eef0f8;border-radius:11px}
+  .mc-progress{flex:1;min-width:180px;display:flex;align-items:center;gap:12px}
+  .mc-progress-bar{flex:1;height:10px;border-radius:99px;background:#eceef7;overflow:hidden;position:relative}
+  .mc-progress-bar i{display:block;height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#4f46e5,#0ea5e9);transition:width .3s ease}
+  .mc-progress-text{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:650}
+
+  .mc-stage{margin-bottom:14px;border:1px solid var(--border);border-radius:11px;overflow:hidden;background:#fff}
+  .mc-stage-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fafbfe;border-bottom:1px solid var(--border)}
+  .mc-stage-num{width:24px;height:24px;border-radius:7px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
+  .mc-stage-title{font-weight:650;font-size:13.5px}
+  .mc-stage-count{font-size:12px;color:var(--muted);margin-left:auto;font-variant-numeric:tabular-nums}
+  .mc-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+  .mc-item{display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-bottom:1px solid #f0f1f7;font-size:13px;transition:.15s;cursor:pointer}
+  .mc-item:last-child{border-bottom:none}
+  .mc-item:hover{background:#fafbff}
+  .mc-item input{margin:2px 0 0;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex:0 0 auto}
+  .mc-item label{flex:1;min-width:0;cursor:pointer;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
+  .mc-item.done label{color:#15803d;text-decoration:line-through;text-decoration-color:#9fd6b2}
+  .mc-item .mc-role{font-size:10px;padding:1px 6px;border-radius:999px;background:#eef0ff;color:#4338ca;font-weight:700;white-space:nowrap;margin-left:auto;flex:0 0 auto}
+  .mc-item .mc-role.rp{background:#eef0ff;color:#4338ca}
+  .mc-item .mc-role.dev{background:#dbeafe;color:#1e40af}
+  .mc-item .mc-role.an{background:#f3e8ff;color:#7e22ce}
+  .mc-item .mc-role.test{background:#ffe4e6;color:#be123c}
+  .mc-item .mc-role.stp{background:#fed7aa;color:#9a3412}
+  .mc-item .mc-role.writer{background:#dbeafe;color:#1e40af}
+  .mc-item .mc-role.lead{background:#f3e8ff;color:#7e22ce}
+
+  @media (max-width: 1180px){
+    .lifecycle{grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px}
+    .lc-arrow{display:none}
+    .review-flow, .review-flow.review-flow-4{grid-template-columns:1fr; gap:8px}
+    .review-flow .doc-arrow, .review-flow.review-flow-4 .doc-arrow{transform:rotate(90deg); padding:4px 0}
+    .contour-flow{grid-template-columns:1fr; gap:8px}
+    .contour-flow .doc-arrow{transform:rotate(90deg); padding:4px 0}
+  }
+  @media (max-width: 900px){
+    .lifecycle{grid-template-columns:repeat(3, minmax(0,1fr))}
+  }
+  @media (max-width: 980px){
+    .layout{flex-direction:column; padding:16px 14px 70px; gap:16px}
+    .sidebar{position:static; width:100%; flex:none; max-height:none}
+    .sidebar nav{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px}
+    .sidebar a{white-space:nowrap}
+    .sidebar .label{display:none}
+    .grid-3,.est-grid{grid-template-columns:1fr 1fr}
+    .role-cards{grid-template-columns:1fr}
+  }
+  @media (max-width: 720px){
+    .lifecycle{grid-template-columns:repeat(2, minmax(0,1fr))}
+    .doc-flow{grid-template-columns:1fr; gap:8px}
+    .doc-arrow{transform:rotate(90deg); padding:4px 0}
+  }
+  @media (max-width: 620px){
+    .grid-2,.grid-3,.est-grid{grid-template-columns:1fr}
+    .card{padding:18px 16px}
+    .topbar h1{font-size:14.5px}
+    .lifecycle{grid-template-columns:1fr}
+    .rolebar-btns{flex-wrap:nowrap}
+  }
+  @media print{.rolebar, .sticky-head{position:static; box-shadow:none}.role-panel{display:none}}
+</style>
+</head>
+<body>
+
+<header class="sticky-head">
+  <div class="topbar">
+    <div class="logo">RM</div>
+    <div>
+      <h1>Правила регистрации задач в Redmine</h1>
+      <div class="sub">Дизайн · Аналитика · FRONT · BACK · TEST · СТП</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" onclick="window.print()">🖨 Печать / PDF</button>
+  </div>
+  <div class="rolebar">
+    <span class="rolebar-label">Я —</span>
+    <div class="rolebar-btns" id="rolebarBtns">
+      <button class="role-btn active" data-role="all">👥 Все</button>
+      <button class="role-btn" data-role="rp">📋 РП / Аналитик</button>
+      <button class="role-btn" data-role="designer">🎨 Дизайнер</button>
+      <button class="role-btn" data-role="analytics">🔍 Аналитик-исполнитель</button>
+      <button class="role-btn" data-role="front">🖥 Front</button>
+      <button class="role-btn" data-role="back">⚙️ Back</button>
+      <button class="role-btn" data-role="tester">🧪 Тестировщик</button>
+      <button class="role-btn" data-role="writer">📝 Тех.пис</button>
+      <button class="role-btn" data-role="stp">📢 СТП</button>
+      <button class="role-btn" data-role="lead">👤 Лид / зам</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="label">Содержание</div>
+    <nav id="nav">
+      <a href="#roles-start"><span class="num">1</span>Что делать по ролям</a>
+      <a href="#principles"><span class="num">2</span>Общие принципы</a>
+      <a href="#tracker"><span class="num">3</span>Трекер, релиз, спринт</a>
+      <a href="#structure"><span class="num">4</span>Структура и наименование</a>
+      <a href="#estimate"><span class="num">5</span>Оценка</a>
+      <a href="#description"><span class="num">6</span>Описание и связи</a>
+      <a href="#review"><span class="num">7</span>Ревью, проверка, тестирование</a>
+      <a href="#documentation"><span class="num">8</span>Документация</a>
+      <a href="#hotfix"><span class="num">9</span>Hotfix</a>
+      <a href="#master"><span class="num">10</span>Мастер-чеклист</a>
+      <a href="#memo"><span class="num">11</span>Памятка</a>
+    </nav>
+  </aside>
+
+  <main>
+
+    <section class="role-panel" id="rolePanel"></section>
+
+    <!-- 1 -->
+    <section class="card" id="roles-start">
+      <header><div class="badge-num">1</div><h2>Что делать по ролям</h2></header>
+      <p class="hint" style="margin-bottom:16px">Выберите роль сверху — увидите подробный алгоритм.</p>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">Жизненный цикл задачи</h3>
+      <div class="lifecycle">
+        <div class="lc-stage">
+          <div class="lc-num">1</div>
+          <div class="lc-title">Инициация</div>
+          <div class="lc-roles"><span class="role-tag rp">РП</span><span class="role-tag lead">Лид</span></div>
+          <div class="lc-desc">Структура, дочерние, оценки</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-stage">
+          <div class="lc-num">2</div>
+          <div class="lc-title">Планирование</div>
+          <div class="lc-roles"><span class="role-tag rp">РП</span><span class="role-tag lead">Лид</span></div>
+          <div class="lc-desc">Исполнители, релиз, спринт</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-stage">
+          <div class="lc-num">3</div>
+          <div class="lc-title">ТЗ + Тест-кейсы</div>
+          <div class="lc-roles"><span class="role-tag designer">Дизайн</span><span class="role-tag rp">Аналитика</span><span class="role-tag tester">Test</span><span class="role-tag lead">Лиды</span></div>
+          <div class="lc-desc">ТЗ, макеты, ревью, тест-кейсы</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-stage">
+          <div class="lc-num">4</div>
+          <div class="lc-title">Разработка (DEV)</div>
+          <div class="lc-roles"><span class="role-tag front">Front</span><span class="role-tag back">Back</span><span class="role-tag lead">Лид</span></div>
+          <div class="lc-desc">Реализация, ревью, публикация, закрытие</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-stage">
+          <div class="lc-num">5</div>
+          <div class="lc-title">Тестирование (DEV)</div>
+          <div class="lc-roles"><span class="role-tag tester">Test</span></div>
+          <div class="lc-desc">Проверка по тест-кейсам</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-stage">
+          <div class="lc-num">6</div>
+          <div class="lc-title">STAGE + PROD</div>
+          <div class="lc-roles"><span class="role-tag lead">Лид</span><span class="role-tag tester">Test</span><span class="role-tag stp">СТП</span></div>
+          <div class="lc-desc">Регресс → смоук → релиз</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-stage">
+          <div class="lc-num">7</div>
+          <div class="lc-title">Документация + Релиз</div>
+          <div class="lc-roles"><span class="role-tag writer">Тех.пис</span><span class="role-tag stp">СТП</span></div>
+          <div class="lc-desc">Правки доков, релиз-ноут</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px; margin:22px 0 12px; color:#3b4360">Карточки ролей</h3>
+      <div class="role-cards">
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">📋</span><div><div class="rc-name">РП / Аналитик</div><div class="rc-sub">Владелец родительской задачи</div></div></div>
+          <div class="rc-when"><b>Когда:</b> получена задача; взятие в работу; изменён функционал</div>
+          <ul class="rc-bullets">
+            <li>Создаёт родительскую и дочерние по направлениям</li>
+            <li>Заполняет оценки, связи, направление для F/B</li>
+            <li>Релиз, спринт, даты</li>
+          </ul>
+          <button class="rc-btn" data-role="rp">Показать мой алгоритм →</button>
+        </div>
+
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">🎨</span><div><div class="rc-name">Дизайнер</div><div class="rc-sub">Направление Design</div></div></div>
+          <div class="rc-when"><b>Когда:</b> назначена Design-задача</div>
+          <ul class="rc-bullets">
+            <li>Проверяет/проставляет оценку</li>
+            <li>Выполняет дизайн по ТЗ</li>
+            <li>Списывает трудозатраты → закрывает</li>
+          </ul>
+          <button class="rc-btn" data-role="designer">Показать мой алгоритм →</button>
+        </div>
+
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">🔍</span><div><div class="rc-name">Аналитик-исполнитель</div><div class="rc-sub">Направление Analytics</div></div></div>
+          <div class="rc-when"><b>Когда:</b> назначена Analytics-задача</div>
+          <ul class="rc-bullets">
+            <li>Списывает трудозатраты перед ревью</li>
+            <li>Ревью ТЗ: «Ответственный за ревью», чат, встреча</li>
+            <li>Закрывает после согласования</li>
+          </ul>
+          <button class="rc-btn" data-role="analytics">Показать мой алгоритм →</button>
+        </div>
+
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">🖥</span><div><div class="rc-name">Front-разработчик</div><div class="rc-sub">Направление Front</div></div></div>
+          <div class="rc-when"><b>Когда:</b> назначена Front-задача</div>
+          <ul class="rc-bullets">
+            <li>Оценка, Направление = FRONT</li>
+            <li>Списывает трудозатраты перед ревью</li>
+            <li>Передаёт Лиду/заму. <b>Закрывает Лид/зам.</b></li>
+          </ul>
+          <button class="rc-btn" data-role="front">Показать мой алгоритм →</button>
+        </div>
+
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">⚙️</span><div><div class="rc-name">Back-разработчик</div><div class="rc-sub">Направление Back</div></div></div>
+          <div class="rc-when"><b>Когда:</b> назначена Back-задача</div>
+          <ul class="rc-bullets">
+            <li>Оценка, Направление = BACK</li>
+            <li>Списывает трудозатраты перед ревью</li>
+            <li>Передаёт Лиду/заму. <b>Закрывает Лид/зам.</b></li>
+          </ul>
+          <button class="rc-btn" data-role="back">Показать мой алгоритм →</button>
+        </div>
+
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">🧪</span><div><div class="rc-name">Тестировщик</div><div class="rc-sub">Test · 3 контура + тест-кейсы</div></div></div>
+          <div class="rc-when"><b>Когда:</b> после согласования ТЗ → тест-кейсы; DEV / STAGE / PROD → тесты</div>
+          <ul class="rc-bullets">
+            <li><b>Пишет тест-кейсы в описании тест-задачи</b> после ТЗ</li>
+            <li>DEV → «Протестировано на DEV»</li>
+            <li>STAGE → «Регресс завершен» · PROD → «Смоук проведен»</li>
+          </ul>
+          <button class="rc-btn" data-role="tester">Показать мой алгоритм →</button>
+        </div>
+
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">📝</span><div><div class="rc-name">Технический писатель</div><div class="rc-sub">Работа по полю «Документация»</div></div></div>
+          <div class="rc-when"><b>Когда:</b> есть задачи с «требует корректировок»</div>
+          <ul class="rc-bullets">
+            <li>Отчёт в Redmine по фильтру</li>
+            <li>Правки, прикрепляет к задаче + Confluence</li>
+            <li>«изменения внесены»</li>
+          </ul>
+          <button class="rc-btn" data-role="writer">Показать мой алгоритм →</button>
+        </div>
+
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">📢</span><div><div class="rc-name">СТП</div><div class="rc-sub">Служба технической поддержки</div></div></div>
+          <div class="rc-when"><b>Когда:</b> после «Регресс завершен» — задачи готовы к PROD</div>
+          <ul class="rc-bullets">
+            <li>Сообщение в чате о техработах</li>
+            <li><b>Не публикует на контура</b> — координирует</li>
+            <li>Релиз-ноут, письмо, уведомление в чате</li>
+          </ul>
+          <button class="rc-btn" data-role="stp">Показать мой алгоритм →</button>
+        </div>
+
+        <div class="role-card">
+          <div class="rc-head"><span class="rc-icon">👤</span><div><div class="rc-name">Лид / зам направления</div><div class="rc-sub">Публикация + закрытие Front/Back</div></div></div>
+          <div class="rc-when"><b>Когда:</b> ревью ТЗ; проверка кода; <b>публикация на контура; закрытие Front/Back</b></div>
+          <ul class="rc-bullets">
+            <li>Ревью ТЗ, проверка кода</li>
+            <li><b>Публикация на DEV / STAGE / PROD</b></li>
+            <li><b>Закрывает Front/Back задачи</b> после DEV (при списанных трудозатратах)</li>
+          </ul>
+          <button class="rc-btn" data-role="lead">Показать мой алгоритм →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="card" id="principles">
+      <header><div class="badge-num">2</div><h2>Общие принципы</h2></header>
+      <ul class="rule-list">
+        <li><span class="dot">1</span><div>Все задачи — <b>в проекте исполнителя</b>. Родительская: трекер <code>Структура</code>, статус <code>Backlog</code>, релиз <code>Backlog</code>. Инициатор — <b>РП</b> (от заказчика) или <b>Лид/зам</b> (техдолг, рефакторинг, баг).</div></li>
+        <li><span class="dot">2</span><div><b>Дочерние задачи</b> — свой трекер по направлению. Статус <code>Backlog</code>.</div></li>
+        <li class="highlight"><span class="dot">3</span><div><b>Взятие в работу:</b> трекер не меняется, статус <code>Новая</code>/<code>В работе</code>, задача переводится в актуальный <b>релиз и спринт</b>, ставятся <b>Дата начала</b> и <b>Срок завершения</b>. Раньше — <b>фактическая дата закрытия</b>.</div></li>
+        <li class="highlight"><span class="dot">4</span><div><b>Оценка временных затрат</b> (с риском <b>+20 %</b>, в ч и днях) — обязательна для каждой задачи. <b>Исполнитель при получении задачи от лида проверяет и проставляет оценку</b> по своему направлению, если она ещё не заполнена.</div></li>
+        <li class="highlight"><span class="dot">5</span><div><b>Ревью обязательно:</b> аналитика — ревью ТЗ (все лиды); Front/Back — статус <b>«Проверка кода»</b> → фидбек лида → <b>публикация на DEV</b> (публикует Лид/зам) + метка <b>«Развернута на DEV»</b>.</div></li>
+        <li class="highlight"><span class="dot">6</span><div><b>Жизненный путь меток по контурам:</b><br>
+          <span class="pill label-dev">Развернута на DEV</span> →
+          <span class="pill label-tested">Протестировано на DEV</span> →
+          <span class="pill label-regress">Регресс</span> →
+          <span class="pill label-regress-done">Регресс завершен</span> →
+          <span class="pill label-smoke">Смоук</span> →
+          <span class="pill label-smoke-done">Смоук проведен</span>.
+        </div></li>
+        <li class="highlight"><span class="dot">7</span><div><b>Публикацию на любой контур выполняет только Лид направления или его зам.</b> Разработчик, тестировщик, СТП не публикуют на контура.</div></li>
+        <li class="highlight"><span class="dot">8</span><div><b>СТП оповещается только перед PROD</b> (после «Регресс завершен»). На DEV и STAGE — оповещения нет. <b>СТП не публикует на PROD</b> — публикует Лид/зам; СТП формирует сообщение, релиз-ноут, письмо, уведомление.</div></li>
+        <li class="highlight"><span class="dot">9</span><div><b>Баги при тестировании</b> создаются <b>только как дочерние задачи своей тест-задачи</b>. Статус — <b>Новая</b>. Обязательно: <b>приоритет</b>, <b>критичность</b>, <b>исполнитель</b>.</div></li>
+        <li class="highlight"><span class="dot">10</span><div><b>Hotfix</b> (срочные баги): отдельный релиз, только нужные задачи, тот же workflow, срочно.</div></li>
+        <li class="highlight"><span class="dot">11</span><div><b>Документация:</b> если функционал изменён — <b>аналитик у родительской задачи</b> ставит <span class="pill doc-need">требует корректировок</span>. Тех.пис: отчёт → правки → <b>прикрепить к задаче + Confluence</b> → <span class="pill doc-done">изменения внесены</span>.</div></li>
+        <li><span class="dot">12</span><div><b>Связи:</b> дочерняя → родительская (<code>Parent / Child</code>); <b>только родительская → задача заказчика</b>.</div></li>
+        <li><span class="dot">13</span><div><b>Направление</b> — только <span class="dir front">Front</span> / <span class="dir back">Back</span>. Для Front/Back <b>поле заполняется обязательно</b>.</div></li>
+        <li class="highlight"><span class="dot">14</span><div><b>Наименование:</b> <code>ФБ. Стори. Направление</code> — для всех задач.</div></li>
+        <li class="highlight"><span class="dot">15</span><div><b>Трудозатраты — обязательны до ревью:</b> перед передачей задачи на ревью (код / ТЗ) исполнитель проверяет, что <b>трудозатраты по задаче списаны</b>. Без списанных трудозатрат <b>задачу закрыть невозможно</b>. Раньше срока — <b>фактическая дата закрытия</b>.</div></li>
+        <li class="highlight"><span class="dot">16</span><div><b>Тест-кейсы:</b> после <b>согласования ТЗ</b> тестировщик пишет тест-кейсы <b>в описании своей тест-задачи</b> — параллельно с разработкой, чтобы к моменту готовности DEV они были готовы.</div></li>
+        <li class="highlight"><span class="dot">17</span><div><b>Закрытие Front/Back задач:</b> задачу закрывает <b>только Лид направления или его зам</b> — после публикации на DEV и проверки списанных трудозатрат. Разработчик задачу не закрывает.</div></li>
+      </ul>
+    </section>
+
+    <!-- 3 -->
+    <section class="card" id="tracker">
+      <header><div class="badge-num">3</div><h2>Трекер, статус, релиз и спринт</h2></header>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">3.1. Трекер и статус при создании</h3>
+      <div class="table-wrap" style="margin-bottom:20px">
+        <table>
+          <thead><tr><th style="width:38%">Тип задачи</th><th>Трекер</th><th>Статус</th></tr></thead>
+          <tbody>
+            <tr><td>Родительская</td><td><span class="pill struct">Структура</span></td><td><span class="pill warn">Backlog</span></td></tr>
+            <tr><td>Дочерняя — <span class="dir design">Design</span></td><td><span class="pill track-design">Дизайн</span></td><td><span class="pill warn">Backlog</span></td></tr>
+            <tr><td>Дочерняя — <span class="dir analytics">Analytics</span></td><td><span class="pill track-analytics">Аналитика</span></td><td><span class="pill warn">Backlog</span></td></tr>
+            <tr><td>Дочерняя — <span class="dir front">Front</span> / <span class="dir back">Back</span></td><td><span class="pill improve">Улучшение</span> / <span class="pill bug">Ошибка</span></td><td><span class="pill warn">Backlog</span></td></tr>
+            <tr><td>Дочерняя — <span class="dir test">Test</span></td><td><span class="pill track-test">Тестирование</span></td><td><span class="pill warn">Backlog</span></td></tr>
+            <tr style="background:#fff7ed;">
+              <td><b>Bug-report</b> (дочерняя тест-задачи)</td>
+              <td><span class="pill bug">Ошибка</span></td>
+              <td><span class="pill status-new">Новая</span> (не Backlog!)<br><span class="hint">+ приоритет, критичность, исполнитель</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">3.2. Статусы жизненного цикла</h3>
+      <div class="table-wrap" style="margin-bottom:20px">
+        <table>
+          <thead><tr><th style="width:28%">Статус</th><th>Когда</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill warn">Backlog</span></td><td>Задача создана, ещё не взята в работу</td></tr>
+            <tr><td><span class="pill status-new">Новая</span></td><td>Взята в работу; <b>или создан bug-report</b> с назначенным исполнителем</td></tr>
+            <tr><td><span class="pill status-work">В работе</span></td><td>Исполнитель выполняет</td></tr>
+            <tr><td><span class="pill status-review">Проверка кода</span></td><td>Front/Back завершена, ждёт лида направления. <b>Трудозатраты списаны.</b></td></tr>
+            <tr><td><span class="pill dev">На DEV</span></td><td>Лид/зам опубликовал + метка «Развернута на DEV»</td></tr>
+            <tr><td><span class="pill status-done">Закрыта</span></td><td>Работа принята, <b>списание трудозатрат выполнено</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">3.3. Метки задачи по контурам</h3>
+      <p class="hint" style="margin-bottom:14px">Метки последовательно проставляются по мере прохождения контуров. По меткам строятся отчёты в Redmine.</p>
+
+      <div class="label-flow">
+        <div class="label-step dev-c">
+          <div class="ls-contour">DEV · публикует Лид/зам</div>
+          <div class="ls-pill"><span class="pill label-dev">Развернута на DEV</span></div>
+          <div class="ls-desc">Задача доступна для тестирования на DEV</div>
+          <div class="ls-role"><span class="role-tag lead">Лид/зам</span></div>
+        </div>
+        <div class="label-step dev-c">
+          <div class="ls-contour">DEV · ставит тестировщик</div>
+          <div class="ls-pill"><span class="pill label-tested">Протестировано на DEV</span></div>
+          <div class="ls-desc">Успешно протестировано → готово к STAGE</div>
+          <div class="ls-role"><span class="role-tag tester">Test</span></div>
+        </div>
+        <div class="label-step stage-c">
+          <div class="ls-contour">STAGE · ставит тестировщик</div>
+          <div class="ls-pill"><span class="pill label-regress">Регресс</span></div>
+          <div class="ls-desc">Лид/зам опубликовал на STAGE → начинается регресс</div>
+          <div class="ls-role"><span class="role-tag tester">Test</span></div>
+        </div>
+        <div class="label-step stage-c">
+          <div class="ls-contour">STAGE · ставит тестировщик</div>
+          <div class="ls-pill"><span class="pill label-regress-done">Регресс завершен</span></div>
+          <div class="ls-desc">Готово к PROD → <b>оповещение СТП</b></div>
+          <div class="ls-role"><span class="role-tag tester">Test</span></div>
+        </div>
+        <div class="label-step prod-c">
+          <div class="ls-contour">PROD · ставит тестировщик</div>
+          <div class="ls-pill"><span class="pill label-smoke">Смоук</span></div>
+          <div class="ls-desc">Лид/зам опубликовал на PROD → смоук</div>
+          <div class="ls-role"><span class="role-tag tester">Test</span></div>
+        </div>
+        <div class="label-step prod-c">
+          <div class="ls-contour">PROD · ставит тестировщик</div>
+          <div class="ls-pill"><span class="pill label-smoke-done">Смоук проведен</span></div>
+          <div class="ls-desc">Успешно → СТП формирует релиз-ноут и уведомляет</div>
+          <div class="ls-role"><span class="role-tag tester">Test</span></div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">3.4. Релиз, спринт и даты</h3>
+      <div class="table-wrap" style="margin-bottom:20px">
+        <table>
+          <thead><tr><th style="width:32%">Этап</th><th>Релиз</th><th>Спринт</th><th>Даты</th></tr></thead>
+          <tbody>
+            <tr><td>Создание</td><td><span class="pill rel">Backlog</span></td><td><span class="pill gray">не назначен</span></td><td><span class="pill gray">не заданы</span></td></tr>
+            <tr><td>После взятия в работу</td><td><b>актуальный релиз проекта</b></td><td><b>актуальный спринт</b></td><td><b>Дата начала</b> + <b>Срок завершения</b></td></tr>
+            <tr><td>Закрыто раньше срока</td><td>—</td><td>—</td><td><b>фактическая дата закрытия</b></td></tr>
+            <tr style="background:#fff7ed;"><td><b>Hotfix</b></td><td><b>отдельный hotfix-релиз</b></td><td>—</td><td>срочно, по факту</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">3.5. Контуры: DEV → STAGE → PROD</h3>
+      <p class="hint" style="margin-bottom:14px">Переход — только вперёд. Каждый контур = своя публикация (Лид/зам) + свои метки.</p>
+
+      <div class="contour-flow">
+        <div class="contour-step dev-c">
+          <span class="step-num">DEV</span>
+          <div class="step-title">Разработка и тест</div>
+          <div class="step-desc">
+            <b>Лид/зам</b> публикует → <span class="pill label-dev">Развернута на DEV</span><br>
+            <b>Тестировщик</b> тестирует по тест-кейсам → <span class="pill label-tested">Протестировано на DEV</span>
+          </div>
+          <div class="step-roles">
+            <span class="role-tag lead">Лид/зам</span>
+            <span class="role-tag tester">Test</span>
+          </div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="contour-step stage-c">
+          <span class="step-num">STAGE</span>
+          <div class="step-title">Предпродакшн · регресс</div>
+          <div class="step-desc">
+            <b>Лид/зам</b> публикует на STAGE<br>
+            <b>Тестировщик</b> ставит <span class="pill label-regress">Регресс</span> → <span class="pill label-regress-done">Регресс завершен</span>
+          </div>
+          <div class="step-roles">
+            <span class="role-tag lead">Лид/зам</span>
+            <span class="role-tag tester">Test</span>
+          </div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="contour-step prod-c">
+          <span class="step-num">PROD</span>
+          <div class="step-title">Продакшн · смоук</div>
+          <div class="step-desc">
+            <b>Лид/зам</b> публикует на PROD<br>
+            <b>Тестировщик</b> ставит <span class="pill label-smoke">Смоук</span> → <span class="pill label-smoke-done">Смоук проведен</span>
+          </div>
+          <div class="step-roles">
+            <span class="role-tag lead">Лид/зам</span>
+            <span class="role-tag tester">Test</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:110px">Контур</th><th>Публикует</th><th>Что делает тестировщик</th><th>Оповещение СТП</th></tr></thead>
+          <tbody>
+            <tr style="background:#ecfdf5;">
+              <td><span class="pill dev">DEV</span></td>
+              <td><b>Лид / зам</b></td>
+              <td>Тест → «Протестировано на DEV»</td>
+              <td>Нет</td>
+            </tr>
+            <tr style="background:#fffbeb;">
+              <td><span class="pill stage">STAGE</span></td>
+              <td><b>Лид / зам</b></td>
+              <td>«Регресс» → «Регресс завершен»</td>
+              <td>Нет <br><span class="hint">(оповещение только перед PROD)</span></td>
+            </tr>
+            <tr style="background:#fef2f2;">
+              <td><span class="pill prod">PROD</span></td>
+              <td><b>Лид / зам</b></td>
+              <td>«Смоук» → «Смоук проведен»</td>
+              <td><b>Да</b> — СТП публикует сообщение, готовит релиз-ноут</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="link-note red" style="margin-top:14px">
+        <span>⚠️</span>
+        <div><b>Публикацию на контура и закрытие Front/Back задач выполняет только Лид направления или его зам.</b> Разработчик, тестировщик, СТП не публикуют и не закрывают Front/Back задачи.</div>
+      </div>
+
+      <div class="link-note orange" style="margin-top:8px">
+        <span>🔥</span>
+        <div><b>СТП не публикует на PROD.</b> СТП: сообщение в чате о техработах → ждёт публикации от Лида/зама → после «Смоук проведен» формирует релиз-ноут, письмо и уведомление в чате.</div>
+      </div>
+
+      <div class="link-note blue" style="margin-top:8px">
+        <span>ℹ️</span>
+        <div><b>Трекер при взятии в работу не меняется.</b> Метки (labels) — отдельный механизм, они не заменяют статусы.</div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="card" id="structure">
+      <header><div class="badge-num">4</div><h2>Структура задач и наименование</h2></header>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">4.1. Структура</h3>
+      <div class="diagram" style="margin-bottom:16px">
+        <div class="node root">
+          <span class="pill">Проект исполнителя</span>
+          <span class="t">Родительская</span>
+          <span class="pill struct">Структура</span>
+          <span class="pill warn">Backlog</span>
+          <span class="pill rel">Релиз: Backlog</span>
+          <span class="pill fb">ФБ</span>
+          <span class="pill est">Оценка + разбивка</span>
+        </div>
+        <div class="branch">
+          <div class="node"><span class="dir design">Design</span><span class="t">ФБ. Стори. DESIGN</span><span class="pill track-design">Дизайн</span><span class="pill warn">Backlog</span></div>
+          <div class="node"><span class="dir analytics">Analytics</span><span class="t">ФБ. Стори. ANALYTICS</span><span class="pill track-analytics">Аналитика</span><span class="pill warn">Backlog</span></div>
+          <div class="node"><span class="dir front">Front</span><span class="t">ФБ. Стори. FRONT</span><span class="pill improve">Улучшение</span>/<span class="pill bug">Ошибка</span><span class="pill warn">Backlog</span><span class="pill review">Направление: FRONT</span></div>
+          <div class="node"><span class="dir back">Back</span><span class="t">ФБ. Стори. BACK</span><span class="pill improve">Улучшение</span>/<span class="pill bug">Ошибка</span><span class="pill warn">Backlog</span><span class="pill review">Направление: BACK</span></div>
+          <div class="node"><span class="dir test">Test</span><span class="t">ФБ. Стори. TEST</span><span class="pill track-test">Тестирование</span><span class="pill warn">Backlog</span></div>
+        </div>
+      </div>
+
+      <div class="link-note red" style="margin-top:0; margin-bottom:16px">
+        <span>⚠️</span>
+        <div>Для дочерних <b>FRONT</b> и <b>BACK</b> в поле <b>«Направление»</b> обязательно: FRONT → <span class="dir front">Front</span>, BACK → <span class="dir back">Back</span>. Ставит РП при создании; разработчик проверяет при взятии в работу.</div>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">4.2. Наименование</h3>
+      <div class="code-block on-light" style="margin-bottom:14px">
+        <button class="copy-fab" data-copy="#algoName" data-copy-label="алгоритм">Копировать</button>
+        <pre class="light" id="algoName">Наименование ФБ. &lt;Стори&gt;. &lt;Направление&gt;</pre>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:14px">
+        <div class="field"><label>ФБ</label><input type="text" id="genFb" value="Реестр нарушений"></div>
+        <div class="field"><label>Стори</label><input type="text" id="genStory" value="Реализовать страницу реестра"></div>
+        <div class="field"><label>Направление</label>
+          <select id="genDir">
+            <option>DESIGN</option><option>ANALYTICS</option>
+            <option selected>FRONT</option><option>BACK</option><option>TEST</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="out-row">
+        <div class="out" id="genOut">Реестр нарушений. Реализовать страницу реестра. FRONT</div>
+        <button class="btn primary" data-copy="#genOut" data-copy-label="наименование">Копировать</button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; margin:20px 0 10px; flex-wrap:wrap">
+        <h3 style="font-size:14px; color:#3b4360; margin:0">Примеры по направлениям</h3>
+        <span class="pill" style="background:#e0f2fe; color:#0369a1;">⟳ авто</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:170px">Направление</th><th>Пример</th><th style="width:60px"></th></tr></thead>
+          <tbody>
+            <tr><td><span class="dir design">Design</span></td><td class="mono"><span class="dyn-val" id="ex-des">Реестр нарушений. Реализовать страницу реестра. DESIGN</span></td><td><button class="btn ghost" data-copy="#ex-des">⧉</button></td></tr>
+            <tr><td><span class="dir analytics">Analytics</span></td><td class="mono"><span class="dyn-val" id="ex-a">Реестр нарушений. Реализовать страницу реестра. ANALYTICS</span></td><td><button class="btn ghost" data-copy="#ex-a">⧉</button></td></tr>
+            <tr><td><span class="dir front">Front</span></td><td class="mono"><span class="dyn-val" id="ex-f">Реестр нарушений. Реализовать страницу реестра. FRONT</span></td><td><button class="btn ghost" data-copy="#ex-f">⧉</button></td></tr>
+            <tr><td><span class="dir back">Back</span></td><td class="mono"><span class="dyn-val" id="ex-b">Реестр нарушений. Реализовать страницу реестра. BACK</span></td><td><button class="btn ghost" data-copy="#ex-b">⧉</button></td></tr>
+            <tr><td><span class="dir test">Test</span></td><td class="mono"><span class="dyn-val" id="ex-t">Реестр нарушений. Реализовать страницу реестра. TEST</span></td><td><button class="btn ghost" data-copy="#ex-t">⧉</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="card" id="estimate">
+      <header><div class="badge-num">5</div><h2>Оценка временных затрат</h2></header>
+      <div class="link-note" style="margin-top:0; margin-bottom:14px">
+        <span>📌</span><div>Поле <b>«Оценка временных затрат»</b>. Риск <b>+20 %</b>. В часах и днях (1 день = 8 ч). Шаблоны описания в разделе 6 <b>обновляются автоматически</b>.</div>
+      </div>
+      <div class="grid-2" style="align-items:start; gap:18px">
+        <div>
+          <h3 style="font-size:14px; margin-bottom:9px; color:#3b4360">Родительская задача</h3>
+          <ul class="rule-list">
+            <li><span class="dot">1</span><div>В поле — общая оценка с риском +20 %.</div></li>
+            <li><span class="dot">2</span><div>В описании — разбивка по направлениям.</div></li>
+          </ul>
+          <h3 style="font-size:14px; margin:18px 0 9px; color:#3b4360">Дочерние задачи</h3>
+          <ul class="rule-list">
+            <li><span class="dot">1</span><div>Оценка по направлению — с риском +20 %.</div></li>
+            <li><span class="dot">2</span><div>Соответствует разбивке в родительской.</div></li>
+            <li><span class="dot">3</span><div>При изменении — обновить в родительской и в описании.</div></li>
+            <li class="highlight"><span class="dot">4</span><div><b>Исполнитель любого направления при получении задачи от лида</b> проверяет и при необходимости проставляет оценку по своему направлению — до взятия в работу.</div></li>
+          </ul>
+        </div>
+        <div class="tool">
+          <div class="tool-head"><span class="ic">Σ</span> Калькулятор <span class="pill risk">риск +20 %</span></div>
+          <div class="est-grid">
+            <div class="est-item"><span class="cap"><span class="dir design">Design</span></span><input type="number" id="estDes" value="8" min="0" step="0.5"><span class="with-risk">с риском: <b id="riskDes">9.6</b> ч.</span></div>
+            <div class="est-item"><span class="cap"><span class="dir analytics">Analytics</span></span><input type="number" id="estA" value="8" min="0" step="0.5"><span class="with-risk">с риском: <b id="riskA">9.6</b> ч.</span></div>
+            <div class="est-item"><span class="cap"><span class="dir front">Front</span></span><input type="number" id="estF" value="12" min="0" step="0.5"><span class="with-risk">с риском: <b id="riskF">14.4</b> ч.</span></div>
+            <div class="est-item"><span class="cap"><span class="dir back">Back</span></span><input type="number" id="estB" value="12" min="0" step="0.5"><span class="with-risk">с риском: <b id="riskB">14.4</b> ч.</span></div>
+            <div class="est-item"><span class="cap"><span class="dir test">Test</span></span><input type="number" id="estT" value="8" min="0" step="0.5"><span class="with-risk">с риском: <b id="riskT">9.6</b> ч.</span></div>
+          </div>
+          <div class="total-box">
+            <div>
+              <div style="font-size:12.5px; color:#5b6377">Общая оценка с риском +20 %</div>
+              <div><span class="n" id="estTotal">57.6</span> <span style="font-size:14px; color:#5b6377">ч.</span> <span class="days">≈ <b id="estTotalDays">7.2</b> дн.</span></div>
+            </div>
+            <div style="font-size:11.5px; color:var(--muted); text-align:right;">1 день = 8 ч</div>
+          </div>
+          <div class="code-block on-light">
+            <button class="copy-fab" data-copy="#estOut" data-copy-label="разбивка">Копировать</button>
+            <pre class="light" id="estOut"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="card" id="description">
+      <header><div class="badge-num">6</div><h2>Описание и связи</h2></header>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">6.1. Шаблоны описания <span class="pill" style="background:#e0f2fe; color:#0369a1; font-weight:650;">⟳ авто из калькулятора</span></h3>
+      <div class="tabs" id="descTabs">
+        <button class="active" data-tab="tab-parent">Родительская</button>
+        <button data-tab="tab-child">Дочерняя (пример для FRONT)</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-parent">
+        <ul class="rule-list" style="margin-bottom:14px">
+          <li><span class="dot">•</span><div>ссылка на ТЗ и на задачу заказчика;</div></li>
+          <li><span class="dot">•</span><div>общая оценка временных затрат (с риском +20 %, в ч и днях);</div></li>
+          <li><span class="dot">•</span><div>разбивка оценки по направлениям;</div></li>
+          <li><span class="dot">•</span><div>краткое описание сути.</div></li>
+        </ul>
+        <div class="code-block on-light">
+          <button class="copy-fab" data-copy="#tplParent">Копировать</button>
+          <pre class="light" id="tplParent"></pre>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-child">
+        <ul class="rule-list" style="margin-bottom:14px">
+          <li><span class="dot">•</span><div>ссылка на ТЗ и на родительскую задачу;</div></li>
+          <li><span class="dot">•</span><div>направление (FRONT/BACK — в поле и в описании);</div></li>
+          <li><span class="dot">•</span><div>краткое содержание, критерии приёмки;</div></li>
+          <li><span class="dot">•</span><div>оценка временных затрат с риском +20 %, в ч и днях.</div></li>
+        </ul>
+        <p class="hint" style="margin-bottom:10px">Пример — для поля <b>Front</b> из калькулятора выше.</p>
+        <div class="code-block on-light">
+          <button class="copy-fab" data-copy="#tplChild">Копировать</button>
+          <pre class="light" id="tplChild"></pre>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">6.2. Связи</h3>
+      <div class="table-wrap" style="margin-bottom:14px">
+        <table>
+          <thead><tr><th>Что связывается</th><th style="width:150px">Тип</th><th style="width:220px">Где</th></tr></thead>
+          <tbody>
+            <tr><td>Дочерняя → родительская</td><td><code>Parent / Child</code></td><td>В проекте исполнителя</td></tr>
+            <tr><td><b>Родительская → задача заказчика</b></td><td><code>Related to</code> / <code>Blocks</code></td><td>В проекте исполнителя</td></tr>
+            <tr><td>Дочерняя → задача заказчика</td><td>—</td><td><b>Не создаётся</b></td></tr>
+            <tr><td><b>Bug-report → тест-задача</b></td><td><code>Parent / Child</code></td><td>Только внутри тест-задачи</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="link-note red" style="margin-top:0">
+        <span>🚫</span><div>Связь с заказчиком — только у родительской.</div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="card" id="review">
+      <header><div class="badge-num">7</div><h2>Ревью, проверка, тестирование</h2></header>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.1. Ревью ТЗ (аналитика)</h3>
+      <p class="hint" style="margin-bottom:14px">После завершения аналитической задачи — обязательное ревью ТЗ всеми лидами направлений.</p>
+      <div class="review-flow" style="margin-bottom:14px">
+        <div class="review-step">
+          <span class="step-num">1</span>
+          <div class="step-title">Списать трудозатраты</div>
+          <div class="step-desc">Аналитик <b>проверяет списание трудозатрат</b> — без них задачу не закрыть.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">2</span>
+          <div class="step-title">«Ответственный за ревью»</div>
+          <div class="step-desc">Заполняет поле <b>«Ответственный за ревью»</b> (множественный выбор) — <b>всех лидов</b>.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">3</span>
+          <div class="step-title">Чат + встреча</div>
+          <div class="step-desc">Оповещает лидов в чате о готовности ТЗ → назначает встречу для согласования.</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">7.2. Тест-кейсы (после согласования ТЗ) <span class="pill tc">параллельно с разработкой</span></h3>
+      <div class="link-note blue" style="margin-top:0; margin-bottom:14px">
+        <span>📝</span>
+        <div>После того как ТЗ согласовано — тестировщик <b>пишет тест-кейсы в описании своей тест-задачи</b>. Это происходит <b>параллельно с разработкой</b>, чтобы к моменту готовности DEV тест-кейсы уже были готовы. Без тест-кейсов тестирование на DEV не начинается.</div>
+      </div>
+      <div class="review-flow" style="margin-bottom:14px">
+        <div class="review-step">
+          <span class="step-num">1</span>
+          <div class="step-title">ТЗ согласовано</div>
+          <div class="step-desc">Встреча по ревью ТЗ пройдена, все лиды согласовали.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step tc">
+          <span class="step-num">2</span>
+          <div class="step-title">Тест-кейсы в тест-задаче</div>
+          <div class="step-desc">Тестировщик пишет тест-кейсы <b>в описании тест-задачи</b> (трекер «Тестирование»). Формат: предусловия · шаги · ожидаемый результат.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step tc">
+          <span class="step-num">3</span>
+          <div class="step-title">Готовность к DEV-тесту</div>
+          <div class="step-desc">Когда разработка готова и Лид/зам опубликовал на DEV — тест-кейсы уже готовы, тестировщик сразу приступает.</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">7.3. Проверка кода + DEV (Front/Back)</h3>
+      <p class="hint" style="margin-bottom:14px">После завершения разработчик списывает трудозатраты → переводит в <b>«Проверка кода»</b>. Лид одобряет → публикует на DEV → <b>закрывает задачу</b>.</p>
+      <div class="review-flow review-flow-4" style="margin-bottom:14px">
+        <div class="review-step">
+          <span class="step-num">1</span>
+          <div class="step-title">Списать трудозатраты</div>
+          <div class="step-desc">Разработчик <b>проверяет наличие списанных трудозатрат</b> перед передачей на ревью — иначе задачу нельзя закрыть.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">2</span>
+          <div class="step-title">Статус «Проверка кода»</div>
+          <div class="step-desc">Разработчик переводит в <b><span class="pill status-review">Проверка кода</span></b>.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step lead">
+          <span class="step-num">3</span>
+          <div class="step-title">Лид/зам: ревью + DEV</div>
+          <div class="step-desc">Лид/зам проверяет код → при замечаниях возвращает → после одобрения <b>публикует на DEV</b> + метка «Развернута на DEV».</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step lead">
+          <span class="step-num">4</span>
+          <div class="step-title">Лид/зам закрывает задачу</div>
+          <div class="step-desc"><b>Задачу закрывает только Лид/зам</b> — после публикации и проверки списанных трудозатрат. Разработчик задачу не закрывает.</div>
+        </div>
+      </div>
+      <div class="link-note red" style="margin-top:0; margin-bottom:22px">
+        <span>⚠️</span><div>Разработчик не закрывает Front/Back задачу — только <b>передаёт Лиду/заму</b>. Закрытие — за Лидом/замом.</div>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.4. Тестирование на DEV → «Протестировано на DEV»</h3>
+      <p class="hint" style="margin-bottom:14px">Тестировщик работает по <b>отчёту в Redmine с меткой «Развернута на DEV»</b>, использует <b>заранее написанные тест-кейсы</b>.</p>
+      <div class="review-flow" style="margin-bottom:14px">
+        <div class="review-step dev">
+          <span class="step-num">1</span>
+          <div class="step-title">Отчёт по метке</div>
+          <div class="step-desc">Строит отчёт по метке «Развернута на DEV» — берёт задачи в тест.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step tc">
+          <span class="step-num">2</span>
+          <div class="step-title">Тест по кейсам</div>
+          <div class="step-desc">Проверяет по <b>тест-кейсам из описания тест-задачи</b>. Баги — дочерние тест-задачи.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step dev">
+          <span class="step-num">3</span>
+          <div class="step-title">Метка</div>
+          <div class="step-desc">После успешного теста: <span class="pill label-tested">Протестировано на DEV</span> → готово к STAGE.</div>
+        </div>
+      </div>
+      <div class="link-note blue" style="margin-top:0; margin-bottom:22px">
+        <span>ℹ️</span><div><b>Оповещение СТП не требуется</b> — публикация на STAGE произойдёт по готовности задачи.</div>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.5. STAGE: публикация Лидом/замом + регресс</h3>
+      <div class="review-flow review-flow-4" style="margin-bottom:14px">
+        <div class="review-step lead">
+          <span class="step-num">1</span>
+          <div class="step-title">Лид/зам публикует STAGE</div>
+          <div class="step-desc">Публикация задач с меткой «Протестировано на DEV» на STAGE — <b>только Лид/зам</b>.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">2</span>
+          <div class="step-title">«Регресс»</div>
+          <div class="step-desc">Тестировщик ставит <span class="pill label-regress">Регресс</span>, проводит регресс.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">3</span>
+          <div class="step-title">«Регресс завершен»</div>
+          <div class="step-desc">Успешно → <span class="pill label-regress-done">Регресс завершен</span>. При замечаниях — баги и возврат.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step prod">
+          <span class="step-num">4</span>
+          <div class="step-title">Оповещение СТП</div>
+          <div class="step-desc">После «Регресс завершен» — тестировщик <b>оповещает СТП</b> о готовности к PROD.</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">7.6. PROD: публикация Лидом/замом + смоук</h3>
+      <div class="review-flow review-flow-4" style="margin-bottom:14px">
+        <div class="review-step stp">
+          <span class="step-num">1</span>
+          <div class="step-title">СТП: сообщение в чате</div>
+          <div class="step-desc">Публикует сообщение о техработах (дата, время).</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step lead">
+          <span class="step-num">2</span>
+          <div class="step-title">Лид/зам публикует PROD</div>
+          <div class="step-desc">Публикация на PROD — <b>только Лид/зам</b>. СТП публикацию не выполняет.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">3</span>
+          <div class="step-title">«Смоук»</div>
+          <div class="step-desc">Тестировщик ставит <span class="pill label-smoke">Смоук</span>, проводит смоук-тест.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">4</span>
+          <div class="step-title">«Смоук проведен»</div>
+          <div class="step-desc">Успешно → <span class="pill label-smoke-done">Смоук проведен</span>. Далее — СТП формирует релиз-ноут.</div>
+        </div>
+      </div>
+      <div class="link-note green" style="margin-top:0; margin-bottom:22px">
+        <span>✅</span>
+        <div>После <b>«Смоук проведен»</b> — <b>СТП формирует релиз-ноут</b>, отправляет письмо о завершении с приложенным релиз-ноутом и публикует уведомление в чате с пользователями.</div>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">7.7. Регистрация багов — только в тест-задаче</h3>
+      <div class="link-note red" style="margin-top:0; margin-bottom:14px">
+        <span>🚫</span>
+        <div>Найденные баги регистрируются <b>только как дочерние задачи своей тест-задачи</b>. Нигде больше баги не создаются.</div>
+      </div>
+      <div class="review-flow" style="margin-bottom:14px">
+        <div class="review-step">
+          <span class="step-num">1</span>
+          <div class="step-title">Найден баг</div>
+          <div class="step-desc">Тестировщик нашёл дефект (на DEV, STAGE или PROD).</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">2</span>
+          <div class="step-title">Дочерняя тест-задачи</div>
+          <div class="step-desc">Трекер «Ошибка», статус <b>Новая</b>. Приоритет, критичность, исполнитель.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">3</span>
+          <div class="step-title">Связь с тест-задачей</div>
+          <div class="step-desc"><code>Parent / Child</code>. Релиз — как у проверяемой.</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px; margin:22px 0 10px; color:#3b4360">7.8. Атрибуты bug-report</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:32%">Поле</th><th>Что указывать</th></tr></thead>
+          <tbody>
+            <tr><td>Трекер</td><td><span class="pill bug">Ошибка</span></td></tr>
+            <tr style="background:#fff7ed;"><td><b>Статус</b></td><td><b><span class="pill status-new">Новая</span></b> (не Backlog!)</td></tr>
+            <tr style="background:#fff7ed;"><td><b>Приоритет</b></td><td><b>Обязательно</b>: <span class="pill priority-low">Low</span> <span class="pill priority-normal">Normal</span> <span class="pill priority-high">High</span> <span class="pill priority-urgent">Urgent</span></td></tr>
+            <tr style="background:#fff7ed;"><td><b>Критичность</b></td><td><b>Обязательно</b>: <span class="pill crit-minor">Minor</span> <span class="pill crit-major">Major</span> <span class="pill crit-critical">Critical</span> <span class="pill crit-blocker">Blocker</span></td></tr>
+            <tr style="background:#fff7ed;"><td><b>Исполнитель</b></td><td><b>Обязательно</b>. Default — <b>лид направления</b></td></tr>
+            <tr><td>Родительская</td><td>Своя тест-задача (обязательно)</td></tr>
+            <tr><td>Релиз</td><td>Тот же, что у проверяемой задачи</td></tr>
+            <tr><td>Наименование</td><td><code>&lt;ФБ&gt;. &lt;Проверяемая&gt;. BUG: &lt;краткое&gt;</code></td></tr>
+            <tr><td>Описание</td><td>Шаги · ожидаемый · фактический · окружение · вложения</td></tr>
+            <tr><td>Оценка</td><td>Не при создании (заполняется при взятии)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="card" id="documentation">
+      <header><div class="badge-num">8</div><h2>Документация</h2></header>
+      <p class="hint" style="margin-bottom:14px">Если по задаче <b>изменён функционал</b> — <b>аналитик у родительской задачи</b> ставит <span class="pill doc-need">требует корректировок</span>. Тех.пис строит отчёт, вносит правки, <b>прикрепляет документы к задаче</b> и <b>добавляет в Confluence</b>, ставит <span class="pill doc-done">изменения внесены</span>.</p>
+
+      <div class="doc-flow">
+        <div class="doc-step">
+          <span class="step-num">1</span>
+          <div class="step-title">Изменён функционал</div>
+          <div class="step-desc">Аналитик у родительской задачи ставит:</div>
+          <span class="step-val"><span class="pill doc-need">требует корректировок</span></span>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="doc-step">
+          <span class="step-num">2</span>
+          <div class="step-title">Тех.пис: отчёт и правки</div>
+          <div class="step-desc">Строит отчёт <b>в Redmine</b>, вносит правки в документы.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="doc-step">
+          <span class="step-num">3</span>
+          <div class="step-title">Тех.пис: прикрепить и обновить</div>
+          <div class="step-desc"><b>Прикрепляет к задаче</b> + <b>Confluence</b> → ставит:</div>
+          <span class="step-val"><span class="pill doc-done">изменения внесены</span></span>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:18px">
+        <table>
+          <thead><tr><th style="width:38%">Значение</th><th>Когда</th><th style="width:220px">Кто</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill doc-empty">не заполнено</span></td><td>Функционал не менялся</td><td>—</td></tr>
+            <tr><td><span class="pill doc-need">требует корректировок</span></td><td>Изменён функционал</td><td>Аналитик (у родительской)</td></tr>
+            <tr><td><span class="pill doc-done">изменения внесены</span></td><td>Правки внесены, документы прикреплены</td><td>Технический писатель</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="card" id="hotfix">
+      <header><div class="badge-num">9</div><h2>Hotfix (срочные баги)</h2></header>
+      <div class="link-note orange" style="margin-top:0; margin-bottom:14px">
+        <span>🔥</span>
+        <div><b>Hotfix</b> — упрощённый workflow для срочного исправления. Тот же процесс с метками и трудозатратами, но срочно.</div>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">9.1. Отличия от обычного релиза</h3>
+      <div class="table-wrap" style="margin-bottom:18px">
+        <table>
+          <thead><tr><th style="width:32%">Параметр</th><th>Обычный релиз</th><th>Hotfix</th></tr></thead>
+          <tbody>
+            <tr><td>Релиз</td><td>Актуальный релиз проекта</td><td><span class="pill hotfix">Отдельный hotfix-релиз</span></td></tr>
+            <tr><td>Состав</td><td>Все готовые задачи спринта</td><td><b>Только необходимые для фикса</b></td></tr>
+            <tr><td>Workflow + метки</td><td>Полный</td><td><b>Тот же</b>, но срочно</td></tr>
+            <tr><td>Публикация на контура</td><td>Лид/зам</td><td>Лид/зам</td></tr>
+            <tr><td>СТП</td><td>После «Регресс завершен»</td><td><b>Срочно</b> после «Регресс завершен»</td></tr>
+            <tr><td>Сроки</td><td>По спринту</td><td>Минимальные</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:14px; margin:0 0 10px; color:#3b4360">9.2. Workflow</h3>
+      <div class="review-flow" style="margin-bottom:8px">
+        <div class="review-step">
+          <span class="step-num">1</span>
+          <div class="step-title">Решение о hotfix</div>
+          <div class="step-desc">РП / Лид фиксируют проблему → решение о hotfix.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">2</span>
+          <div class="step-title">Создание задач</div>
+          <div class="step-desc">Задачи включаются в <b>отдельный hotfix-релиз</b>.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step">
+          <span class="step-num">3</span>
+          <div class="step-title">DEV → STAGE → PROD</div>
+          <div class="step-desc">Полный workflow с метками. Публикация на контура — только Лид/зам.</div>
+        </div>
+      </div>
+      <div class="review-flow">
+        <div class="review-step">
+          <span class="step-num">4</span>
+          <div class="step-title">Регресс завершен</div>
+          <div class="step-desc">Тестировщик <b>срочно оповещает СТП</b>.</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step stp">
+          <span class="step-num">5</span>
+          <div class="step-title">СТП: сообщение в чате</div>
+          <div class="step-desc">Срочное сообщение о техработах (дата, время).</div>
+        </div>
+        <div class="doc-arrow">→</div>
+        <div class="review-step stp">
+          <span class="step-num">6</span>
+          <div class="step-title">Лид/зам → PROD → релиз-ноут</div>
+          <div class="step-desc">Лид/зам публикует PROD → после «Смоук проведен» СТП готовит релиз-ноут, письмо + уведомление в чате.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 MASTER CHECKLIST -->
+    <section class="card" id="master">
+      <header><div class="badge-num">10</div><h2>Мастер-чеклист по задаче</h2></header>
+      <p class="hint" style="margin-bottom:14px">Рабочий журнал по одной задаче. Прогресс сохраняется в браузере.</p>
+
+      <div class="mc-head">
+        <div class="mc-progress">
+          <div class="mc-progress-bar"><i id="mcBar"></i></div>
+          <div class="mc-progress-text" id="mcText">0 / 0</div>
+        </div>
+        <button class="btn ghost" id="mcReset">Сбросить всё</button>
+      </div>
+
+      <div class="mc-stage">
+        <div class="mc-stage-head">
+          <div class="mc-stage-num">1</div>
+          <div class="mc-stage-title">Инициация (РП + Лид/зам)</div>
+          <div class="mc-stage-count" data-mc-count>0/6</div>
+        </div>
+        <ul class="mc-items">
+          <li class="mc-item"><input type="checkbox" data-mc><label>Источник определён: <b>заказчик (через РП)</b> или <b>Лид/зам</b> (техдолг, рефакторинг, баг) <span class="mc-role rp">РП</span> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Создана родительская: трекер <b>Структура</b>, статус <b>Backlog</b>, релиз <b>Backlog</b>, ФБ <span class="mc-role rp">РП</span> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Заполнено описание родительской: ТЗ, ссылка на заказчика, общая оценка (с риском +20 %), разбивка <span class="mc-role rp">РП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Созданы 5 дочерних задач со своими трекерами <span class="mc-role rp">РП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>У Front/Back заполнено поле <b>«Направление»</b> (FRONT / BACK) <span class="mc-role rp">РП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Связи: дочерние → родительская (<code>Parent / Child</code>); только родительская → заказчик <span class="mc-role rp">РП</span></label></li>
+        </ul>
+      </div>
+
+      <div class="mc-stage">
+        <div class="mc-stage-head">
+          <div class="mc-stage-num">2</div>
+          <div class="mc-stage-title">Планирование (РП + Лид/зам)</div>
+          <div class="mc-stage-count" data-mc-count>0/3</div>
+        </div>
+        <ul class="mc-items">
+          <li class="mc-item"><input type="checkbox" data-mc><label>Задачи взяты в работу: статус <b>Новая</b> / <b>В работе</b>, трекер не менялся <span class="mc-role rp">РП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Задачи в актуальном релизе и спринте, установлены <b>Дата начала</b> и <b>Срок завершения</b> <span class="mc-role rp">РП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Назначены исполнители, <b>оценка по направлению проверена/проставлена</b> <span class="mc-role lead">Лид</span></label></li>
+        </ul>
+      </div>
+
+      <div class="mc-stage">
+        <div class="mc-stage-head">
+          <div class="mc-stage-num">3</div>
+          <div class="mc-stage-title">Проработка: Дизайн / Аналитика / ТЗ + тест-кейсы</div>
+          <div class="mc-stage-count" data-mc-count>0/6</div>
+        </div>
+        <ul class="mc-items">
+          <li class="mc-item"><input type="checkbox" data-mc><label>Дизайнер выполнил дизайн по ТЗ, <b>списал трудозатраты</b>, закрыл <span class="mc-role dev">Design</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Аналитик проработал ТЗ, заполнил поле <b>«Ответственный за ревью»</b> <span class="mc-role an">Analytics</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Аналитик <b>списал трудозатраты</b> перед ревью ТЗ <span class="mc-role an">Analytics</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Аналитик оповестил лидов и назначил встречу <span class="mc-role an">Analytics</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>ТЗ согласовано, задача закрыта (списание). Если функционал изменён — «Документация = требует корректировок» <span class="mc-role an">Analytics</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>После согласования ТЗ тестировщик пишет тест-кейсы в описании тест-задачи</b> (параллельно с разработкой) <span class="mc-role test">Test</span></label></li>
+        </ul>
+      </div>
+
+      <div class="mc-stage">
+        <div class="mc-stage-head">
+          <div class="mc-stage-num">4</div>
+          <div class="mc-stage-title">Разработка (DEV) → публикация Лидом/замом + закрытие</div>
+          <div class="mc-stage-count" data-mc-count>0/8</div>
+        </div>
+        <ul class="mc-items">
+          <li class="mc-item"><input type="checkbox" data-mc><label>Разработчик проверил/проставил <b>оценку временных затрат</b> <span class="mc-role dev">Dev</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Поле <b>«Направление»</b> установлено (FRONT / BACK) <span class="mc-role dev">Dev</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Работа выполнена, <b>трудозатраты списаны</b>, статус <b>«Проверка кода»</b> <span class="mc-role dev">Dev</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Лид/зам одобрил код <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам публикует на DEV</b> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Метка <b>«Развернута на DEV»</b> установлена <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам закрыл задачу после публикации</b> (при списанных трудозатратах) <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Если раньше срока — поставлена фактическая дата закрытия <span class="mc-role lead">Лид</span></label></li>
+        </ul>
+      </div>
+
+      <div class="mc-stage">
+        <div class="mc-stage-head">
+          <div class="mc-stage-num">5</div>
+          <div class="mc-stage-title">Тестирование (DEV) → «Протестировано на DEV»</div>
+          <div class="mc-stage-count" data-mc-count>0/5</div>
+        </div>
+        <ul class="mc-items">
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Тест-кейсы готовы</b> в описании тест-задачи (написаны после согласования ТЗ) <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Тестировщик построил отчёт по метке <b>«Развернута на DEV»</b> <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Проверка по тест-кейсам <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Баги заведены как <b>дочерние тест-задачи</b> и закрыты <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Тест пройден → метка <span class="pill label-tested">Протестировано на DEV</span> <span class="mc-role test">Test</span></label></li>
+        </ul>
+      </div>
+
+      <div class="mc-stage">
+        <div class="mc-stage-head">
+          <div class="mc-stage-num">6</div>
+          <div class="mc-stage-title">STAGE → публикация Лидом/замом + регресс</div>
+          <div class="mc-stage-count" data-mc-count>0/4</div>
+        </div>
+        <ul class="mc-items">
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам публикует на STAGE</b> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Тестировщик ставит метку <span class="pill label-regress">Регресс</span> <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Регресс пройден (баги закрыты) <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Метка <span class="pill label-regress-done">Регресс завершен</span>. Оповещение СТП <span class="mc-role test">Test</span></label></li>
+        </ul>
+      </div>
+
+      <div class="mc-stage">
+        <div class="mc-stage-head">
+          <div class="mc-stage-num">7</div>
+          <div class="mc-stage-title">PROD → публикация Лидом/замом + смоук</div>
+          <div class="mc-stage-count" data-mc-count>0/5</div>
+        </div>
+        <ul class="mc-items">
+          <li class="mc-item"><input type="checkbox" data-mc><label>СТП: сообщение в чате о техработах (дата, время) <span class="mc-role stp">СТП</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label><b>Лид/зам публикует на PROD</b> <span class="mc-role lead">Лид</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Тестировщик: метка <span class="pill label-smoke">Смоук</span>, проведение смоука <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Метка <span class="pill label-smoke-done">Смоук проведен</span> <span class="mc-role test">Test</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>СТП: релиз-ноут + письмо + <b>уведомление в чате с пользователями</b> <span class="mc-role stp">СТП</span></label></li>
+        </ul>
+      </div>
+
+      <div class="mc-stage">
+        <div class="mc-stage-head">
+          <div class="mc-stage-num">8</div>
+          <div class="mc-stage-title">Документация (если функционал изменён)</div>
+          <div class="mc-stage-count" data-mc-count>0/3</div>
+        </div>
+        <ul class="mc-items">
+          <li class="mc-item"><input type="checkbox" data-mc><label>Тех.пис построил отчёт в Redmine по фильтру «Документация = требует корректировок» <span class="mc-role writer">Тех.пис</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>Документы обновлены, <b>прикреплены к задаче + в Confluence</b> <span class="mc-role writer">Тех.пис</span></label></li>
+          <li class="mc-item"><input type="checkbox" data-mc><label>В задаче стоит <b>«Документация = изменения внесены»</b> <span class="mc-role writer">Тех.пис</span></label></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="card" id="memo">
+      <header><div class="badge-num">11</div><h2>Краткая памятка</h2></header>
+      <div class="memo">
+        <div class="memo-item"><span class="k">ТРЕКЕР</span><div>Родительская — <b>Структура</b>. Дочерние — <b>свой по направлению</b>. Не меняется.</div></div>
+        <div class="memo-item"><span class="k">СТАТУС</span><div>При создании — <b>Backlog</b>. После взятия — <b>Новая</b>/<b>В работе</b>. Front/Back → <b>Проверка кода</b> → <b>На DEV</b>. Bug — сразу <b>Новая</b>.</div></div>
+        <div class="memo-item"><span class="k">ТРУДОЗАТРАТЫ</span><div><b>Перед ревью исполнитель проверяет списание трудозатрат.</b> Без них задачу <b>закрыть нельзя</b>. Раньше срока — фактическая дата.</div></div>
+        <div class="memo-item"><span class="k">ЗАКРЫТИЕ F/B</span><div><b>Front/Back задачи закрывает только Лид/зам</b> — после публикации на DEV и проверки трудозатрат. Разработчик не закрывает.</div></div>
+        <div class="memo-item"><span class="k">ТЕСТ-КЕЙСЫ</span><div>Пишутся тестировщиком <b>в описании тест-задачи</b> после согласования ТЗ — параллельно с разработкой.</div></div>
+        <div class="memo-item"><span class="k">ПУБЛИКАЦИЯ</span><div><b>Только Лид/зам.</b> Разработчик, тестировщик, СТП не публикуют.</div></div>
+        <div class="memo-item"><span class="k">МЕТКИ</span><div>
+          <span class="pill label-dev">Развернута на DEV</span> (Лид) →
+          <span class="pill label-tested">Протестировано на DEV</span> (Test) →
+          <span class="pill label-regress">Регресс</span> (Test) →
+          <span class="pill label-regress-done">Регресс завершен</span> (Test) →
+          <span class="pill label-smoke">Смоук</span> (Test) →
+          <span class="pill label-smoke-done">Смоук проведен</span> (Test).
+        </div></div>
+        <div class="memo-item"><span class="k">КОНТУРЫ</span><div><b>DEV</b> / <b>STAGE</b> / <b>PROD</b> — публикует <b>только Лид/зам</b>.</div></div>
+        <div class="memo-item"><span class="k">ОПОВЕЩЕНИЕ СТП</span><div><b>Только перед PROD</b> — после «Регресс завершен». СТП публикацию не выполняет.</div></div>
+        <div class="memo-item"><span class="k">РЕЛИЗ · СПРИНТ</span><div>При создании — <b>Backlog</b>. После взятия — <b>актуальный релиз и спринт</b>. Hotfix — <b>отдельный hotfix-релиз</b>.</div></div>
+        <div class="memo-item"><span class="k">ДАТЫ</span><div>После взятия — <b>Дата начала</b> + <b>Срок завершения</b>. Раньше — <b>фактическая дата</b>.</div></div>
+        <div class="memo-item"><span class="k">НАПРАВЛЕНИЕ</span><div>Для Front/Back — <b>обязательно</b>. Ставит РП, разработчик проверяет.</div></div>
+        <div class="memo-item"><span class="k">ОЦЕНКА</span><div>«Оценка временных затрат», риск <b>+20 %</b>. Исполнитель обязан проверить/проставить при получении задачи.</div></div>
+        <div class="memo-item"><span class="k">РЕВЬЮ ТЗ</span><div>Аналитик → «Ответственный за ревью» (все лиды) → чат → встреча → согласование.</div></div>
+        <div class="memo-item"><span class="k">ПРОВЕРКА КОДА</span><div>Разработчик → «Проверка кода» → лид одобряет → лид/зам публикует DEV + метка → <b>лид/зам закрывает</b>.</div></div>
+        <div class="memo-item"><span class="k">БАГИ</span><div>Только дочерние тест-задачи. Статус <b>Новая</b>. <b>Приоритет + критичность + исполнитель</b>.</div></div>
+        <div class="memo-item"><span class="k">СТП</span><div>Оповещается после «Регресс завершен». Готовит сообщение и релиз-ноут. <b>Публикацию не выполняет</b>.</div></div>
+        <div class="memo-item"><span class="k">HOTFIX</span><div>Отдельный релиз, тот же workflow с метками, срочно.</div></div>
+        <div class="memo-item"><span class="k">ДОКУМЕНТАЦИЯ</span><div>Аналитик ставит <span class="pill doc-need">требует корректировок</span>. Тех.пис: отчёт → правки → <b>прикрепление к задаче + Confluence</b> → <span class="pill doc-done">изменения внесены</span>.</div></div>
+        <div class="memo-item"><span class="k">СВЯЗЬ</span><div>С заказчиком — только у родительской.</div></div>
+        <div class="memo-item"><span class="k">ИМЯ</span><div><code>ФБ. Стори. Направление</code>.</div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+  var RISK = 0.20;
+  var HOURS_PER_DAY = 8;
+
+  var ROLES = {
+    rp: {
+      icon: '📋', name: 'РП / Аналитик', subtitle: 'Владелец родительской задачи',
+      trigger: 'Получена задача от заказчика или инициирована Лидом; взятие в работу; изменён функционал',
+      steps: [
+        'Создай <b>родительскую задачу</b>: «Структура», Backlog, релиз Backlog, нужный ФБ. Инициатор — ты или Лид/зам.',
+        'Заполни <b>описание</b>: ТЗ, ссылка на заказчика, общая оценка (с риском +20 %), разбивка.',
+        'Создай <b>дочерние задачи</b> по 5 направлениям со своими трекерами.',
+        'В каждой дочерней: имя, <b>направление (для Front/Back — обязательно)</b>, описание, ТЗ, оценка, ссылка на родительскую.',
+        'Свяжи <b>только родительскую</b> с задачей заказчика.',
+        'После взятия — статус «Новая»/«В работе», актуальный релиз и спринт, Даты.',
+        'Если изменён функционал — в <b>родительской</b> задаче поле «Документация» = «требует корректировок».'
+      ],
+      result: 'Готовая структура с дочерними задачами и заполненными полями.'
+    },
+    designer: {
+      icon: '🎨', name: 'Дизайнер', subtitle: 'Направление Design',
+      trigger: 'Назначена Design-задача',
+      steps: [
+        'Возьми задачу в работу. После взятия — статус, релиз, спринт.',
+        'Установи Дату начала и Срок завершения.',
+        '<b>Проверь и при необходимости проставь «Оценку временных затрат»</b>.',
+        'Выполни дизайн по ТЗ.',
+        'Обнови оценку, если факт отличается.',
+        '<b>Проверь списание трудозатрат перед закрытием.</b> Без них задачу закрыть нельзя.',
+        'Закрой задачу. Если раньше срока — фактическая дата.'
+      ],
+      result: 'Дизайн-макеты готовы, трудозатраты списаны, задача закрыта.'
+    },
+    analytics: {
+      icon: '🔍', name: 'Аналитик-исполнитель', subtitle: 'Направление Analytics',
+      trigger: 'Назначена Analytics-задача',
+      steps: [
+        'Возьми задачу в работу. Статус, релиз, спринт, даты.',
+        '<b>Проверь и при необходимости проставь «Оценку временных затрат»</b>.',
+        'Проработай требования, критерии приёмки, ТЗ.',
+        '<b>Перед передачей на ревью проверь, что трудозатраты по задаче списаны.</b> Без них задачу закрыть нельзя.',
+        '<b>После проработки</b> — заполни поле <b>«Ответственный за ревью»</b>: всех лидов.',
+        '<b>Оповести лидов в рабочем чате</b> о готовности ТЗ.',
+        '<b>Назначь встречу</b> для согласования ТЗ.',
+        '<b>Отслеживай статус своей задачи в Redmine</b>.',
+        'После согласования — обнови оценку.',
+        '<b>Закрой задачу только после списания трудозатрат.</b> Раньше — фактическая дата.',
+        'Если менялся функционал — «Документация = требует корректировок» <b>у родительской задачи</b>.'
+      ],
+      result: 'ТЗ согласовано, трудозатраты списаны, задача закрыта.'
+    },
+    front: {
+      icon: '🖥', name: 'Front-разработчик', subtitle: 'Направление Front',
+      trigger: 'Назначена Front-задача',
+      steps: [
+        'Возьми задачу в работу. Статус «Новая»/«В работе», актуальный релиз и спринт.',
+        'Установи Дату начала и Срок завершения.',
+        '<b>Обязательно проставь «Оценку временных затрат»</b>, если ещё не заполнена.',
+        '<b>Установи в поле «Направление» значение FRONT</b>.',
+        'Реализуй по ТЗ.',
+        '<b>Перед переводом в «Проверка кода» проверь, что трудозатраты по задаче списаны.</b> Без них задачу закрыть нельзя.',
+        'Переведи в <b>«Проверка кода»</b>.',
+        'Дождись фидбека <b>Лида/зама своего направления</b>. При замечаниях — исправь и верни.',
+        '<b>Передай задачу Лиду/заму для публикации на DEV.</b> Публикацию и закрытие делает Лид/зам.',
+        'После публикации — задача на DEV с меткой «Развернута на DEV». <b>Закрывает задачу Лид/зам</b> — разработчик не закрывает.'
+      ],
+      result: 'Код передан Лиду/заму, на DEV с меткой, трудозатраты списаны. Задачу закрыл Лид/зам.'
+    },
+    back: {
+      icon: '⚙️', name: 'Back-разработчик', subtitle: 'Направление Back',
+      trigger: 'Назначена Back-задача',
+      steps: [
+        'Возьми задачу в работу. Статус, релиз, спринт, даты.',
+        'Установи Дату начала и Срок завершения.',
+        '<b>Обязательно проставь «Оценку временных затрат»</b>, если ещё не заполнена.',
+        '<b>Установи в поле «Направление» значение BACK</b>.',
+        'Реализуй API / бизнес-логику по ТЗ.',
+        '<b>Перед переводом в «Проверка кода» проверь, что трудозатраты списаны.</b>',
+        'Переведи в <b>«Проверка кода»</b>.',
+        'Дождись фидбека <b>Лида/зама</b>.',
+        '<b>Передай задачу Лиду/заму для публикации на DEV.</b> Публикацию и закрытие делает Лид/зам.',
+        'После публикации — задача на DEV с меткой «Развернута на DEV». <b>Закрывает Лид/зам</b>.'
+      ],
+      result: 'Код передан Лиду/заму, на DEV с меткой, трудозатраты списаны. Задачу закрыл Лид/зам.'
+    },
+    tester: {
+      icon: '🧪', name: 'Тестировщик', subtitle: 'Test · 3 контура + тест-кейсы',
+      trigger: 'После согласования ТЗ → тест-кейсы; DEV / STAGE / PROD → тесты',
+      steps: [
+        '<b>После согласования ТЗ:</b> напиши <b>тест-кейсы в описании своей тест-задачи</b> (трекер «Тестирование») — параллельно с разработкой.',
+        '<b>DEV:</b> построй отчёт в Redmine по метке <b>«Развернута на DEV»</b> — рабочий список.',
+        'Возьми тест-задачу в работу. Установи даты. Проверь/проставь <b>«Оценку временных затрат»</b>.',
+        'Проверь по <b>тест-кейсам</b>. Баги — <b>только дочерние задачи тест-задачи</b> (Ошибка, Новая, приоритет+критичность+исполнитель).',
+        'После успешного теста поставь метку <span class="pill label-tested">Протестировано на DEV</span>. <b>СТП не оповещай.</b>',
+        '<b>STAGE:</b> Лид/зам опубликует на STAGE. Ставишь <span class="pill label-regress">Регресс</span>, проводишь регресс.',
+        'После успешного регресса поставь <span class="pill label-regress-done">Регресс завершен</span> и <b>оповести СТП</b> о готовности к PROD.',
+        '<b>PROD:</b> Лид/зам опубликует на PROD. Ставишь метку <span class="pill label-smoke">Смоук</span>, проводишь смоук.',
+        'После успешного смоука поставь <span class="pill label-smoke-done">Смоук проведен</span>.',
+        '<b>Перед закрытием тест-задачи проверь списание трудозатрат.</b> Закрой (или фактическая дата).'
+      ],
+      result: 'Тест-кейсы в описании, качество подтверждено на DEV, STAGE, PROD. СТП оповещён.'
+    },
+    writer: {
+      icon: '📝', name: 'Технический писатель', subtitle: 'Работа по полю «Документация»',
+      trigger: 'Есть задачи с «Документация = требует корректировок»',
+      steps: [
+        'Построй отчёт <b>в трекере задач Redmine</b> по фильтру «Документация = требует корректировок».',
+        'По каждой задаче определи, что изменилось в функционале.',
+        'Внеси правки в соответствующие документы.',
+        '<b>Прикрепи обновлённые документы к задаче</b> и <b>добавь в Confluence</b>.',
+        'В каждой задаче поставь «Документация = изменения внесены».',
+        'При необходимости — согласуй с РП / аналитиком.'
+      ],
+      result: 'Документы обновлены, поле «Документация» закрыто.'
+    },
+    stp: {
+      icon: '📢', name: 'СТП', subtitle: 'Служба технической поддержки',
+      trigger: 'Получено уведомление о «Регресс завершен» — задачи готовы к PROD',
+      steps: [
+        '<b>Оповещение только перед PROD.</b> На DEV и STAGE — СТП не участвует.',
+        'Получи уведомление от тестировщика после метки «Регресс завершен».',
+        'Сформируй и опубликуй <b>сообщение в чате</b> о технических работах (дата, время).',
+        '<b>Не публикуй на PROD сам</b> — публикацию выполняет Лид/зам направления.',
+        'Дождись, пока Лид/зам опубликует на PROD и тестировщик поставит <span class="pill label-smoke-done">Смоук проведен</span>.',
+        'Сформируй <b>релиз-ноут</b>, отправь <b>письмо о завершении</b> с приложенным релиз-ноутом и <b>опубликуй уведомление в чате с пользователями</b>.',
+        'Для hotfix — те же шаги, но в минимальные сроки.'
+      ],
+      result: 'Пользователи оповещены, релиз-ноут и письмо отправлены. Публикацию выполнял Лид/зам.'
+    },
+    lead: {
+      icon: '👤', name: 'Лид / зам направления', subtitle: 'Публикация + закрытие Front/Back',
+      trigger: 'Ревью ТЗ; проверка кода; публикация на контура; закрытие Front/Back',
+      steps: [
+        'Можешь <b>инициировать задачу</b> (техдолг, рефакторинг, баг).',
+        'Получи уведомление о новой дочерней. Назначь исполнителя, проверь/подтверди <b>оценку</b>.',
+        'Подтверди план: оценка, релиз, спринт, даты.',
+        '<b>Ревью ТЗ:</b> получи оповещение от аналитика → участвуй во встрече → согласуй ТЗ.',
+        '<b>Проверка кода:</b> получи задачу в статусе «Проверка кода» → проверь, что <b>трудозатраты списаны</b> → оставь фидбек → одобри или верни.',
+        '<b>Публикация на DEV:</b> после одобрения кода — опубликуй задачу на DEV и установи метку <span class="pill label-dev">Развернута на DEV</span>.',
+        '<b>Закрой Front/Back задачу после публикации на DEV</b> — при списанных трудозатратах. Если раньше срока — фактическая дата.',
+        '<b>Публикация на STAGE:</b> после <span class="pill label-tested">Протестировано на DEV</span> — опубликуй на STAGE.',
+        '<b>Публикация на PROD:</b> после <span class="pill label-regress-done">Регресс завершен</span> и оповещения СТП — опубликуй на PROD.',
+        'Если тебя нет — <b>публикацию и закрытие выполняет твой зам</b>.'
+      ],
+      result: 'Задачи направления согласованы, опубликованы на контура, Front/Back закрыты (при списанных трудозатратах).'
+    }
+  };
+
+  var toastTimer;
+  function toast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 1900);
+  }
+  function copyText(text, label){
+    var done = function(){ toast('Скопировано' + (label ? ': ' + label : '')); };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch(e){ toast('Не удалось'); }
+      document.body.removeChild(ta);
+    }
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+    var el = document.querySelector(btn.getAttribute('data-copy'));
+    if (!el) return;
+    var text = (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') ? el.value : el.innerText;
+    copyText(text, btn.getAttribute('data-copy-label') || '');
+  });
+
+  var rolePanel = document.getElementById('rolePanel');
+  function renderRolePanel(role){
+    if (role === 'all' || !ROLES[role]){ rolePanel.classList.remove('show'); rolePanel.innerHTML = ''; return; }
+    var d = ROLES[role];
+    var html = '<div class="rp-head"><span class="rp-icon">' + d.icon + '</span><div><div class="rp-title">' + d.name + '</div><div class="rp-subtitle">' + d.subtitle + '</div></div><button class="rp-close">✕</button></div>'
+      + '<div class="rp-trigger"><b>Когда включаешься:</b> ' + d.trigger + '</div>'
+      + '<ol class="rp-steps">';
+    d.steps.forEach(function(s){ html += '<li>' + s + '</li>'; });
+    html += '</ol><div class="rp-result"><b>Результат:</b> ' + d.result + '</div>';
+    rolePanel.innerHTML = html;
+    rolePanel.classList.add('show');
+    rolePanel.querySelector('.rp-close').addEventListener('click', function(){
+      document.querySelectorAll('.role-btn').forEach(function(b){ b.classList.remove('active'); });
+      var allBtn = document.querySelector('.role-btn[data-role="all"]');
+      if (allBtn) allBtn.classList.add('active');
+      rolePanel.classList.remove('show'); rolePanel.innerHTML = '';
+    });
+  }
+  function selectRole(role){
+    document.querySelectorAll('.role-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.role === role); });
+    renderRolePanel(role);
+    if (role !== 'all' && rolePanel.classList.contains('show')){
+      var y = rolePanel.getBoundingClientRect().top + window.pageYOffset - 120;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }
+  document.querySelectorAll('.role-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ selectRole(btn.dataset.role); });
+  });
+  document.querySelectorAll('.rc-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ selectRole(btn.dataset.role); });
+  });
+
+  var genFb = document.getElementById('genFb'), genStory = document.getElementById('genStory'), genDir = document.getElementById('genDir'), genOut = document.getElementById('genOut');
+  var exNodes = { 'DESIGN': document.getElementById('ex-des'), 'ANALYTICS': document.getElementById('ex-a'), 'FRONT': document.getElementById('ex-f'), 'BACK': document.getElementById('ex-b'), 'TEST': document.getElementById('ex-t') };
+  function flash(el){ if (!el) return; el.classList.add('flash'); setTimeout(function(){ el.classList.remove('flash'); }, 350); }
+  function renderName(){
+    var fb = (genFb.value || '').trim() || 'Наименование ФБ';
+    var st = (genStory.value || '').trim() || 'Стори';
+    genOut.textContent = fb + '. ' + st + '. ' + genDir.value;
+    Object.keys(exNodes).forEach(function(dir){
+      var n = exNodes[dir]; if (!n) return;
+      var next = fb + '. ' + st + '. ' + dir;
+      if (n.textContent !== next){ n.textContent = next; flash(n); }
+    });
+  }
+  [genFb, genStory].forEach(function(el){ el.addEventListener('input', renderName); });
+  genDir.addEventListener('change', renderName);
+  renderName();
+
+  var fields = { 'Дизайн': document.getElementById('estDes'), 'Аналитика': document.getElementById('estA'), 'FRONT': document.getElementById('estF'), 'BACK': document.getElementById('estB'), 'TEST': document.getElementById('estT') };
+  var riskFields = { 'Дизайн': document.getElementById('riskDes'), 'Аналитика': document.getElementById('riskA'), 'FRONT': document.getElementById('riskF'), 'BACK': document.getElementById('riskB'), 'TEST': document.getElementById('riskT') };
+  var estTotalEl = document.getElementById('estTotal'), estTotalDaysEl = document.getElementById('estTotalDays'), estOutEl = document.getElementById('estOut');
+  var tplParentEl = document.getElementById('tplParent'), tplChildEl = document.getElementById('tplChild');
+  function fmt(n){ return (Math.round(n * 100) / 100).toString(); }
+
+  function renderTemplates(des, an, fr, ba, te, totalRisk, totalDays){
+    var tplP =
+      'h3. Суть задачи\n' +
+      '<краткое описание>\n\n' +
+      'h3. Ссылки\n' +
+      '* ТЗ: <ссылка на ТЗ>\n' +
+      '* Задача заказчика: <ссылка>\n\n' +
+      'h3. Оценка временных затрат (с учётом риска +20 %)\n' +
+      'Общая: ' + fmt(totalRisk) + ' ч. ≈ ' + fmt(totalDays) + ' дн.\n\n' +
+      'Разбивка:\n' +
+      '* Дизайн: ' + fmt(des) + ' ч. + 20% (' + fmt(des*RISK) + ' ч.) = ' + fmt(des*(1+RISK)) + ' ч.\n' +
+      '* Аналитика: ' + fmt(an) + ' ч. + 20% (' + fmt(an*RISK) + ' ч.) = ' + fmt(an*(1+RISK)) + ' ч.\n' +
+      '* FRONT: ' + fmt(fr) + ' ч. + 20% (' + fmt(fr*RISK) + ' ч.) = ' + fmt(fr*(1+RISK)) + ' ч.\n' +
+      '* BACK: ' + fmt(ba) + ' ч. + 20% (' + fmt(ba*RISK) + ' ч.) = ' + fmt(ba*(1+RISK)) + ' ч.\n' +
+      '* TEST: ' + fmt(te) + ' ч. + 20% (' + fmt(te*RISK) + ' ч.) = ' + fmt(te*(1+RISK)) + ' ч.\n\n' +
+      'Итого с риском: ' + fmt(totalRisk) + ' ч. ≈ ' + fmt(totalDays) + ' дн.';
+    if (tplParentEl) tplParentEl.textContent = tplP;
+
+    var frRisk = fr * (1 + RISK);
+    var frDays = frRisk / HOURS_PER_DAY;
+    var tplC =
+      'h3. Направление\n' +
+      'FRONT\n\n' +
+      'h3. Ссылки\n' +
+      '* ТЗ: <ссылка на ТЗ>\n' +
+      '* Родительская задача: <ссылка>\n\n' +
+      'h3. Содержание работ\n' +
+      '<краткое содержание>\n\n' +
+      'h3. Критерии приёмки\n' +
+      '* <критерий 1>\n' +
+      '* <критерий 2>\n\n' +
+      'h3. Оценка временных затрат (с учётом риска +20 %)\n' +
+      fmt(fr) + ' ч. + 20% (' + fmt(fr*RISK) + ' ч.) = ' + fmt(frRisk) + ' ч. ≈ ' + fmt(frDays) + ' дн.';
+    if (tplChildEl) tplChildEl.textContent = tplC;
+  }
+
+  function renderEst(){
+    var totalRisk = 0, lines = [];
+    var vals = {};
+    Object.keys(fields).forEach(function(key){
+      var b = parseFloat(fields[key].value); if (isNaN(b) || b < 0) b = 0;
+      vals[key] = b;
+      var ra = b * RISK, wr = b + ra; totalRisk += wr;
+      if (riskFields[key]) riskFields[key].textContent = fmt(wr);
+      lines.push('* ' + key + ': ' + fmt(b) + ' ч. + 20% (' + fmt(ra) + ' ч.) = ' + fmt(wr) + ' ч. ≈ ' + fmt(wr / HOURS_PER_DAY) + ' дн.');
+    });
+    var td = totalRisk / HOURS_PER_DAY;
+    estTotalEl.textContent = fmt(totalRisk);
+    estTotalDaysEl.textContent = fmt(td);
+    estOutEl.textContent = 'Оценка временных затрат (с учётом риска +20 %): ' + fmt(totalRisk) + ' ч. ≈ ' + fmt(td) + ' дн. (8 ч/день)\n\n'
+      + 'Разбивка по направлениям (базовая + риск 20 %):\n' + lines.join('\n') + '\n\n'
+      + 'Итого с риском: ' + fmt(totalRisk) + ' ч. ≈ ' + fmt(td) + ' дн.';
+
+    renderTemplates(vals['Дизайн'] || 0, vals['Аналитика'] || 0, vals['FRONT'] || 0, vals['BACK'] || 0, vals['TEST'] || 0, totalRisk, td);
+  }
+  Object.keys(fields).forEach(function(k){ if (fields[k]) fields[k].addEventListener('input', renderEst); });
+  renderEst();
+
+  var tabsWrap = document.getElementById('descTabs');
+  tabsWrap.addEventListener('click', function(e){
+    var b = e.target.closest('button[data-tab]'); if (!b) return;
+    tabsWrap.querySelectorAll('button').forEach(function(x){ x.classList.remove('active'); }); b.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    var p = document.getElementById(b.getAttribute('data-tab')); if (p) p.classList.add('active');
+  });
+
+  var MC_KEY = 'rm_master_checklist_v5';
+  var mcBar = document.getElementById('mcBar');
+  var mcText = document.getElementById('mcText');
+  var mcBoxes = Array.prototype.slice.call(document.querySelectorAll('[data-mc]'));
+
+  function mcUpdate(){
+    var done = 0;
+    mcBoxes.forEach(function(cb){
+      var li = cb.closest('.mc-item');
+      if (cb.checked){ done++; if (li) li.classList.add('done'); }
+      else { if (li) li.classList.remove('done'); }
+    });
+    var total = mcBoxes.length;
+    var pct = total ? (done / total) * 100 : 0;
+    if (mcBar) mcBar.style.width = pct + '%';
+    if (mcText) mcText.textContent = done + ' / ' + total;
+    document.querySelectorAll('.mc-stage').forEach(function(stage){
+      var boxes = stage.querySelectorAll('[data-mc]');
+      var stageDone = 0;
+      boxes.forEach(function(b){ if (b.checked) stageDone++; });
+      var cnt = stage.querySelector('[data-mc-count]');
+      if (cnt) cnt.textContent = stageDone + '/' + boxes.length;
+    });
+  }
+  function mcSave(){
+    var state = mcBoxes.map(function(cb){ return cb.checked ? 1 : 0; });
+    try { localStorage.setItem(MC_KEY, JSON.stringify(state)); } catch(e){}
+  }
+  function mcLoad(){
+    try {
+      var raw = localStorage.getItem(MC_KEY); if (!raw) return;
+      var state = JSON.parse(raw) || [];
+      mcBoxes.forEach(function(cb, i){ if (state[i]) cb.checked = true; });
+    } catch(e){}
+  }
+  mcBoxes.forEach(function(cb){
+    cb.addEventListener('change', function(){ mcUpdate(); mcSave(); });
+  });
+  var mcResetBtn = document.getElementById('mcReset');
+  if (mcResetBtn){
+    mcResetBtn.addEventListener('click', function(){
+      mcBoxes.forEach(function(cb){ cb.checked = false; });
+      try { localStorage.removeItem(MC_KEY); } catch(e){}
+      mcUpdate(); toast('Чеклист сброшен');
+    });
+  }
+  mcLoad(); mcUpdate();
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function setActive(id){ links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + id); }); }
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting) setActive(en.target.id); });
+    }, { rootMargin: '-130px 0px -70% 0px', threshold: 0 });
+    sections.forEach(function(s){ if (s) io.observe(s); });
+  }
+  links.forEach(function(a){ a.addEventListener('click', function(){ setActive(a.getAttribute('href').slice(1)); }); });
+})();
+</script>
+</body>
+</html>
