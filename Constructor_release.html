@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Генератор релиз-ноутов | ЖКХ-Контур 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0b0e1a;
+    background-image:
+      radial-gradient(ellipse at 10% 10%, rgba(30, 91, 255, 0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 90%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+      linear-gradient(180deg, #0b0e1a 0%, #13182b 100%);
+    min-height: 100vh;
+    color: #e8edf5;
+    padding: 20px;
+    line-height: 1.5;
+  }
+
+  .app-header {
+    max-width: 1600px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .app-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .app-header .app-version {
+    font-size: 12px;
+    color: #64748b;
+    background: rgba(255,255,255,0.05);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .layout {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 480px 1fr;
+    gap: 20px;
+    height: calc(100vh - 100px);
+  }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr; height: auto; }
+    .panel-preview { min-height: 600px; }
+  }
+
+  .panel {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #c8d0e0;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .panel h2 .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, #1e5bff, #7c3aed);
+    border-radius: 8px;
+    font-size: 11px;
+    color: #fff;
+  }
+
+  textarea {
+    width: 100%;
+    flex: 1;
+    min-height: 220px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px;
+    color: #e8edf5;
+    font-family: "JetBrains Mono", "Consolas", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus { border-color: rgba(30, 91, 255, 0.5); }
+  textarea::placeholder { color: #475569; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .row.full { grid-template-columns: 1fr; }
+
+  label.field-label {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+    margin-top: 10px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: #e8edf5;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus { border-color: rgba(30, 91, 255, 0.5); }
+  input::placeholder { color: #475569; }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1e5bff, #7c3aed);
+    box-shadow: 0 4px 16px rgba(30, 91, 255, 0.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(30, 91, 255, 0.45);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+  }
+  .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(34, 197, 94, 0.45);
+  }
+
+  .btn-ghost {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    grid-column: 1 / -1;
+    font-size: 12px;
+    padding: 9px;
+  }
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .stats-box {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .stat {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: #64748b;
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .stat-improve .stat-value { color: #4ade80; }
+  .stat-fix .stat-value { color: #fbbf24; }
+  .stat-module .stat-value { color: #60a5fa; }
+  .stat-total .stat-value { color: #c4b5fd; }
+
+  .log {
+    margin-top: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #94a3b8;
+    max-height: 120px;
+    overflow-y: auto;
+    font-family: "JetBrains Mono", monospace;
+    line-height: 1.5;
+  }
+
+  .log .ok { color: #4ade80; }
+  .log .warn { color: #fbbf24; }
+  .log .err { color: #f87171; }
+
+  .panel-preview { padding: 0; overflow: hidden; }
+
+  .panel-preview iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #0b0e1a;
+    border-radius: 18px;
+  }
+
+  .preview-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    color: #475569;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .preview-empty .icon { font-size: 48px; opacity: 0.5; }
+  .preview-empty p { font-size: 14px; max-width: 300px; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+
+  .tab {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: rgba(30, 91, 255, 0.15);
+    color: #60a5fa;
+    border-color: rgba(30, 91, 255, 0.3);
+  }
+
+  .hidden { display: none !important; }
+
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type="file"] {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .file-drop {
+    display: block;
+    padding: 40px 20px;
+    background: rgba(0,0,0,0.3);
+    border: 2px dashed rgba(255,255,255,0.15);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .file-drop:hover { border-color: rgba(30,91,255,0.5); }
+
+  .collapsible-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .collapsible-header:hover { color: #60a5fa; }
+
+  .collapsible-header .arrow {
+    font-size: 10px;
+    transition: transform 0.2s;
+    color: #64748b;
+  }
+
+  .collapsible-header.open .arrow { transform: rotate(90deg); }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>⚙️ Генератор релиз-ноутов</h1>
+  <span class="app-version">v1.3 · build 2026-11-03</span>
+</header>
+
+<div class="layout">
+
+  <!-- ЛЕВАЯ ПАНЕЛЬ: ВВОД -->
+  <div class="panel panel-input" style="overflow-y:auto;">
+
+    <div class="tabs">
+      <div class="tab active" data-tab="paste" onclick="switchTab('paste')">📋 Вставить текст</div>
+      <div class="tab" data-tab="file" onclick="switchTab('file')">📁 Загрузить .txt</div>
+    </div>
+
+    <div id="tab-paste">
+      <h2><span class="step-num">1</span> Текст релиза</h2>
+      <textarea id="inputText" placeholder="Вставьте сюда текст релиза...
+
+Пример:
+🔹 Название модуля
+Улучшения ✨
+— Пункт 1
+— Пункт 2
+
+Исправления 🔧
+— Пункт 1"></textarea>
+    </div>
+
+    <div id="tab-file" class="hidden">
+      <h2><span class="step-num">1</span> Загрузите файл</h2>
+      <div class="file-input-wrapper">
+        <label for="fileInput" class="file-drop">
+          <div style="font-size:36px; margin-bottom:8px;">📄</div>
+          <div style="font-size:13px; color:#94a3b8;">Нажмите, чтобы выбрать файл</div>
+          <div style="font-size:11px; color:#475569; margin-top:4px;">Поддерживается .txt (UTF-8)</div>
+        </label>
+        <input type="file" id="fileInput" accept=".txt,text/plain" onchange="handleFile(event)" />
+      </div>
+    </div>
+
+    <!-- ПАРАМЕТРЫ РЕЛИЗА -->
+    <h2 style="margin-top:16px; cursor:pointer;" class="collapsible-header open" onclick="toggleSection(this)">
+      <span><span class="step-num">2</span> Параметры релиза</span>
+      <span class="arrow">▶</span>
+    </h2>
+    <div id="sectionParams">
+      <div class="row">
+        <div>
+          <label class="field-label">Версия</label>
+          <input type="text" id="inpVersion" placeholder="2.14" />
+        </div>
+        <div>
+          <label class="field-label">Дата выпуска</label>
+          <input type="text" id="inpDate" placeholder="06.10.2026" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label class="field-label">Заголовок</label>
+          <input type="text" id="inpTitle" placeholder="Релиз-ноут" />
+        </div>
+        <div>
+          <label class="field-label">Продукт</label>
+          <input type="text" id="inpProduct" placeholder="ЖКХ-Контур 2.0" />
+        </div>
+      </div>
+
+      <div class="row full">
+        <div>
+          <label class="field-label">Бейдж (плашка над заголовком)</label>
+          <input type="text" id="inpBadge" placeholder="🚀 Новое обновление" />
+        </div>
+      </div>
+
+      <div class="row full">
+        <div>
+          <label class="field-label">Подпись в заключении</label>
+          <input type="text" id="inpSignature" placeholder="Команда разработки ЖКХ-Контур" />
+        </div>
+      </div>
+
+      <div class="row full">
+        <div>
+          <label class="field-label">Следующий релиз</label>
+          <input type="text" id="inpNextRelease" placeholder="октябрь 2026 года" />
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="generate()">⚡ Сформировать</button>
+      <button class="btn-success" onclick="downloadHtml()">💾 Скачать HTML</button>
+      <button class="btn-ghost" onclick="loadExample()">📥 Загрузить пример</button>
+      <button class="btn-ghost" onclick="resetSettings()">🔄 Сбросить настройки</button>
+    </div>
+
+    <div class="stats-box" id="statsBox">
+      <div class="stat stat-module">
+        <div class="stat-value" id="statModules">0</div>
+        <div class="stat-label">Модулей</div>
+      </div>
+      <div class="stat stat-improve">
+        <div class="stat-value" id="statImprove">0</div>
+        <div class="stat-label">Улучшений</div>
+      </div>
+      <div class="stat stat-fix">
+        <div class="stat-value" id="statFix">0</div>
+        <div class="stat-label">Исправлений</div>
+      </div>
+      <div class="stat stat-total">
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">Всего</div>
+      </div>
+    </div>
+
+    <div class="log" id="logBox">
+      <div>⏳ Ожидание текста релиза...</div>
+    </div>
+  </div>
+
+  <!-- ПРАВАЯ ПАНЕЛЬ: ПРЕДПРОСМОТР -->
+  <div class="panel panel-preview">
+    <div class="preview-empty" id="previewEmpty">
+      <div class="icon">🎆</div>
+      <p>Здесь появится предпросмотр<br />сгенерированного релиз-ноута</p>
+      <p style="font-size:12px; color:#334155; margin-top:8px;">Вставьте текст и нажмите «Сформировать»</p>
+    </div>
+    <iframe id="previewFrame" class="hidden"></iframe>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   НАСТРОЙКИ ПО УМОЛЧАНИЮ
+   ============================================================ */
+const DEFAULTS = {
+  version: '',
+  date: '',
+  title: 'Релиз-ноут',
+  product: 'ЖКХ-Контур 2.0',
+  badge: '🚀 Новое обновление',
+  signature: 'Команда разработки ЖКХ-Контур',
+  nextRelease: 'октябрь 2026 года'
+};
+
+const STORAGE_KEY = 'release-generator-settings-v1';
+
+/* ============================================================
+   ПАРСЕР ТЕКСТА РЕЛИЗА
+   ============================================================ */
+
+// Маркеры заголовков секций (чередование вместо символьного класса!)
+const SECTION_MARKERS = ['🔹', '🔸', '▸', '▶', '►', '◆', '▪', '◾', '●', '⬥', '⬦'];
+const SUBSECTION_MARKERS = ['✨', '🔧', '📝', '🛠', '⚙'];
+
+function isSectionMarker(line) {
+  for (const m of SECTION_MARKERS) {
+    if (line.startsWith(m)) return m;
+  }
+  return null;
+}
+
+function isSubsectionMarker(line) {
+  for (const m of SUBSECTION_MARKERS) {
+    if (line.startsWith(m)) return m;
+  }
+  return null;
+}
+
+function parseRelease(text) {
+  const lines = text.split(/\r?\n/);
+  let version = '';
+  let date = '';
+
+  const vm = text.match(/Версия[\s:]*([0-9][0-9.]*)/i);
+  if (vm) version = vm[1];
+
+  const dm = text.match(/Дата(?:\s+выпуска)?[\s:]*([0-9]{1,2}[.\-\/][0-9]{1,2}[.\-\/][0-9]{2,4})/i);
+  if (dm) date = dm[1];
+
+  const sections = [];
+  let cur = null;
+  let curSub = null;
+
+  const skipLine = (line) => {
+    if (/^Уважаемые пользователи/i.test(line)) return true;
+    if (/^Сообщаем вам/i.test(line)) return true;
+    if (/^Релиз-ноут/i.test(line)) return true;
+    if (/^Версия\s*:/i.test(line)) return true;
+    if (/^Дата\s+выпуска\s*:/i.test(line)) return true;
+    if (/^Все изменения опубликованы/i.test(line)) return true;
+    if (/^✅\s*Все изменения/i.test(line)) return true;
+    return false;
+  };
+
+  const classifyItem = (txt) => {
+    const head = txt.split(/[.,;:!?]/)[0].toLowerCase();
+    if (/^(исправлен|устранен|убран|удален|решена|откачен|починен|доработан)/.test(head)) return 'fix';
+    if (/исправлен|устранен|убран|удален/.test(head)) return 'fix';
+    if (/^(добавлен|реализован|разработан|улучшен|обновлен|актуализирован|теперь|появил|запущен|доработан)/.test(head)) return 'imp';
+    return 'imp';
+  };
+
+  for (let raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    if (skipLine(line)) continue;
+
+    const sectionMarker = isSectionMarker(line);
+    if (sectionMarker) {
+      const title = line.slice(sectionMarker.length).trim()
+        .replace(/[✨🔧📝🚀]/gu, '')
+        .trim();
+      if (title) {
+        cur = { title, improvements: [], fixes: [], autoClassified: false };
+        sections.push(cur);
+        curSub = null;
+        continue;
+      }
+    }
+
+    if (/^Улучшени[яй]?\s*✨?\s*$/iu.test(line) && line.length < 30) {
+      curSub = 'imp'; continue;
+    }
+    if (/^Исправлени[яй]?\s*🔧?\s*$/iu.test(line) && line.length < 30) {
+      curSub = 'fix'; continue;
+    }
+    if (/^Изменени[яй]?\s*📝?\s*$/iu.test(line) && line.length < 30) {
+      curSub = 'change'; continue;
+    }
+    if (/^Прочие улучшения/i.test(line)) {
+      curSub = 'change'; continue;
+    }
+
+    const subMarker = isSubsectionMarker(line);
+    if (subMarker) {
+      const rest = line.slice(subMarker.length).trim();
+      if (/^Улучшения\s*$/iu.test(rest)) { curSub = 'imp'; continue; }
+      if (/^Исправления\s*$/iu.test(rest)) { curSub = 'fix'; continue; }
+      if (/^Изменения\s*$/iu.test(rest)) { curSub = 'change'; continue; }
+    }
+
+    const itemMatch = line.match(/^[—\-–•*]\s*(.+)$/u) || line.match(/^\d+[.)]\s*(.+)$/u);
+    const itemText = itemMatch ? itemMatch[1].trim() : line;
+
+    if (!cur) continue;
+
+    if (curSub === 'imp') {
+      cur.improvements.push(itemText);
+    } else if (curSub === 'fix') {
+      cur.fixes.push(itemText);
+    } else {
+      cur.autoClassified = true;
+      const kind = classifyItem(itemText);
+      if (kind === 'fix') cur.fixes.push(itemText);
+      else cur.improvements.push(itemText);
+    }
+  }
+
+  let totalImprovements = 0, totalFixes = 0;
+  sections.forEach(s => {
+    totalImprovements += s.improvements.length;
+    totalFixes += s.fixes.length;
+  });
+
+  return {
+    version,
+    date,
+    sections,
+    totalImprovements,
+    totalFixes,
+    modules: sections.length,
+    total: totalImprovements + totalFixes
+  };
+}
+
+/* ============================================================
+   УТИЛИТЫ
+   ============================================================ */
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function formatDate(input) {
+  if (!input) {
+    const d = new Date();
+    const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} г.`;
+  }
+  const m = input.match(/(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{2,4})/);
+  if (m) {
+    const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+    const day = parseInt(m[1]);
+    const month = parseInt(m[2]) - 1;
+    let year = parseInt(m[3]);
+    if (year < 100) year += 2000;
+    return `${day} ${months[month]} ${year} г.`;
+  }
+  return input;
+}
+
+function getSectionIcon(title) {
+  const t = title.toLowerCase();
+  if (t.includes('график') || t.includes('озп') || t.includes('сезон')) return '📅';
+  if (t.includes('взу') || t.includes('водоснабж') || t.includes('водозабор')) return '💧';
+  if (t.includes('цтп') || t.includes('теплоснабж') || t.includes('котельн')) return '🔥';
+  if (t.includes('карт')) return '🗺️';
+  if (t.includes('выездн')) return '🚗';
+  if (t.includes('паспорт') || t.includes('акт')) return '📄';
+  if (t.includes('опрос')) return '📝';
+  if (t.includes('оценочн')) return '📋';
+  if (t.includes('конструктор') || t.includes('реестр')) return '🛠️';
+  if (t.includes('организац')) return '🏢';
+  if (t.includes('пользовател')) return '👥';
+  if (t.includes('жилищн') || t.includes('мкд') || t.includes('дом')) return '🏠';
+  if (t.includes('еддс') || t.includes('заявк')) return '📞';
+  if (t.includes('навигац') || t.includes('переход')) return '🧭';
+  if (t.includes('администр') || t.includes('панель')) return '⚙️';
+  if (t.includes('технич') || t.includes('прочие') || t.includes('улучшения')) return '🔄';
+  return '📌';
+}
+
+function slugify(s) {
+  return String(s || 'release')
+    .toLowerCase()
+    .replace(/[^a-z0-9а-яё]+/gi, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+}
+
+/* ============================================================
+   ГЕНЕРАЦИЯ HTML
+   ============================================================ */
+function generateReleaseHtml(data, settings) {
+  const { version, date, sections, totalImprovements, totalFixes, modules, total } = data;
+  const { title, product, badge, signature, nextRelease } = settings;
+
+  const sectionsHtml = sections.map((s, i) => {
+    const icon = getSectionIcon(s.title);
+    const both = s.improvements.length && s.fixes.length;
+
+    let cards = '';
+    if (s.improvements.length) {
+      cards += `
+        <div class="card card-improvement"${!both ? ' style="grid-column: 1 / -1;"' : ''}>
+          <h3><span class="emoji">✨</span> Улучшения <span class="badge-new">NEW</span></h3>
+          <ul>${s.improvements.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+        </div>`;
+    }
+    if (s.fixes.length) {
+      cards += `
+        <div class="card card-fix"${!both ? ' style="grid-column: 1 / -1;"' : ''}>
+          <h3><span class="emoji">🔧</span> Исправления <span class="badge-new">NEW</span></h3>
+          <ul>${s.fixes.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+        </div>`;
+    }
+
+    return `
+    <div class="section-title">
+      <span class="num">${i + 1}</span>
+      ${escapeHtml(s.title)}
+      <span class="icon">${icon}</span>
+    </div>
+    <div class="cards-grid">${cards}</div>`;
+  }).join('');
+
+  const overviewSections = sections.map(s => `<span class="highlight-text">${escapeHtml(s.title)}</span>`).join(', ');
+
+  const dateFormatted = formatDate(date);
+  const displayVersion = version || '—';
+  const fullTitle = `${title}: ${product}`;
+  const pageTitle = version ? `${fullTitle} — v${version}` : fullTitle;
+
+  const scriptClose = '<' + '/script>';
+
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${escapeHtml(pageTitle)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0b0e1a;
+  background-image:
+    radial-gradient(ellipse at 10% 20%, rgba(30, 91, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(34, 197, 94, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #0b0e1a 0%, #13182b 100%);
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: #e8edf5;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+#fireworks-canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999; }
+@keyframes fadeInUp { from { opacity:0; transform: translateY(40px) scale(0.96); } to { opacity:1; transform: translateY(0) scale(1); } }
+@keyframes glowPulse { 0%,100% { box-shadow: 0 0 20px rgba(30,91,255,0.2); } 50% { box-shadow: 0 0 40px rgba(30,91,255,0.4); } }
+@keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+@keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes iconBounce { 0%,100% { transform: scale(1) rotate(0deg); } 25% { transform: scale(1.2) rotate(-5deg); } 75% { transform: scale(1.1) rotate(5deg); } }
+.container { max-width: 1100px; margin: 0 auto; animation: fadeInUp 0.8s cubic-bezier(0.22,1,0.36,1) forwards; }
+.header { text-align: center; margin-bottom: 50px; }
+.header-badge { display:inline-block; background: linear-gradient(135deg,#1e5bff,#7c3aed); padding: 6px 20px; border-radius: 40px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #fff; margin-bottom: 16px; animation: glowPulse 3s ease-in-out infinite; }
+.header h1 { font-size: 48px; font-weight: 800; background: linear-gradient(135deg,#ffffff 0%,#94a3b8 50%,#ffffff 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 6s linear infinite; letter-spacing: -0.03em; }
+.header h1 .version { display:inline-block; font-size: 18px; font-weight: 700; background: linear-gradient(135deg,#1e5bff,#7c3aed); -webkit-text-fill-color: #fff; padding: 4px 18px; border-radius: 40px; margin-left: 12px; vertical-align: middle; animation: float 3s ease-in-out infinite; }
+.header-meta { display:flex; justify-content:center; gap: 32px; flex-wrap: wrap; margin-top: 16px; font-size: 15px; color: #8892b0; }
+.header-meta span { display:flex; align-items: center; gap: 8px; }
+.overview { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 28px 32px; margin-bottom: 48px; position: relative; overflow: hidden; transition: all 0.4s ease; }
+.overview::before { content:''; position:absolute; top:0; left:0; right:0; height: 2px; background: linear-gradient(90deg, transparent, #1e5bff, #7c3aed, transparent); }
+.overview:hover { border-color: rgba(30,91,255,0.3); transform: translateY(-2px); }
+.overview p { font-size: 16px; color: #c8d0e0; margin: 0; }
+.overview p strong { color: #ffffff; }
+.overview .highlight-text { color: #60a5fa; font-weight: 500; }
+.section-title { font-size: 26px; font-weight: 700; margin-top: 48px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; color: #ffffff; }
+.section-title .num { display:inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: linear-gradient(135deg,#1e5bff,#7c3aed); border-radius: 12px; font-size: 15px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.section-title .icon { font-size: 28px; animation: iconBounce 4s ease-in-out infinite; display:inline-block; }
+.cards-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 8px; }
+@media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; } }
+.card { background: rgba(255,255,255,0.04); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 22px 24px; transition: all 0.4s cubic-bezier(0.22,1,0.36,1); position: relative; overflow: hidden; animation: fadeInUp 0.7s cubic-bezier(0.22,1,0.36,1) forwards; opacity: 0; }
+.card:hover { transform: translateY(-6px) scale(1.01); border-color: rgba(30,91,255,0.25); background: rgba(255,255,255,0.07); }
+.card-improvement:hover { border-color: rgba(34,197,94,0.3); box-shadow: 0 12px 40px rgba(34,197,94,0.08); }
+.card-fix:hover { border-color: rgba(245,158,11,0.3); box-shadow: 0 12px 40px rgba(245,158,11,0.08); }
+.card-improvement::after { content:''; position:absolute; top:0; left:0; width: 4px; height: 100%; background: linear-gradient(180deg,#22c55e,#16a34a); border-radius: 18px 0 0 18px; }
+.card-fix::after { content:''; position:absolute; top:0; left:0; width: 4px; height: 100%; background: linear-gradient(180deg,#f59e0b,#d97706); border-radius: 18px 0 0 18px; }
+.card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: #ffffff; letter-spacing: 0.3px; }
+.card h3 .emoji { font-size: 18px; }
+.card ul { list-style: none; padding: 0; margin: 0; }
+.card ul li { padding: 5px 0 5px 28px; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2360a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>') left center no-repeat; background-size: 16px; color: #c8d0e0; font-size: 14px; }
+.card ul li strong { color: #ffffff; font-weight: 600; }
+.badge-new { display:inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: linear-gradient(135deg,#22c55e,#16a34a); color: #fff; padding: 2px 10px; border-radius: 40px; margin-left: 8px; vertical-align: middle; animation: glowPulse 2s ease-in-out infinite; }
+.conclusion { margin-top: 52px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.06); text-align: center; }
+.conclusion h2 { font-size: 24px; font-weight: 700; color: #ffffff; margin-bottom: 12px; }
+.conclusion p { color: #94a3b8; font-size: 16px; max-width: 700px; margin: 0 auto 8px; }
+.conclusion .highlight { color: #60a5fa; font-weight: 600; }
+.conclusion .signature { margin-top: 20px; color: #64748b; font-size: 15px; }
+.conclusion .signature strong { color: #e8edf5; }
+.release-progress { margin-top: 24px; background: rgba(255,255,255,0.06); border-radius: 40px; height: 6px; overflow: hidden; max-width: 400px; margin-left: auto; margin-right: auto; }
+.release-progress .bar { height: 100%; width: 100%; background: linear-gradient(90deg,#1e5bff,#7c3aed,#22c55e); border-radius: 40px; animation: glowPulse 3s ease-in-out infinite; }
+@media (max-width: 600px) {
+  body { padding: 16px 10px; }
+  .header h1 { font-size: 28px; }
+  .header h1 .version { font-size: 14px; padding: 3px 14px; margin-left: 6px; }
+  .header-meta { gap: 16px; font-size: 13px; flex-wrap: wrap; }
+  .overview { padding: 20px; }
+  .overview p { font-size: 14px; }
+  .section-title { font-size: 20px; gap: 10px; }
+  .section-title .num { width: 30px; height: 30px; font-size: 13px; }
+  .section-title .icon { font-size: 22px; }
+  .card { padding: 18px; }
+  .card h3 { font-size: 14px; }
+  .card ul li { font-size: 13px; padding: 4px 0 4px 24px; background-size: 14px; }
+  .conclusion h2 { font-size: 20px; }
+  .conclusion p { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+<canvas id="fireworks-canvas"></canvas>
+<div class="container">
+  <header class="header">
+    <div class="header-badge">${escapeHtml(badge)}</div>
+    <h1>
+      ${escapeHtml(title)}: ${escapeHtml(product)}
+      <span class="version">v${escapeHtml(displayVersion)}</span>
+    </h1>
+    <div class="header-meta">
+      <span>📅 ${escapeHtml(dateFormatted)}</span>
+      <span>✨ ${totalImprovements} улучшений</span>
+      <span>🔧 ${totalFixes} исправлений</span>
+      <span>📊 ${modules} модулей</span>
+    </div>
+  </header>
+
+  <div class="overview">
+    <p>
+      <strong>📋 Обзор релиза</strong><br />
+      В рамках разработки системы <strong>«${escapeHtml(product)}»</strong> реализованы
+      очередные улучшения и исправления. Обновление затрагивает
+      ${overviewSections}.
+    </p>
+    <p style="margin-top: 8px;">
+      ⚡ Всего изменений: <strong>${total}</strong>. Все изменения прошли тестирование и готовы к эксплуатации.
+    </p>
+  </div>
+
+  ${sectionsHtml}
+
+  <div class="conclusion">
+    <h2>🎯 Заключение</h2>
+    <p>
+      Релиз сфокусирован на <span class="highlight">повышении стабильности</span>,
+      <span class="highlight">удобстве работы пользователей</span> и
+      <span class="highlight">корректности отображения данных</span>.
+      Все изменения прошли тестирование и готовы к эксплуатации. ✅
+    </p>
+    <p>
+      📆 Следующий релиз запланирован на <strong>${escapeHtml(nextRelease)}</strong> —
+      в приоритете отчётные формы и внешние интеграции.
+    </p>
+    <div class="release-progress"><div class="bar"></div></div>
+    <div class="signature">
+      💙 С уважением, <strong>${escapeHtml(signature)}</strong>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('fireworks-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = [];
+  const palettes = [
+    ['#1e5bff','#60a5fa','#93bbfc','#ffffff'],
+    ['#7c3aed','#a78bfa','#c4b5fd','#ffffff'],
+    ['#22c55e','#4ade80','#86efac','#ffffff'],
+    ['#f59e0b','#fbbf24','#fcd34d','#ffffff']
+  ];
+  function burst(x, y, palette) {
+    for (let i = 0; i < 100; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 8 + 3;
+      const color = palette[(Math.random() * palette.length) | 0];
+      particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, decay: 0.022 + Math.random() * 0.015, color, size: Math.random() * 2.5 + 1.5 });
+    }
+  }
+  const w = canvas.width, h = canvas.height;
+  const points = [
+    [w * 0.5, h * 0.25, palettes[0]],
+    [w * 0.2, h * 0.35, palettes[1]],
+    [w * 0.8, h * 0.30, palettes[2]],
+    [w * 0.35, h * 0.15, palettes[3]],
+    [w * 0.65, h * 0.20, palettes[0]],
+    [w * 0.5, h * 0.45, palettes[2]]
+  ];
+  points.forEach(p => burst(p[0], p[1], p[2]));
+  function animate() {
+    ctx.fillStyle = 'rgba(11, 14, 26, 0.22)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.vx *= 0.97; p.vy *= 0.97; p.life -= p.decay;
+      if (p.life <= 0) { particles.splice(i, 1); continue; }
+      ctx.globalAlpha = p.life;
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = p.life * 0.25;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.life * 2.5, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (particles.length > 0) requestAnimationFrame(animate);
+    else { canvas.style.transition = 'opacity 0.5s ease'; canvas.style.opacity = '0'; setTimeout(() => canvas.remove(), 500); }
+  }
+  animate();
+})();
+${scriptClose}
+</body>
+</html>`;
+}
+
+/* ============================================================
+   UI ЛОГИКА
+   ============================================================ */
+let lastParsed = null;
+let lastHtml = '';
+
+function log(msg, cls) {
+  const box = document.getElementById('logBox');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function clearLog() {
+  document.getElementById('logBox').innerHTML = '';
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.getElementById('tab-paste').classList.toggle('hidden', name !== 'paste');
+  document.getElementById('tab-file').classList.toggle('hidden', name !== 'file');
+}
+
+function toggleSection(header) {
+  header.classList.toggle('open');
+  const next = header.nextElementSibling;
+  if (next) next.classList.toggle('hidden');
+}
+
+/* ============================================================
+   НАСТРОЙКИ (localStorage)
+   ============================================================ */
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { ...DEFAULTS };
+    const parsed = JSON.parse(raw);
+    return { ...DEFAULTS, ...parsed };
+  } catch (e) {
+    return { ...DEFAULTS };
+  }
+}
+
+function saveSettings() {
+  const s = readFormSettings();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  } catch (e) { /* ignore */ }
+}
+
+function readFormSettings() {
+  return {
+    version:     document.getElementById('inpVersion').value.trim(),
+    date:        document.getElementById('inpDate').value.trim(),
+    title:       document.getElementById('inpTitle').value.trim() || DEFAULTS.title,
+    product:     document.getElementById('inpProduct').value.trim() || DEFAULTS.product,
+    badge:       document.getElementById('inpBadge').value.trim() || DEFAULTS.badge,
+    signature:   document.getElementById('inpSignature').value.trim() || DEFAULTS.signature,
+    nextRelease: document.getElementById('inpNextRelease').value.trim() || DEFAULTS.nextRelease
+  };
+}
+
+function applySettings(s) {
+  document.getElementById('inpVersion').value = s.version || '';
+  document.getElementById('inpDate').value = s.date || '';
+  document.getElementById('inpTitle').value = s.title || DEFAULTS.title;
+  document.getElementById('inpProduct').value = s.product || DEFAULTS.product;
+  document.getElementById('inpBadge').value = s.badge || DEFAULTS.badge;
+  document.getElementById('inpSignature').value = s.signature || DEFAULTS.signature;
+  document.getElementById('inpNextRelease').value = s.nextRelease || DEFAULTS.nextRelease;
+}
+
+function resetSettings() {
+  if (!confirm('Сбросить все параметры релиза к значениям по умолчанию?')) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  applySettings({ ...DEFAULTS });
+  clearLog();
+  log('🔄 Настройки сброшены', 'ok');
+}
+
+/* ============================================================
+   ЗАГРУЗКА ФАЙЛА / ПРИМЕР
+   ============================================================ */
+function handleFile(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    document.getElementById('inputText').value = ev.target.result;
+    switchTab('paste');
+    log('✅ Файл загружен: ' + f.name, 'ok');
+  };
+  reader.readAsText(f, 'UTF-8');
+}
+
+function loadExample() {
+  document.getElementById('inputText').value = `Уважаемые пользователи!
+
+Релиз-ноут: «ЖКХ-Контур 2.0» 🚀
+Версия: 2.14
+Дата выпуска: 06.10.2026
+
+Сообщаем вам, что в рамках разработки новой системы ЖКХ-Контур 2.0 были реализованы следующие направления:
+
+🔹 Карта ЖКХ и карточка ВЗУ
+Улучшения ✨
+— Обновлен раздел «Датчики» в карточке ВЗУ на единой карте.
+— Измеряемый параметр и модель датчика вынесены в отдельные строки.
+— Добавлен столбец «ID» и столбец «Статус» с цветовой индикацией.
+— Для каждого датчика теперь отображаются 6 последних измерений.
+
+🔹 Опросы пользователей
+Улучшения ✨
+— Запущено модальное окно с приглашением пройти опрос.
+
+🔹 Реестр объектов водоснабжения (ВЗУ)
+Исправления 🔧
+— Исправлены ошибки при создании и редактировании ВЗУ на вкладке «Инфраструктура».
+— Исправлена ошибка сохранения при выборе значения «Нет» в поле «Наличие станции очистки».
+
+🔹 Подготовка к ОЗП и Конструктор реестров
+Исправления 🔧
+— Исправлена ошибка при удалении последнего МКД без УК в Конструкторе реестров.
+— Исправлено отображение удаленных объектов оценки в реестре ОЗП.
+
+🔹 Технические улучшения
+Улучшения ✨
+— В данные пользователя добавлен ключ базовой роли.`;
+  log('📥 Загружен пример текста', 'ok');
+}
+
+/* ============================================================
+   ГЕНЕРАЦИЯ
+   ============================================================ */
+function generate() {
+  const text = document.getElementById('inputText').value.trim();
+  if (!text) {
+    clearLog();
+    log('⚠️ Введите текст релиза', 'warn');
+    return;
+  }
+
+  clearLog();
+  log('🔍 Начинаю парсинг...');
+
+  const settings = readFormSettings();
+  const parsed = parseRelease(text);
+
+  if (settings.version) parsed.version = settings.version;
+  if (settings.date) parsed.date = settings.date;
+
+  lastParsed = parsed;
+  saveSettings();
+
+  log('✅ Найдено модулей: ' + parsed.modules, 'ok');
+  log('✨ Улучшений: ' + parsed.totalImprovements, 'ok');
+  log('🔧 Исправлений: ' + parsed.totalFixes, 'ok');
+  log('📊 Всего изменений: ' + parsed.total, 'ok');
+
+  if (parsed.modules === 0) {
+    log('⚠️ Не найдено ни одной секции с 🔹', 'warn');
+    log('💡 Убедитесь, что разделы начинаются с 🔹', 'warn');
+  }
+  if (!parsed.version) log('⚠️ Версия не найдена — укажите вручную', 'warn');
+  if (!parsed.date) log('⚠️ Дата не найдена — укажите вручную', 'warn');
+
+  parsed.sections.forEach((s, i) => {
+    log(`   ${i + 1}. «${s.title}» — ✨${s.improvements.length} / 🔧${s.fixes.length}`, '');
+  });
+
+  document.getElementById('statModules').textContent = parsed.modules;
+  document.getElementById('statImprove').textContent = parsed.totalImprovements;
+  document.getElementById('statFix').textContent = parsed.totalFixes;
+  document.getElementById('statTotal').textContent = parsed.total;
+
+  const html = generateReleaseHtml(parsed, settings);
+  lastHtml = html;
+
+  const frame = document.getElementById('previewFrame');
+  const empty = document.getElementById('previewEmpty');
+  frame.classList.remove('hidden');
+  empty.classList.add('hidden');
+  frame.srcdoc = html;
+
+  log('🎆 Страница сформирована!', 'ok');
+}
+
+function downloadHtml() {
+  if (!lastHtml) {
+    clearLog();
+    log('⚠️ Сначала нажмите «Сформировать»', 'warn');
+    return;
+  }
+  const settings = readFormSettings();
+  const version = (lastParsed && lastParsed.version) ? lastParsed.version : 'release';
+  const productSlug = slugify(settings.product);
+  const filename = `releasenote-${productSlug}-v${version}.html`;
+  const blob = new Blob([lastHtml], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  log('💾 Файл сохранён: ' + filename, 'ok');
+}
+
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ
+   ============================================================ */
+(function init() {
+  const saved = loadSettings();
+  applySettings(saved);
+
+  // Автосохранение при изменении полей
+  ['inpVersion','inpDate','inpTitle','inpProduct','inpBadge','inpSignature','inpNextRelease'].forEach(id => {
+    document.getElementById(id).addEventListener('input', saveSettings);
+  });
+})();
+</script>
+
+</body>
+</html>
